@@ -6,5 +6,4 @@ data class AlarmItem(
     val time: LocalDateTime,
     val name: String,
     val message: String
-){
-}
+)
