@@ -19,5 +19,5 @@ interface AlarmDao : BaseDao<AlarmEntity> {
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateAlarm(entity: AlarmEntity)
-    
+
 }
