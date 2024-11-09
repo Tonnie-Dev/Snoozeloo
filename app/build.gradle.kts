@@ -53,6 +53,8 @@ dependencies {
     implementation(AndroidX.compose.ui.toolingPreview)
     implementation(AndroidX.compose.material3)
 
+    //Splash Screen
+    implementation(AndroidX.core.splashscreen)
 
     // Dagger Hilt
     implementation(Google.dagger.hilt.android)
