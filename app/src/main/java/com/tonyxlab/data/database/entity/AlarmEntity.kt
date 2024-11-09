@@ -6,7 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.tonyxlab.domain.model.DayActive
 
-@Entity(tableName = "alarms")
+@Entity(tableName = "alarms_table")
 data class AlarmEntity(
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "id")
