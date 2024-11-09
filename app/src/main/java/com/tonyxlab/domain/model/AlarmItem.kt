@@ -11,7 +11,7 @@ data class AlarmItem(
     val daysActive: List<DayActive> = emptyList(),
     val ringtone: Uri? = null,
     val volume: Int = 0,
-    val vibrate: Boolean = false,
+    val isHapticOn: Boolean = false,
     val wakeUpTime: String? = null
 )
 
