@@ -5,6 +5,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.tonyxlab.domain.model.DayActive
+import java.time.LocalDateTime
 
 @Entity(tableName = "alarms_table")
 data class AlarmEntity(
@@ -16,9 +17,9 @@ data class AlarmEntity(
     @ColumnInfo(name = "is_active")
     val isActive: Boolean,
     @ColumnInfo(name = "trigger_time")
-    val triggerTime: String,
-    @ColumnInfo(name = "duration_to_trigger")
-    val durationToTrigger: String,
+    val triggerTime: LocalDateTime,
+    @ColumnInfo(name = "duration_to_next_trigger")
+    val durationToNextTrigger: Long,
     @ColumnInfo(name = "days_active")
     val daysActive: List<DayActive> = emptyList(),
     @ColumnInfo(name = "ringtone")
