@@ -1,4 +1,4 @@
-package com.tonyxlab.ui.theme
+package com.tonyxlab.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

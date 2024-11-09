@@ -1,4 +1,4 @@
-package com.tonyxlab
+package com.tonyxlab.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,7 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.tonyxlab.ui.theme.SnoozelooTheme
+import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.zoomSplashAnimation
 import dagger.hilt.android.AndroidEntryPoint
 

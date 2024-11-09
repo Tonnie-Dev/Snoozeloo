@@ -1,4 +1,4 @@
-package com.tonyxlab
+package com.tonyxlab.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
