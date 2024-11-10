@@ -1,5 +1,6 @@
 package com.tonyxlab.domain.repository
 
+
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.utils.Resource
 import kotlinx.coroutines.flow.Flow
@@ -7,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface AlarmRepository {
 
     fun getAlarms(): Flow<List<AlarmItem>>
-    suspend fun getAlarmById():AlarmItem
+    suspend fun getAlarmById(): AlarmItem
     suspend fun createAlarm(): Resource<Boolean>
     suspend fun updateAlarm(alarmItem: AlarmItem): Resource<Boolean>
     suspend fun deleteAlarm(alarmItem: AlarmItem): Resource<Boolean>

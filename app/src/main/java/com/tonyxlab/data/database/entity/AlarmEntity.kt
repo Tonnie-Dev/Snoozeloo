@@ -27,7 +27,7 @@ data class AlarmEntity(
     @ColumnInfo(name = "volume")
     val volume: Int = 0,
     @ColumnInfo(name = "is_haptic_on")
-    val isHapticOn: Boolean = false,
+    val isHapticsOn: Boolean = false,
     @ColumnInfo(name = "wake_up_time")
     val wakeUpTime: String? = null
 )
