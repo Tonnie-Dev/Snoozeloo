@@ -12,12 +12,12 @@ import kotlinx.coroutines.flow.Flow
 interface AlarmDao : BaseDao<AlarmEntity> {
 
     @Query("SELECT * FROM alarms_table ORDER BY duration_to_next_trigger ASC")
-    fun getAlarms(): Flow<List<AlarmEntity>>
+    fun getAlarms(): Flow<List<AlarmEntity>?>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+  /*  @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createAlarm(): Long
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun updateAlarm(entity: AlarmEntity)
+    suspend fun updateAlarm(entity: AlarmEntity)*/
 
 }
