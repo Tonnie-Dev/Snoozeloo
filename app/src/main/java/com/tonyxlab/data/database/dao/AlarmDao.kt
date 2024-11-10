@@ -1,10 +1,7 @@
 package com.tonyxlab.data.database.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Update
 import com.tonyxlab.data.database.entity.AlarmEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -14,10 +11,13 @@ interface AlarmDao : BaseDao<AlarmEntity> {
     @Query("SELECT * FROM alarms_table ORDER BY duration_to_next_trigger ASC")
     fun getAlarms(): Flow<List<AlarmEntity>?>
 
-  /*  @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun createAlarm(): Long
+    @Query("SELECT * FROM alarms_table WHERE id = :id")
+    suspend fun getAlarmById(id: String): AlarmEntity?
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun updateAlarm(entity: AlarmEntity)*/
+    /*  @Insert(onConflict = OnConflictStrategy.REPLACE)
+      suspend fun createAlarm(): Long
+
+      @Update(onConflict = OnConflictStrategy.REPLACE)
+      suspend fun updateAlarm(entity: AlarmEntity)*/
 
 }

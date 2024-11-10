@@ -18,6 +18,10 @@ class AlarmRepositoryImpl @Inject constructor(private val dao: AlarmDao) : Alarm
                 }
     }
 
+    override suspend fun getAlarmById(): AlarmItem {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun createAlarm(): Resource<Boolean> {
         TODO("Not yet implemented")
     }

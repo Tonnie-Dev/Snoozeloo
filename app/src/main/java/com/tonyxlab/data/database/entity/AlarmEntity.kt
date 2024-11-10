@@ -14,7 +14,7 @@ data class AlarmEntity(
     val id: String,
     @ColumnInfo(name = "name")
     val name: String,
-    @ColumnInfo(name = "is_active")
+    @ColumnInfo(name = "is_enabled")
     val isEnabled: Boolean,
     @ColumnInfo(name = "trigger_time")
     val triggerTime: LocalDateTime,
@@ -27,7 +27,7 @@ data class AlarmEntity(
     @ColumnInfo(name = "volume")
     val volume: Int = 0,
     @ColumnInfo(name = "is_haptic_on")
-    val isHapticsOn: Boolean = false,
+    val isHapticOn: Boolean = false,
     @ColumnInfo(name = "wake_up_time")
     val wakeUpTime: String? = null
 )
