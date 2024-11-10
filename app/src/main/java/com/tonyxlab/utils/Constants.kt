@@ -1,3 +1,5 @@
 package com.tonyxlab.utils
 
-const val ALARM_ID = "alarm_id"
+object Constants {
+    const val ALARM_ID = "alarm_id"
+}
