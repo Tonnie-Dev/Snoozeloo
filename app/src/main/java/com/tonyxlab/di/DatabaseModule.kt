@@ -1,6 +1,5 @@
 package com.tonyxlab.di
 
-import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import com.tonyxlab.data.database.AlarmDatabase
