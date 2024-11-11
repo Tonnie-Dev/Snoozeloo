@@ -22,7 +22,7 @@ class AlarmRepositoryImpl @Inject constructor(
 
         return dao.getAlarms()
                 .map { alarms ->
-                    return@map alarms?.map { it.toDomainModel() } ?: emptyList()
+                    return@map alarms.map { it.toDomainModel() } ?: emptyList()
                 }
     }
 
