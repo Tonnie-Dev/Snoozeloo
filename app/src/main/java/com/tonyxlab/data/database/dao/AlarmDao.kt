@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface AlarmDao : BaseDao<AlarmEntity> {
 
     @Query("SELECT * FROM alarms_table ORDER BY duration_to_next_trigger ASC")
-    fun getAlarms(): Flow<List<AlarmEntity>?>
+    fun getAlarms(): Flow<List<AlarmEntity>>
 
     @Query("SELECT * FROM alarms_table WHERE id = :id")
     suspend fun getAlarmById(id: String): AlarmEntity?
