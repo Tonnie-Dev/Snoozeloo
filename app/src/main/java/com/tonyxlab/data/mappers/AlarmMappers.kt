@@ -1,8 +1,9 @@
 package com.tonyxlab.data.mappers
 
 import com.tonyxlab.data.database.entity.AlarmEntity
+import com.tonyxlab.domain.model.AlarmItem
 
-fun com.tonyxlab.domain.model.AlarmItem.toEntityModel(): AlarmEntity {
+fun AlarmItem.toEntityModel(): AlarmEntity {
 
     return AlarmEntity(
             id = id,
@@ -18,9 +19,9 @@ fun com.tonyxlab.domain.model.AlarmItem.toEntityModel(): AlarmEntity {
     )
 }
 
-fun AlarmEntity.toDomainModel(): com.tonyxlab.domain.model.AlarmItem {
+fun AlarmEntity.toDomainModel():AlarmItem {
 
-    return com.tonyxlab.domain.model.AlarmEntity(
+    return AlarmItem(
             id = id,
             name = name,
             isEnabled = isEnabled,

@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.tonyxlab.domain.model.DayActive
+import com.tonyxlab.domain.model.DayChipState
 import java.time.LocalDateTime
 
 @Entity(tableName = "alarms_table")
@@ -21,7 +21,7 @@ data class AlarmEntity(
     @ColumnInfo(name = "duration_to_next_trigger")
     val durationToNextTrigger: Long,
     @ColumnInfo(name = "days_active")
-    val daysActive: List<DayActive> = emptyList(),
+    val daysActive: List<DayChipState> = emptyList(),
     @ColumnInfo(name = "ringtone")
     val ringtone: Uri? = null,
     @ColumnInfo(name = "volume")
