@@ -67,6 +67,9 @@ dependencies {
     implementation(AndroidX.room.ktx)
     ksp(AndroidX.room.compiler)
 
+    // Kotlinx Date-Time
+    implementation(KotlinX.datetime)
+
     // Logging
     implementation(JakeWharton.timber)
 
