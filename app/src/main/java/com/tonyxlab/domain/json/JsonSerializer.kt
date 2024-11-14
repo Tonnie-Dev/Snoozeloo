@@ -2,9 +2,8 @@ package com.tonyxlab.domain.json
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.serializer
 
-interface Serializer {
+interface JsonSerializer {
     fun <T> toJson(serializer: KSerializer<T>, data: T): String {
         return Json.encodeToString(serializer, data)
     }

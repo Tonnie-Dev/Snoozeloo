@@ -3,7 +3,9 @@ package com.tonyxlab.di
 import android.content.Context
 import androidx.room.Room
 import com.tonyxlab.data.database.AlarmDatabase
+import com.tonyxlab.data.database.converters.Converters
 import com.tonyxlab.data.database.dao.AlarmDao
+import com.tonyxlab.domain.json.JsonSerializer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,15 +18,20 @@ import javax.inject.Singleton
 object DatabaseModule {
     private const val DATABASE_NAME = "alarm_database"
 
+
     @Provides
     @Singleton
-    fun provideDatabase(@ApplicationContext context: Context): AlarmDatabase {
+    fun provideDatabase(
+        @ApplicationContext context: Context, serializer: JsonSerializer
+    ): AlarmDatabase {
 
         return Room.databaseBuilder(
-                context,
-                AlarmDatabase::class.java,
-                DATABASE_NAME
+                context = context,
+                klass = AlarmDatabase::class.java,
+                name = DATABASE_NAME
         )
+                .addTypeConverter(Converters(serializer = serializer))
+                .fallbackToDestructiveMigration(false)
                 .build()
     }
 

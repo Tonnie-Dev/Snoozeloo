@@ -1,20 +1,19 @@
 package com.tonyxlab.data.database.converters
 
 
-import com.tonyxlab.domain.json.Serializer
-import com.tonyxlab.domain.model.DayChipState
+import com.tonyxlab.domain.json.JsonSerializer
 import kotlinx.serialization.KSerializer
 import javax.inject.Inject
 
-class DayChipStateSerializer @Inject constructor(
-    private val serializer: KSerializer<List<DayChipState>>
-) : Serializer {
+class JsonSerializerImpl<T> @Inject constructor(
+    private val serializer: KSerializer<T>
+) : JsonSerializer {
 
-    fun toJson(data: List<DayChipState>): String {
+    fun toJson(data: T): String {
         return toJson(serializer, data)
     }
 
-    fun fromJson(json: String): List<DayChipState> {
+    fun fromJson(json: String): T {
         return fromJson(serializer, json)
     }
 }
