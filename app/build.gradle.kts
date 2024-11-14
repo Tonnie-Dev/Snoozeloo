@@ -1,3 +1,5 @@
+import Google.Ar.Sceneform.plugin
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -5,6 +7,7 @@ plugins {
     alias(libs.plugins.hilt.plugin)
     alias(libs.plugins.ksp.plugin)
     alias(libs.plugins.parcelize.plugin)
+    alias(libs.plugins.kotlin.serializer.plugin )
 }
 
 android {
@@ -69,6 +72,10 @@ dependencies {
 
     // Kotlinx Date-Time
     implementation(KotlinX.datetime)
+
+    // Kotlinx Serialization
+
+    implementation(KotlinX.serialization.json)
 
     // Logging
     implementation(JakeWharton.timber)
