@@ -5,7 +5,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.tonyxlab.domain.model.DayChipState
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
+
 
 @Entity(tableName = "alarms_table")
 data class AlarmEntity(

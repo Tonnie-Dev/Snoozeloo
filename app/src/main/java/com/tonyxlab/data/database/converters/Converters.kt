@@ -1,5 +1,6 @@
 package com.tonyxlab.data.database.converters
 
+import android.net.Uri
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 import com.tonyxlab.domain.json.JsonSerializer
@@ -42,5 +43,15 @@ class Converters @Inject constructor(
     fun readDayChipStateList(json: String): List<DayChipState> {
 
         return serializer.fromJson(listSerializer, json)
+    }
+
+    @TypeConverter
+    fun writeUri(uri: Uri?): String? {
+        return uri?.toString()
+    }
+
+    @TypeConverter
+    fun readUri(uriString: String?): Uri? {
+        return uriString?.let { Uri.parse(it) }
     }
 }
