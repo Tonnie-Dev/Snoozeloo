@@ -11,14 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.domain.model.DayChipState
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.getRoyalBlueComposeColor
-import java.time.LocalDateTime
+import com.tonyxlab.utils.now
+import kotlinx.datetime.LocalDateTime
 import java.util.UUID
 
 @Composable

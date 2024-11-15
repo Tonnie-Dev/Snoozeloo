@@ -5,9 +5,10 @@ import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 import com.tonyxlab.domain.json.JsonSerializer
 import com.tonyxlab.domain.model.DayChipState
-import com.tonyxlab.utils.fromLocalDateTimeToUtcMillis
-import com.tonyxlab.utils.fromUtcMillisToLocalDateTimeDefault
+import com.tonyxlab.utils.fromLocalDateTimeToMillis
+import com.tonyxlab.utils.fromMillisToLocalDateTime
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import javax.inject.Inject
@@ -23,13 +24,13 @@ class Converters @Inject constructor(
     @TypeConverter
     fun writeLocalDateTimeToLong(time: LocalDateTime?): Long? {
 
-        return time?.fromLocalDateTimeToUtcMillis()
+        return time?.fromLocalDateTimeToMillis(TimeZone.UTC)
     }
 
     @TypeConverter
     fun readMillisToLocalDateTimeDefault(value: Long?): LocalDateTime? {
 
-        return value?.fromUtcMillisToLocalDateTimeDefault()
+        return value?.fromMillisToLocalDateTime()
     }
 
     @TypeConverter

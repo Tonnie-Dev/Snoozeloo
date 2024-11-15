@@ -8,10 +8,12 @@ import com.tonyxlab.data.receiver.AlarmReceiver
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.domain.scheduler.AlarmScheduler
 import com.tonyxlab.utils.Constants.ALARM_ID
-import com.tonyxlab.utils.toMillis
+import com.tonyxlab.utils.fromLocalDateTimeToMillis
 import javax.inject.Inject
 
-class AlarmSchedulerImpl @Inject constructor(private val context: Context) : AlarmScheduler {
+class AlarmSchedulerImpl @Inject constructor(
+    private val context: Context
+) : AlarmScheduler {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -23,7 +25,7 @@ class AlarmSchedulerImpl @Inject constructor(private val context: Context) : Ala
 
         alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
-                alarmItem.triggerTime.toMillis(),
+                alarmItem.triggerTime.fromLocalDateTimeToMillis(),
                 PendingIntent.getBroadcast(
                         context,
                         alarmItem.hashCode(),
