@@ -1,15 +1,23 @@
 package com.tonyxlab.presentation.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.FilterChip
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.domain.model.AlarmItem
@@ -21,6 +29,7 @@ import com.tonyxlab.utils.now
 import kotlinx.datetime.LocalDateTime
 import java.util.UUID
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun WeekRow(
     onClick: () -> Unit,
@@ -29,37 +38,104 @@ fun WeekRow(
     /*inactiveColor: Color,*/
     modifier: Modifier = Modifier
 ) {
-    val daysOfWeek = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
     val spacing = LocalSpacing.current
-    Row(
-            modifier = modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+    val daysOfWeek = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
+    FlowRow(
+            modifier = modifier
+                    .fillMaxWidth()
+                    .padding(spacing.spaceMedium),
+            maxLines = 1,
+            horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
 
         alarmItem.daysActive.forEachIndexed { i, state ->
 
-            FilterChip(
-                    selected = state.isEnabled,
-                    onClick = onClick,
-                    shape = RoundedCornerShape(spacing.spaceSmall),
-                    label = { Text(text = daysOfWeek[i]) }
-            )
+
+            DayChip(text = daysOfWeek[i], onClick = onClick, isSelected = state.isEnabled, modifier = Modifier.weight(1f))
+            /*   FilterChip(
+                       modifier = Modifier
+                               .padding(2.dp),
+
+                       selected = state.isEnabled,
+                       onClick = onClick,
+                       shape = RoundedCornerShape(16.dp),
+                       label = {
+                           Text(
+                                   text = daysOfWeek[i],
+                                   style = MaterialTheme.typography.bodySmall
+                           )
+                       }
+               )*/
         }
+    }
+}
+
+@Composable
+fun DayChip(
+    text: String,
+    onClick: () -> Unit,
+    isSelected: Boolean,
+    activeColor: Color = getRoyalBlueComposeColor(),
+    inactiveColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+    modifier: Modifier = Modifier
+) {
+    val spacing = LocalSpacing.current
+    Box(
+            modifier = modifier
+                    .wrapContentSize()
+                    .clip(RoundedCornerShape(spacing.spaceMedium))
+                    .background(
+                            color = if (isSelected) activeColor else inactiveColor
+                    )
+                    .clickable { onClick() }
+                    .padding(spacing.spaceSmall),
+            contentAlignment = Alignment.Center
+    ) {
+
+        Text(text = text)
     }
 }
 
 
 @PreviewLightDark
 @Composable
-private fun Preview() {
+private fun DayChipPreview() {
+
+    val spacing = LocalSpacing.current
+    SnoozelooTheme {
+
+        Surface {
+            Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(spacing.spaceExtraLarge)
+            ) {
+                DayChip(
+                        text = "Tu",
+                        onClick = {},
+                        isSelected = true,
+                )
+
+                DayChip(
+                        text = "Tu",
+                        onClick = {},
+                        isSelected = false,
+                )
+            }
+
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun WeekRowPreview() {
 
     SnoozelooTheme {
 
         Surface {
 
-            WeekRow(onClick ={}, alarmItem = getRandomAlarmItem())
+            WeekRow(onClick = {}, alarmItem = getRandomAlarmItem())
         }
     }
 }
@@ -75,14 +151,14 @@ private fun getRandomAlarmItem(): AlarmItem = AlarmItem(
         daysActive = populateDaysActiveList(),
 )
 
-private fun populateDaysActiveList():List<DayChipState> {
+private fun populateDaysActiveList(): List<DayChipState> {
 
     val daysOfWeek = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
-    return  buildList {
+    return buildList {
 
-        (0..6).forEach{ i ->
+        (0..6).forEach { i ->
 
-            add(DayChipState(day = daysOfWeek[i], isEnabled = i%2 ==0 ))
+            add(DayChipState(day = daysOfWeek[i], isEnabled = i % 2 == 0))
         }
     }
 }
