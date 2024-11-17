@@ -8,14 +8,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.domain.model.DayChipState
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
-import com.tonyxlab.utils.getBlue_600
 import com.tonyxlab.utils.now
 import kotlinx.datetime.LocalDateTime
 import java.util.UUID
@@ -26,7 +23,7 @@ fun WeekRow(
     alarmItem: AlarmItem,
     onDayChipClick: ()-> Unit,
     modifier: Modifier = Modifier
-) {
+)                    {
     val spacing = LocalSpacing.current
     val daysOfWeek = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
 
