@@ -15,6 +15,16 @@ fun getRandomAlarmItem(): AlarmItem = AlarmItem(
         daysActive = populateDaysActiveList(),
 )
 
+
+fun getRandomAlarmItems(count: Int = 10):List<AlarmItem> =
+    buildList {
+
+        repeat(count){
+
+            add(getRandomAlarmItem())
+        }
+    }
+
 fun populateDaysActiveList(): List<DayChipState> {
 
     val daysOfWeek = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
