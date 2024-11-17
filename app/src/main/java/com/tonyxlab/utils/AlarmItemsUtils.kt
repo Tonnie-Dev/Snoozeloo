@@ -9,7 +9,7 @@ fun getRandomAlarmItem(): AlarmItem = AlarmItem(
         id = UUID.randomUUID()
                 .toString(),
         isEnabled = false,
-        name = "Alarm",
+        name = "Wake Up",
         triggerTime = LocalDateTime.now(),
         durationToNextTrigger = 0L,
         daysActive = populateDaysActiveList(),
