@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Snoozeloo</string>
     <string name="alarm_in_text">Alarm in %s</string>
+    <string name="empty_screen_text">It\'s empty! Add the first alarm so you don\'t miss an important moment!</string>
 </resources>
