@@ -61,7 +61,7 @@ fun DialFace(alarmItem: AlarmItem, modifier: Modifier = Modifier) {
                     fontWeight = FontWeight.Bold,
                     color = getBlack_900()
             )
-           
+
             Text(
                     modifier = Modifier.alignByBaseline(),
                     text = alarmItem.triggerTime.toAmPmTime()
