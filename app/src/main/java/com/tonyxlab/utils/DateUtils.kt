@@ -8,6 +8,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 import kotlin.time.Duration
 
@@ -34,7 +35,8 @@ fun LocalDateTime.Companion.now(): LocalDateTime {
 
 fun LocalDateTime.toAmPmTime(): String {
     val pattern = "HH:mm a"
-    return SimpleDateFormat(pattern, Locale.getDefault()).format(this)
+    val date =Date(this.fromLocalDateTimeToMillis())
+    return SimpleDateFormat(pattern, Locale.getDefault()).format(date)
 }
 
 fun Long.alarmIn(): String {
@@ -42,10 +44,6 @@ fun Long.alarmIn(): String {
 
     val duration = durationToNextAlarm(this)
 
-
-    val dayMillis = 24 * 60 * 60 * 1000
-    val hourMillis = 60 * 60 * 1000
-    val minMillis = 60 * 1000
 
     val totalNoOfMinutes = duration.inWholeMinutes
 

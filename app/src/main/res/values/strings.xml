@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Snoozeloo</string>
+    <string name="alarm_in_text">Alarm in %s</string>
 </resources>
