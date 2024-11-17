@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -49,6 +50,7 @@ fun DialFace(alarmItem: AlarmItem, modifier: Modifier = Modifier) {
             Switch(checked = true, onCheckedChange = {})
         }
 
+         Spacer(modifier = Modifier.height(spacing.spaceSmall))
         Row(modifier = Modifier.fillMaxWidth()) {
 
             Text(
@@ -59,7 +61,7 @@ fun DialFace(alarmItem: AlarmItem, modifier: Modifier = Modifier) {
                     fontWeight = FontWeight.Bold,
                     color = getBlack_900()
             )
-            Spacer(modifier = Modifier.width(spacing.spaceDoubleDp))
+           
             Text(
                     modifier = Modifier.alignByBaseline(),
                     text = alarmItem.triggerTime.toAmPmTime()
@@ -70,6 +72,8 @@ fun DialFace(alarmItem: AlarmItem, modifier: Modifier = Modifier) {
             )
 
         }
+
+         Spacer(modifier = Modifier.height(spacing.spaceSmall))
         Row(modifier = Modifier.fillMaxWidth()) {
             Text(
                     text = stringResource(
