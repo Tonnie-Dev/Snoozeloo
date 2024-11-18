@@ -3,4 +3,8 @@
     <string name="alarm_in_text">Alarm in %s</string>
     <string name="empty_screen_text">It\'s empty! Add the first alarm so you don\'t miss an important moment!</string>
     <string name="add_alarm_item_text">Add Alarm Item</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="back_text">Back</string>
+    <string name="icon_text">Icon</string>
+    <string name="save_text">Save</string>
 </resources>
