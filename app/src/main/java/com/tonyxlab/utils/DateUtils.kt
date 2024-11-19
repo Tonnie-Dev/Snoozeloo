@@ -35,7 +35,7 @@ fun LocalDateTime.Companion.now(): LocalDateTime {
 
 fun LocalDateTime.toAmPmTime(): String {
     val pattern = "HH:mm a"
-    val date =Date(this.fromLocalDateTimeToMillis())
+    val date = Date(this.fromLocalDateTimeToMillis())
     return SimpleDateFormat(pattern, Locale.getDefault()).format(date)
 }
 
@@ -90,4 +90,18 @@ fun Long.addOneDayToMilliTime(): Long {
 
     val dayInMillis = 24 * 60 * 60 * 1000
     return this.plus(dayInMillis)
+}
+
+fun LocalDateTime.getHourString(): String {
+
+    val hourInt = this.hour
+
+    return if (hourInt in 0..9) "0$hourInt" else "$hourInt"
+
+}
+
+fun LocalDateTime.getMinuteString():String {
+
+    val minuteInt = this.minute
+    return if (minuteInt in 0..9) "0$minuteInt" else "$minuteInt"
 }
