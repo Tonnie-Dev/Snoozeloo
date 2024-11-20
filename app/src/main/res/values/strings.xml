@@ -7,4 +7,9 @@
     <string name="back_text">Back</string>
     <string name="icon_text">Icon</string>
     <string name="save_text">Save</string>
+    <string name="close_window_text">Close Window</string>
+    <string name="alarm_name_text">Alarm Name</string>
+    <string name="repeat_text">Repeat</string>
+    <string name="alarm_ringtone_text">Alarm Ringtone</string>
+    <string name="alarm_volume_text">Alarm Volume</string>
 </resources>
