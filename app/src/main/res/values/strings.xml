@@ -12,4 +12,5 @@
     <string name="repeat_text">Repeat</string>
     <string name="alarm_ringtone_text">Alarm Ringtone</string>
     <string name="alarm_volume_text">Alarm Volume</string>
+    <string name="vibrate_text">Vibrate</string>
 </resources>

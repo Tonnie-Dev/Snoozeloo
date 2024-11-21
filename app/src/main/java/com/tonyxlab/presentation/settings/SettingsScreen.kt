@@ -1,7 +1,6 @@
 package com.tonyxlab.presentation.settings
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,20 +14,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
 import com.tonyxlab.R
 import com.tonyxlab.domain.model.AlarmItem
+import com.tonyxlab.presentation.components.ChipsRow
 import com.tonyxlab.presentation.components.MediumButton
 import com.tonyxlab.presentation.components.SmallButton
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
@@ -43,8 +43,12 @@ fun SettingsScreenContent(
     alarmItem: AlarmItem,
     onClose: () -> Unit,
     onSave: () -> Unit,
+    volume: Float,
+    onDayChipClick: () -> Unit,
     isCloseButtonEnabled: Boolean,
     isSaveButtonEnabled: Boolean,
+    isVibrationEnabled: Boolean,
+    onVibrationModeChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
@@ -73,6 +77,65 @@ fun SettingsScreenContent(
                 onHourBoxClick = {},
                 onMinuteBoxClick = {}
         )
+
+        TitlePanel(
+                mainText = stringResource(R.string.alarm_name_text),
+                subText = alarmItem.name,
+                sideContent = { text ->
+
+                    text?.let {
+                        Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.W500
+                        )
+                    }
+
+
+                }
+        )
+
+        TitlePanel(
+                mainText = stringResource(R.string.repeat_text),
+                bottomContent = {
+                    ChipsRow(
+                            modifier = Modifier.padding(horizontal = spacing.spaceMedium),
+                            alarmItem = alarmItem,
+                            onDayChipClick = onDayChipClick
+                    )
+                }
+        )
+
+        TitlePanel(
+                mainText = stringResource(id = R.string.alarm_ringtone_text),
+                subText = "Default", // TODO: Fix Alarm Ringtone Name
+                sideContent = { text ->
+
+                    text?.let {
+                        Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.W500
+                        )
+                    }
+                }
+        )
+
+        TitlePanel(
+                mainText = stringResource(R.string.alarm_volume_text),
+                bottomContent = { Slider(value = volume, onValueChange = {}) }
+        )
+        TitlePanel(
+                mainText = stringResource(R.string.vibrate_text),
+                sideContent = {
+                    Switch(
+                            checked = isVibrationEnabled,
+                            onCheckedChange = onVibrationModeChange
+                    )
+                }
+        )
+
+
     }
 }
 
@@ -162,34 +225,43 @@ fun TimePanel(
 
 
 @Composable
-fun TextPanel(
-    text1: String,
-    text2: String,
-    modifier: Modifier = Modifier
-) {
+fun TitlePanel(
+    mainText: String,
+    modifier: Modifier = Modifier,
+    subText: String? = null,
+    sideContent: @Composable ((text: String?) -> Unit)? = null,
+    bottomContent: @Composable (() -> Unit)? = null,
 
-    val spacing = LocalSpacing.current
-
-    Row(
-            modifier = modifier
-                    .fillMaxWidth()
-                    .padding(spacing.spaceMedium),
-            Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
     ) {
 
-        Text(
-                text = text1,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.W600
-        )
+    val spacing = LocalSpacing.current
+    Surface {
 
-        Text(
-                text = text2,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.W600
-        )
+        Column {
+
+            Row(
+                    modifier = modifier
+                            .fillMaxWidth()
+                            .padding(spacing.spaceMedium),
+                    Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                        text = mainText,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.W600
+                )
+
+                sideContent?.invoke(subText)
+
+
+            }
+            bottomContent?.invoke()
+        }
+
     }
+
 }
 
 
@@ -203,12 +275,16 @@ private fun SettingsScreenContentPreview() {
         Surface {
 
             SettingsScreenContent(
+                    modifier = Modifier.fillMaxSize(),
                     alarmItem = getRandomAlarmItem(),
                     onClose = {},
                     onSave = {},
+                    onDayChipClick = {},
                     isCloseButtonEnabled = false,
                     isSaveButtonEnabled = false,
-                    modifier = Modifier.fillMaxSize()
+                    volume = .7f,
+                    isVibrationEnabled = false,
+                    onVibrationModeChange = {}
             )
         }
     }

@@ -10,16 +10,24 @@ fun getRandomAlarmItem(): AlarmItem = AlarmItem(
                 .toString(),
         isEnabled = false,
         name = "Wake Up",
-        triggerTime = LocalDateTime.now(),
+        triggerTime = LocalDateTime(
+                year = 2023,
+                monthNumber = 7,
+                dayOfMonth = 13,
+                hour = 11,
+                minute = 13,
+                second = 57,
+                nanosecond = 100
+        ),
         durationToNextTrigger = 0L,
         daysActive = populateDaysActiveList(),
 )
 
 
-fun getRandomAlarmItems(count: Int = 10):List<AlarmItem> =
+fun getRandomAlarmItems(count: Int = 10): List<AlarmItem> =
     buildList {
 
-        repeat(count){
+        repeat(count) {
 
             add(getRandomAlarmItem())
         }

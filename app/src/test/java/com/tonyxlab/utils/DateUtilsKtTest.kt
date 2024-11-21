@@ -22,7 +22,7 @@ class DateUtilsKtTest {
     }
 
     @Test
-    fun `Test get_Minute_String function with 101 minute`(){
+    fun `Test get_Minute_String function`(){
 
         val time1= LocalDateTime(2021, 10, 10, 10, 32)
         val time2= LocalDateTime(2021, 10, 10, 9, 1)

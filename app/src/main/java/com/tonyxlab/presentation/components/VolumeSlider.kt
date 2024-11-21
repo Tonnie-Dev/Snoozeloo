@@ -41,7 +41,7 @@ fun CustomSlider() {
             onValueChange = { value: Float -> /* handle value change */ },
             thumb = { RoundSliderThumb() },
             track = {
-           
+
             }
 
 

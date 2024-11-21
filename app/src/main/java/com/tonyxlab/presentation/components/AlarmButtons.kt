@@ -29,6 +29,7 @@ import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 fun SmallButton(
     icon: ImageVector,
     onClickIcon: () -> Unit,
+    isEnabled: Boolean,
     contentDescription: String = stringResource(id = R.string.icon_text),
     modifier: Modifier = Modifier
 ) {
@@ -85,12 +86,14 @@ private fun SmallButtonPreview() {
                 SmallButton(
                         icon = Icons.AutoMirrored.Filled.ArrowBack,
                         onClickIcon = {},
+                        isEnabled = true,
                         contentDescription = ""
                 )
                 Spacer(modifier = Modifier.height(spacing.spaceMedium))
                 SmallButton(
                         icon = Icons.Default.Close,
                         onClickIcon = {},
+                        isEnabled = false,
                         contentDescription = ""
                 )
 
