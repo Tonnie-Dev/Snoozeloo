@@ -74,8 +74,10 @@ dependencies {
     implementation(KotlinX.datetime)
 
     // Kotlinx Serialization
-
     implementation(KotlinX.serialization.json)
+
+    //Compose Navigation
+    implementation(AndroidX.navigation.compose)
 
     // Logging
     implementation(JakeWharton.timber)
