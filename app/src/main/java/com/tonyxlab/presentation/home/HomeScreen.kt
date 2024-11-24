@@ -13,7 +13,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,7 +26,12 @@ import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.getRandomAlarmItems
 
 @Composable
-fun HomeScreen(items: List<AlarmItem>, onClickAddItem: () -> Unit, modifier: Modifier = Modifier) {
+fun HomeScreen(
+    items: List<AlarmItem>,
+    onAlarmItemClick: (id: String) -> Unit,
+    onClickAddItem: () -> Unit,
+    modifier: Modifier = Modifier
+) {
 
     val spacing = LocalSpacing.current
     Scaffold(floatingActionButton = {
@@ -49,6 +53,7 @@ fun HomeScreen(items: List<AlarmItem>, onClickAddItem: () -> Unit, modifier: Mod
 
         HomeScreenContent(
                 modifier = modifier.padding(paddingValues = innerPadding),
+                onAlarmItemClick = onAlarmItemClick,
                 items = items
         )
     }
@@ -57,19 +62,20 @@ fun HomeScreen(items: List<AlarmItem>, onClickAddItem: () -> Unit, modifier: Mod
 @Composable
 fun HomeScreenContent(
     items: List<AlarmItem>,
+    onAlarmItemClick: (id: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     val spacing = LocalSpacing.current
-    LazyColumn(modifier = modifier, contentPadding = PaddingValues(spacing.spaceMedium)) {
+    LazyColumn(
+            modifier = modifier,
+            contentPadding = PaddingValues(spacing.spaceMedium)
+    ) {
 
         items(items = items, key = { it.id }) {
 
 
-            AlarmCard(
-                    alarmItem = it,
-                    onDayChipClick = {}
-            )
+            AlarmCard(alarmItem = it, onAlarmItemClick = onAlarmItemClick, onDayChipClick = {})
         }
     }
 }
@@ -83,6 +89,7 @@ private fun EmptyHomeScreenPreview() {
 
             HomeScreen(
                     items = emptyList(),
+                    onAlarmItemClick = {},
                     onClickAddItem = {}
             )
         }
@@ -93,10 +100,9 @@ private fun EmptyHomeScreenPreview() {
 @Composable
 private fun FilledHomeScreenPreview() {
     SnoozelooTheme {
-
-
         HomeScreen(
                 items = getRandomAlarmItems(10),
+                onAlarmItemClick = {},
                 onClickAddItem = {}
         )
 

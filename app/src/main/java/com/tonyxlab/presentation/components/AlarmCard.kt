@@ -1,6 +1,7 @@
 package com.tonyxlab.presentation.components
 
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,14 +20,17 @@ import com.tonyxlab.utils.getRandomAlarmItem
 @Composable
 fun AlarmCard(
     alarmItem: AlarmItem,
+    onAlarmItemClick: (id: String) -> Unit,
     onDayChipClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     val spacing = LocalSpacing.current
-   Surface (
+    Surface(
             modifier = modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth().clickable {
+                        onAlarmItemClick(alarmItem.id)
+                    }
                     .padding(spacing.spaceMedium)
     ) {
         Column {
@@ -48,6 +52,10 @@ fun AlarmCard(
 private fun AlarmCardPreview() {
     SnoozelooTheme {
 
-        AlarmCard(alarmItem = getRandomAlarmItem(), onDayChipClick = {})
+        AlarmCard(
+                alarmItem = getRandomAlarmItem(),
+                onAlarmItemClick = {},
+                onDayChipClick = {}
+        )
     }
 }

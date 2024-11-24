@@ -11,9 +11,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.tonyxlab.domain.model.AlarmItem
+import com.tonyxlab.presentation.home.HomeScreen
+import com.tonyxlab.presentation.settings.SettingsScreenContent
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
+import com.tonyxlab.utils.getRandomAlarmItem
+import com.tonyxlab.utils.getRandomAlarmItems
 import com.tonyxlab.utils.zoomSplashAnimation
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.serialization.Serializable
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -28,14 +37,48 @@ class MainActivity : ComponentActivity() {
 
         }
 
-
         setContent {
             SnoozelooTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                val navController = rememberNavController()
 
-                    Text(text = "Tonnie", modifier = Modifier.padding(innerPadding))
+                NavHost(
+                        navController = navController,
+                        startDestination = HomeScreenObject
+                ) {
+
+                    composable<HomeScreenObject> {
+
+                        HomeScreen(
+                                items = getRandomAlarmItems(),
+                                onAlarmItemClick = { navController.navigate(SettingsScreenObject(it)) },
+                                onClickAddItem = {}
+                        )
+                    }
+                    composable<SettingsScreenObject> {
+
+                        val args = it.id
+                        SettingsScreenContent(
+                                alarmItem = getRandomAlarmItem(),
+                                onClose = {},
+                                onSave = {},
+                                volume = 0.0f,
+                                onDayChipClick = {},
+                                isCloseButtonEnabled = false,
+                                isSaveButtonEnabled = false,
+                                isVibrationEnabled = false,
+                                onVibrationModeChange = {},
+                        )
+
+                    }
                 }
             }
         }
     }
 }
+
+
+@Serializable
+object HomeScreenObject
+
+@Serializable
+data class SettingsScreenObject(val id: String)
