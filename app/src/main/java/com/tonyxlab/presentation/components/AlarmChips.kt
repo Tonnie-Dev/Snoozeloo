@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,7 +48,7 @@ fun ChipsRow(
             DayChip(
                     text = daysOfWeek[i],
                     onClick = onDayChipClick,
-                    isSelected = state.isEnabled,
+                    selected = state.isEnabled,
                     modifier = Modifier.weight(1f)
             )
 
@@ -56,25 +56,11 @@ fun ChipsRow(
     }
 }
 
-@PreviewLightDark
-@Composable
-private fun WeekRowPreview() {
-
-    SnoozelooTheme {
-
-        Surface {
-
-            ChipsRow(onDayChipClick = {}, alarmItem = getRandomAlarmItem())
-        }
-    }
-}
-
-
 @Composable
 fun DayChip(
     text: String,
     onClick: () -> Unit,
-    isSelected: Boolean,
+    selected: Boolean,
     activeColor: Color = getBlue_600(),
     inactiveColor: Color = getBlue_100(),
     modifier: Modifier = Modifier
@@ -84,13 +70,20 @@ fun DayChip(
     Box(
             modifier = modifier
                     .clip(RoundedCornerShape(spacing.spaceMedium + spacing.spaceExtraSmall))
-                    .background(color = if (isSelected) activeColor else inactiveColor)
+                    .background(color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inversePrimary)
                     .clickable { onClick() }
-                    .padding(end = spacing.spaceDoubleDp, top = spacing.spaceExtraSmall, bottom = spacing.spaceExtraSmall),
+                    .padding(
+                            end = spacing.spaceDoubleDp,
+                            top = spacing.spaceExtraSmall,
+                            bottom = spacing.spaceExtraSmall
+                    ),
             contentAlignment = Alignment.Center
     ) {
 
-        Text(text = text)
+        Text(
+                text = text,
+                color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+        )
     }
 }
 
@@ -110,16 +103,30 @@ private fun DayChipPreview() {
                 DayChip(
                         text = "Tu",
                         onClick = {},
-                        isSelected = true,
+                        selected = true,
                 )
 
                 DayChip(
                         text = "Tu",
                         onClick = {},
-                        isSelected = false,
+                        selected = false,
                 )
             }
 
+        }
+    }
+}
+
+
+@PreviewLightDark
+@Composable
+private fun WeekRowPreview() {
+
+    SnoozelooTheme {
+
+        Surface {
+
+            ChipsRow(onDayChipClick = {}, alarmItem = getRandomAlarmItem())
         }
     }
 }

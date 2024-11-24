@@ -4,13 +4,44 @@ import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.shapes
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 
+@Composable
+fun SnoozelooTheme(content: @Composable () -> Unit) {
+    MaterialTheme(
+            colorScheme = defaultScheme,
+            shapes = shapes,
+            typography = typography,
+            content = content
+    )
+}
+
+
+private val defaultScheme = lightColorScheme(
+        primary = primaryLight,
+        secondary = secondaryLight,
+        tertiary = tertiaryLight,
+        background = backgroundLight,
+        surface = surfaceLight,
+        onPrimary = onPrimaryLight,
+        onSecondary = onSecondaryLight,
+        onTertiary = onTertiaryLight,
+        onBackground = onBackgroundLight,
+        onSurface = onSurfaceLight,
+        inversePrimary = inversePrimaryLight
+
+)
+
+/*
 private val DarkColorScheme = darkColorScheme(
         primary = Purple80,
         secondary = PurpleGrey80,
@@ -22,6 +53,7 @@ private val LightColorScheme = lightColorScheme(
         secondary = PurpleGrey40,
         tertiary = Pink40
 
+
         /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
@@ -32,7 +64,8 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
-
+*/
+/*
 @Composable
 fun SnoozelooTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -55,4 +88,4 @@ fun SnoozelooTheme(
             typography = Typography,
             content = content
     )
-}
+}*/
