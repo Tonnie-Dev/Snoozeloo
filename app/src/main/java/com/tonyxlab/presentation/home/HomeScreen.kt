@@ -11,8 +11,10 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,6 +51,7 @@ fun HomeScreen(
 
     }, floatingActionButtonPosition = FabPosition.Center) { innerPadding ->
 
+
         items.ifEmpty { EmptyScreen() }
 
         HomeScreenContent(
@@ -67,15 +70,26 @@ fun HomeScreenContent(
 ) {
 
     val spacing = LocalSpacing.current
+
+
     LazyColumn(
             modifier = modifier,
-            contentPadding = PaddingValues(spacing.spaceMedium)
+            contentPadding = PaddingValues(spacing.spaceSmall)
     ) {
+        item {
+            Text(
+                    stringResource(R.string.your_alarms_header_text),
+                    style = MaterialTheme.typography.headlineSmall
+            )
+        }
+        items(items = items, key = { it.id }, ) {
 
-        items(items = items, key = { it.id }) {
 
-
-            AlarmCard(alarmItem = it, onAlarmItemClick = onAlarmItemClick, onDayChipClick = {})
+            AlarmCard(
+                    modifier = Modifier.padding(spacing.spaceSmall),
+                    alarmItem = it,
+                    onAlarmItemClick = onAlarmItemClick,
+                    onDayChipClick = {})
         }
     }
 }

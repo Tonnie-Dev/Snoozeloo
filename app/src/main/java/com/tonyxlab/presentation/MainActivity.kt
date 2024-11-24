@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.presentation.home.HomeScreen
+import com.tonyxlab.presentation.settings.SettingsScreen
 import com.tonyxlab.presentation.settings.SettingsScreenContent
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.getRandomAlarmItem
@@ -57,7 +58,7 @@ class MainActivity : ComponentActivity() {
                     composable<SettingsScreenObject> {
 
                         val args = it.id
-                        SettingsScreenContent(
+                        SettingsScreen(
                                 alarmItem = getRandomAlarmItem(),
                                 onClose = {},
                                 onSave = {},

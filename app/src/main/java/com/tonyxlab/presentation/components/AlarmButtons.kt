@@ -1,23 +1,31 @@
 package com.tonyxlab.presentation.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -34,18 +42,27 @@ fun SmallButton(
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
+
     Box(
-            modifier = modifier.clip(RoundedCornerShape(spacing.spaceMedium)),
+            modifier = modifier
+                    .clip(RoundedCornerShape(spacing.spaceSmall))
+
+                    .background(
+                            color = if (isEnabled) MaterialTheme.colorScheme.primary
+                            else MaterialTheme.colorScheme.onSurface.copy(alpha = .12f)
+                    )
+                    ,
             contentAlignment = Alignment.Center
     ) {
 
-        IconButton(onClick = onClickIcon) {
 
-            Icon(
+
+            Icon(modifier = Modifier.padding(spacing.spaceSmall),
                     imageVector = icon,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     contentDescription = contentDescription
             )
-        }
+
 
     }
 }
@@ -67,7 +84,11 @@ fun MediumButton(
                     vertical = spacing.spaceSmall
             ),
             onClick = onClick,
-            enabled = isEnabled
+            enabled = isEnabled,
+            colors = ButtonDefaults.buttonColors(
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    disabledContentColor =Color.White
+            )
     ) {
         Text(text = text)
     }
@@ -109,23 +130,27 @@ private fun MediumButtonPreview() {
 
     SnoozelooTheme {
 
-        Surface {
-
-            Column {
-
-                MediumButton(
-                        text = stringResource(R.string.save_text),
-                        onClick = {},
-                        isEnabled = true
-                )
+Surface {
 
 
-                MediumButton(
-                        text = stringResource(R.string.save_text),
-                        onClick = {},
-                        isEnabled = false
-                )
-            }
-        }
+    Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+    ) {
+
+        MediumButton(
+                text = stringResource(R.string.save_text),
+                onClick = {},
+                isEnabled = true
+        )
+
+
+        MediumButton(
+                text = stringResource(R.string.save_text),
+                onClick = {},
+                isEnabled = false
+        )
+    }
+}
     }
 }

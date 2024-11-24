@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -39,6 +40,37 @@ import com.tonyxlab.utils.getMinuteString
 import com.tonyxlab.utils.getRandomAlarmItem
 
 @Composable
+fun SettingsScreen(
+    alarmItem: AlarmItem,
+    onSave: () -> Unit,
+    onClose: () -> Unit,
+    volume: Float,
+    onDayChipClick: () -> Unit,
+    isCloseButtonEnabled: Boolean,
+    isSaveButtonEnabled: Boolean,
+    isVibrationEnabled: Boolean,
+    onVibrationModeChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+
+    Scaffold { innerPadding ->
+        SettingsScreenContent(
+                alarmItem = alarmItem,
+                onClose = onClose,
+                onSave = onSave,
+                volume = volume,
+                onDayChipClick = onDayChipClick,
+                isCloseButtonEnabled = isCloseButtonEnabled,
+                isSaveButtonEnabled = isSaveButtonEnabled,
+                isVibrationEnabled = isVibrationEnabled,
+                onVibrationModeChange = onVibrationModeChange,
+                modifier = modifier.padding(innerPadding)
+        )
+    }
+
+}
+
+@Composable
 fun SettingsScreenContent(
     alarmItem: AlarmItem,
     onClose: () -> Unit,
@@ -56,7 +88,8 @@ fun SettingsScreenContent(
 
         Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
         ) {
             SmallButton(
                     icon = Icons.Default.Close,
@@ -242,7 +275,7 @@ fun TitlePanel(
             Row(
                     modifier = modifier
                             .fillMaxWidth()
-                            .padding(spacing.spaceMedium),
+                            .padding(),
                     Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
             ) {
@@ -271,21 +304,17 @@ fun TitlePanel(
 private fun SettingsScreenContentPreview() {
 
     SnoozelooTheme {
-
-        Surface {
-
-            SettingsScreenContent(
-                    modifier = Modifier.fillMaxSize(),
-                    alarmItem = getRandomAlarmItem(),
-                    onClose = {},
-                    onSave = {},
-                    onDayChipClick = {},
-                    isCloseButtonEnabled = false,
-                    isSaveButtonEnabled = false,
-                    volume = .7f,
-                    isVibrationEnabled = false,
-                    onVibrationModeChange = {}
-            )
-        }
+        SettingsScreenContent(
+                modifier = Modifier.fillMaxSize(),
+                alarmItem = getRandomAlarmItem(),
+                onClose = {},
+                onSave = {},
+                onDayChipClick = {},
+                isCloseButtonEnabled = false,
+                isSaveButtonEnabled = false,
+                volume = .7f,
+                isVibrationEnabled = false,
+                onVibrationModeChange = {}
+        )
     }
 }
