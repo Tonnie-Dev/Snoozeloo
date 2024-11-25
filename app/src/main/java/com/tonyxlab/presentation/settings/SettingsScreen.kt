@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -35,6 +36,7 @@ import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.presentation.components.ChipsRow
 import com.tonyxlab.presentation.components.MediumButton
 import com.tonyxlab.presentation.components.SmallButton
+import com.tonyxlab.presentation.components.TimeInputField
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.alarmIn
@@ -205,16 +207,14 @@ fun TimePanel(
                     ),
                     shape = RoundedCornerShape(spacing.spaceDoubleDp * 5)
             ) {
-                Text(
-                        modifier = Modifier.padding(
-                                horizontal = spacing.spaceLarge,
-                                vertical = spacing.spaceMedium
-                        ),
-                        text = alarmItem.triggerTime.getHourString(),
-                        style = MaterialTheme.typography.displayLarge,
-                        fontWeight = FontWeight.W500
+
+                TimeInputField(
+                        modifier = Modifier.wrapContentSize(),
+                        initialText = alarmItem.triggerTime.getHourString(),
+                        range = (0..23)
                 )
             }
+
             Spacer(modifier = Modifier.width(spacing.spaceMedium))
 
             Text(
@@ -224,20 +224,17 @@ fun TimePanel(
             )
 
             Spacer(modifier = Modifier.width(spacing.spaceMedium))
+
             Card(
                     colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.background
                     ),
                     shape = RoundedCornerShape(spacing.spaceDoubleDp * 5)
             ) {
-                Text(
-                        modifier = Modifier.padding(
-                                horizontal = spacing.spaceLarge,
-                                vertical = spacing.spaceMedium
-                        ),
-                        text = alarmItem.triggerTime.getMinuteString(),
-                        style = MaterialTheme.typography.displayLarge,
-                        fontWeight = FontWeight.W500
+                TimeInputField(
+                        modifier = Modifier.wrapContentSize(),
+                        initialText = alarmItem.triggerTime.getMinuteString(),
+                        range = (0..59)
                 )
             }
         }

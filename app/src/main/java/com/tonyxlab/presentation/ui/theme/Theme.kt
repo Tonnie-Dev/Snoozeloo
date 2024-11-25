@@ -20,7 +20,7 @@ fun SnoozelooTheme(content: @Composable () -> Unit) {
     MaterialTheme(
             colorScheme = defaultScheme,
             shapes = shapes,
-            typography = typography,
+            typography = Typography,
             content = content
     )
 }
