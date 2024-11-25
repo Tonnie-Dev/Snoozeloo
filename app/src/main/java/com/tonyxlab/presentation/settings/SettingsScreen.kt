@@ -1,5 +1,6 @@
 package com.tonyxlab.presentation.settings
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
@@ -22,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -181,79 +184,76 @@ fun TimePanel(
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
-    Surface(
-            modifier = modifier.padding(spacing.spaceMedium),
-            shape = RoundedCornerShape(spacing.spaceMedium)
-    ) {
+    Column(
 
-        Column {
+            modifier = modifier
+                    .clip(RoundedCornerShape(spacing.spaceMedium))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(spacing.spaceMedium),
 
-            Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
             ) {
 
-                Card(
-                        modifier = Modifier.padding(
-                                horizontal = spacing.spaceDefault,
-                                vertical = spacing.spaceDefault
-                        ),
-                        shape = RoundedCornerShape(spacing.spaceDoubleDp * 5)
-                ) {
-                    Text(
-                            modifier = Modifier.padding(
-                                    horizontal = spacing.spaceLarge,
-                                    vertical = spacing.spaceMedium
-                            ),
-                            text = alarmItem.triggerTime.getHourString(),
-                            style = MaterialTheme.typography.displayLarge,
-                            fontWeight = FontWeight.W500
-                    )
-                }
-                Spacer(modifier = Modifier.width(spacing.spaceMedium))
+        Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+        ) {
 
+            Card(
+                    colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.background
+                    ),
+                    shape = RoundedCornerShape(spacing.spaceDoubleDp * 5)
+            ) {
                 Text(
-                        text = ":",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.width(spacing.spaceMedium))
-                Card(
                         modifier = Modifier.padding(
-                                horizontal = spacing.spaceDefault,
-                                vertical = spacing.spaceDefault
+                                horizontal = spacing.spaceLarge,
+                                vertical = spacing.spaceMedium
                         ),
-                        shape = RoundedCornerShape(spacing.spaceDoubleDp * 5)
-                ) {
-                    Text(
-                            modifier = Modifier.padding(
-                                    horizontal = spacing.spaceLarge,
-                                    vertical = spacing.spaceMedium
-                            ),
-                            text = alarmItem.triggerTime.getMinuteString(),
-                            style = MaterialTheme.typography.displayLarge,
-                            fontWeight = FontWeight.W500
-                    )
-                }
+                        text = alarmItem.triggerTime.getHourString(),
+                        style = MaterialTheme.typography.displayLarge,
+                        fontWeight = FontWeight.W500
+                )
             }
-
-            Spacer(modifier = Modifier.height(spacing.spaceMedium))
-
+            Spacer(modifier = Modifier.width(spacing.spaceMedium))
 
             Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(
-                            id = R.string.alarm_in_text,
-                            alarmItem.durationToNextTrigger.alarmIn()
-                    ),
-                    textAlign = TextAlign.Center
+                    text = ":",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
             )
+
+            Spacer(modifier = Modifier.width(spacing.spaceMedium))
+            Card(
+                    colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.background
+                    ),
+                    shape = RoundedCornerShape(spacing.spaceDoubleDp * 5)
+            ) {
+                Text(
+                        modifier = Modifier.padding(
+                                horizontal = spacing.spaceLarge,
+                                vertical = spacing.spaceMedium
+                        ),
+                        text = alarmItem.triggerTime.getMinuteString(),
+                        style = MaterialTheme.typography.displayLarge,
+                        fontWeight = FontWeight.W500
+                )
+            }
         }
 
-
+        Spacer(modifier = Modifier.height(spacing.spaceMedium))
+        Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(
+                        id = R.string.alarm_in_text,
+                        alarmItem.durationToNextTrigger.alarmIn()
+                ),
+                textAlign = TextAlign.Center
+        )
     }
+
+
 }
 
 
