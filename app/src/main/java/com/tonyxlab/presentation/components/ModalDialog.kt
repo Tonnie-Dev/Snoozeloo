@@ -14,9 +14,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.sp
 import com.tonyxlab.R
-import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 
 @Composable
@@ -26,29 +28,35 @@ fun ModalDialog(
     modifier: Modifier = Modifier,
     onConfirmDialog: () -> Unit,
     onDismissDialog: () -> Unit,
-    isSaveEnabled: Boolean
 ) {
-
-    val spacing = LocalSpacing.current
     var textValue by remember { mutableStateOf("") }
+    var isSaveEnabled by remember { mutableStateOf(false) }
 
     if (isShowDialog) {
 
         AlertDialog(
                 modifier = modifier,
-                onDismissRequest = { },
+                onDismissRequest = onDismissDialog,
                 title = { Text(text = title) },
                 text = {
-
                     OutlinedTextField(
                             modifier = Modifier.fillMaxWidth(),
                             value = textValue,
-                            onValueChange = { textValue = it }
+                            onValueChange = {
+                                textValue = it
+                                if (it.isNotEmpty()) {
+                                    isSaveEnabled = true
+                                }
+                            },
+                            singleLine = true,
+                            textStyle = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W500)
                     )
                 },
                 confirmButton = {
-                    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
-
+                    Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.End
+                    ) {
 
                         MediumButton(
                                 text = stringResource(id = R.string.save_text),
@@ -58,16 +66,14 @@ fun ModalDialog(
                     }
                 },
         )
+
     }
 
 }
 
-
 @PreviewLightDark
 @Composable
 private fun ModalDialogPreview() {
-
-
     SnoozelooTheme {
 
         Surface {
@@ -77,7 +83,6 @@ private fun ModalDialogPreview() {
                     isShowDialog = true,
                     onConfirmDialog = {},
                     onDismissDialog = {},
-                    isSaveEnabled = false
             )
         }
     }

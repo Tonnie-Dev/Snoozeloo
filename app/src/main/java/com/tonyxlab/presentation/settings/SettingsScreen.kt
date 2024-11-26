@@ -1,6 +1,7 @@
 package com.tonyxlab.presentation.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,10 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,6 +41,7 @@ import com.tonyxlab.R
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.presentation.components.ChipsRow
 import com.tonyxlab.presentation.components.MediumButton
+import com.tonyxlab.presentation.components.ModalDialog
 import com.tonyxlab.presentation.components.NumberInputField
 import com.tonyxlab.presentation.components.SmallButton
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
@@ -90,12 +96,16 @@ fun SettingsScreenContent(
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
+    var showDialog by remember { mutableStateOf(false) }
+
     Column(
             modifier = modifier
                     .padding(spacing.spaceMedium)
                     .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(spacing.spaceMedium)
     ) {
+
+        //Top Buttons
 
         Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -115,13 +125,14 @@ fun SettingsScreenContent(
                     isEnabled = isSaveButtonEnabled
             )
         }
-
+        //Set Time Setting
         TimePanel(
                 alarmItem = alarmItem,
                 onHourBoxClick = {},
                 onMinuteBoxClick = {}
         )
 
+        //Alarm Name Setting
         TitlePanel(
                 mainText = stringResource(R.string.alarm_name_text),
                 subText = alarmItem.name,
@@ -136,9 +147,11 @@ fun SettingsScreenContent(
                     }
 
 
-                }
+                },
+                onClickComponent = { showDialog = true }
         )
 
+        //Chips-Day Setting
         TitlePanel(
                 mainText = stringResource(R.string.repeat_text),
                 bottomContent = {
@@ -150,6 +163,8 @@ fun SettingsScreenContent(
                 }
         )
 
+
+        //Ringtone Setting
         TitlePanel(
                 mainText = stringResource(id = R.string.alarm_ringtone_text),
                 subText = "Default", // TODO: Fix Alarm Ringtone Name
@@ -165,10 +180,13 @@ fun SettingsScreenContent(
                 }
         )
 
+        //Alarm Volume Setting
         TitlePanel(
                 mainText = stringResource(R.string.alarm_volume_text),
                 bottomContent = { Slider(value = volume, onValueChange = {}) }
         )
+
+        //Vibration Setting
         TitlePanel(
                 mainText = stringResource(R.string.vibrate_text),
                 sideContent = {
@@ -179,6 +197,15 @@ fun SettingsScreenContent(
                 }
         )
 
+        // Modal Dialog
+        ModalDialog(
+                title = stringResource(id = R.string.alarm_name_text),
+                isShowDialog = showDialog,
+                onConfirmDialog = {
+                    // TODO: Call Save Name Here - from view model
+                    showDialog = false
+                },
+                onDismissDialog = { showDialog = false })
 
     }
 }
@@ -266,8 +293,14 @@ fun TitlePanel(
     mainText: String,
     modifier: Modifier = Modifier,
     subText: String? = null,
+    onClickComponent: (() -> Unit)? = null,
+    onClickChip: (() -> Unit)? = null,
+    onSelectRingtone: (() -> Unit)? = null,
+    onAdjustVolume: (() -> Unit)? = null,
+    onToggleVibration: (() -> Unit)? = null,
     sideContent: @Composable ((text: String?) -> Unit)? = null,
     bottomContent: @Composable (() -> Unit)? = null,
+
 
     ) {
 
@@ -278,6 +311,7 @@ fun TitlePanel(
             modifier = Modifier
                     .clip(RoundedCornerShape(spacing.spaceDoubleDp * 2))
                     .background(color = MaterialTheme.colorScheme.surface)
+                    .clickable { onClickComponent?.invoke() }
                     .padding(spacing.spaceMedium),
             verticalArrangement = Arrangement.spacedBy(spacing.spaceDoubleDp * 2)
     ) {

@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.R
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
@@ -79,7 +80,7 @@ fun MediumButton(
     val spacing = LocalSpacing.current
 
     Button(
-            modifier = Modifier.padding(
+            modifier = modifier.padding(
                     horizontal = spacing.spaceMedium,
                     vertical = spacing.spaceSmall
             ),
@@ -90,7 +91,11 @@ fun MediumButton(
                     disabledContentColor =Color.White
             )
     ) {
-        Text(text = text)
+        Text(
+                text = text,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.W600
+        )
     }
 
 
