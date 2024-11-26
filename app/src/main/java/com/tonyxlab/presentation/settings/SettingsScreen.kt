@@ -1,8 +1,6 @@
 package com.tonyxlab.presentation.settings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,8 +36,8 @@ import com.tonyxlab.R
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.presentation.components.ChipsRow
 import com.tonyxlab.presentation.components.MediumButton
+import com.tonyxlab.presentation.components.NumberInputField
 import com.tonyxlab.presentation.components.SmallButton
-import com.tonyxlab.presentation.components.TimeInputField
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.alarmIn
@@ -210,13 +208,14 @@ fun TimePanel(
         ) {
 
             Card(
+                    modifier = Modifier.align(Alignment.CenterVertically),
                     colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.background
                     ),
                     shape = RoundedCornerShape(spacing.spaceDoubleDp * 5)
             ) {
 
-                TimeInputField(
+                NumberInputField(
                         modifier = Modifier.wrapContentSize(),
                         initialText = alarmItem.triggerTime.getHourString(),
                         range = (0..23)
@@ -239,7 +238,7 @@ fun TimePanel(
                     ),
                     shape = RoundedCornerShape(spacing.spaceDoubleDp * 5)
             ) {
-                TimeInputField(
+                NumberInputField(
                         modifier = Modifier.wrapContentSize(),
                         initialText = alarmItem.triggerTime.getMinuteString(),
                         range = (0..59)
