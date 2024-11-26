@@ -14,16 +14,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
-import com.tonyxlab.utils.getBlue_100
-import com.tonyxlab.utils.getBlue_600
 import com.tonyxlab.utils.getRandomAlarmItem
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -47,7 +48,7 @@ fun ChipsRow(
 
             DayChip(
                     text = daysOfWeek[i],
-                    onClick = onDayChipClick,
+                    onSelectChip = onDayChipClick,
                     selected = state.isEnabled,
                     modifier = Modifier.weight(1f)
             )
@@ -59,19 +60,25 @@ fun ChipsRow(
 @Composable
 fun DayChip(
     text: String,
-    onClick: () -> Unit,
     selected: Boolean,
-    activeColor: Color = getBlue_600(),
-    inactiveColor: Color = getBlue_100(),
+    onSelectChip: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
-
+    var isSelected by remember { mutableStateOf(selected) }
     Box(
             modifier = modifier
                     .clip(RoundedCornerShape(spacing.spaceMedium + spacing.spaceExtraSmall))
-                    .background(color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.inversePrimary)
-                    .clickable { onClick() }
+                    .background(
+                            color = if (isSelected)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.inversePrimary
+                    )
+                    .clickable {
+                        onSelectChip()
+                        isSelected = !isSelected
+                    }
                     .padding(
                             end = spacing.spaceDoubleDp,
                             top = spacing.spaceExtraSmall,
@@ -82,7 +89,9 @@ fun DayChip(
 
         Text(
                 text = text,
-                color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                color = if (isSelected) MaterialTheme.colorScheme.onPrimary
+                else
+                    MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -102,13 +111,13 @@ private fun DayChipPreview() {
             ) {
                 DayChip(
                         text = "Tu",
-                        onClick = {},
+                        onSelectChip = {},
                         selected = true,
                 )
 
                 DayChip(
                         text = "Tu",
-                        onClick = {},
+                        onSelectChip = {},
                         selected = false,
                 )
             }
