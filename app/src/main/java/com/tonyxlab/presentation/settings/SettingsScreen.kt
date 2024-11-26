@@ -1,6 +1,8 @@
 package com.tonyxlab.presentation.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
@@ -19,7 +23,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -89,7 +92,12 @@ fun SettingsScreenContent(
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
-    Column(modifier = modifier) {
+    Column(
+            modifier = modifier
+                    .padding(spacing.spaceMedium)
+                    .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(spacing.spaceMedium)
+    ) {
 
         Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -137,7 +145,7 @@ fun SettingsScreenContent(
                 mainText = stringResource(R.string.repeat_text),
                 bottomContent = {
                     ChipsRow(
-                            modifier = Modifier.padding(horizontal = spacing.spaceMedium),
+                            modifier = Modifier,
                             alarmItem = alarmItem,
                             onDayChipClick = onDayChipClick
                     )
@@ -265,31 +273,35 @@ fun TitlePanel(
     ) {
 
     val spacing = LocalSpacing.current
-    Surface {
-
-        Column {
-
-            Row(
-                    modifier = modifier
-                            .fillMaxWidth()
-                            .padding(),
-                    Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Text(
-                        text = mainText,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.W600
-                )
-
-                sideContent?.invoke(subText)
 
 
-            }
-            bottomContent?.invoke()
+    Column(
+            modifier = Modifier
+                    .clip(RoundedCornerShape(spacing.spaceDoubleDp * 2))
+                    .background(color = MaterialTheme.colorScheme.surface)
+                    .padding(spacing.spaceMedium),
+            verticalArrangement = Arrangement.spacedBy(spacing.spaceDoubleDp * 2)
+    ) {
+
+        Row(
+                modifier = modifier
+                        .fillMaxWidth()
+                        .padding(vertical = spacing.spaceSmall),
+                Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Text(
+                    text = mainText,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.W600
+            )
+
+            sideContent?.invoke(subText)
+
+
         }
-
+        bottomContent?.invoke()
     }
 
 }
