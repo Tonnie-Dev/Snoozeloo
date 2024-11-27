@@ -1,5 +1,7 @@
 package com.tonyxlab.data.repository
 
+import android.content.SharedPreferences
+import android.net.Uri
 import com.tonyxlab.data.database.dao.AlarmDao
 import com.tonyxlab.data.mappers.toDomainModel
 import com.tonyxlab.data.mappers.toEntityModel
@@ -9,6 +11,7 @@ import com.tonyxlab.domain.scheduler.AlarmScheduler
 import com.tonyxlab.utils.AppCoroutineDispatchers
 import com.tonyxlab.utils.Resource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -16,8 +19,12 @@ import javax.inject.Inject
 class AlarmRepositoryImpl @Inject constructor(
     private val dao: AlarmDao,
     private val scheduler: AlarmScheduler,
+    private val sharedPreferences: SharedPreferences,
     private val dispatchers: AppCoroutineDispatchers
 ) : AlarmRepository {
+
+    private val ringtoneFlowMutable = MutableStateFlow<Uri?>(null)
+
     override fun getAlarms(): Flow<List<AlarmItem>> {
 
         return dao.getAlarms()
@@ -91,4 +98,21 @@ class AlarmRepositoryImpl @Inject constructor(
                 Resource.Error(e)
             }
         }
+
+    companion object {
+        private const val KEY_RINGTONE_URI = "selected_ringtone_uri"
+    }
+
+    init {
+        val savedUriString = sharedPreferences.getString(KEY_RINGTONE_URI, null)
+        ringtoneFlowMutable.value = savedUriString?.let { Uri.parse(it) }
+    }
+
+    override val ringtoneFlow: Flow<Uri?>
+        get() = ringtoneFlowMutable
+
+    override suspend fun saveRingtone(uri: Uri) {
+        sharedPreferences.edit().putString(KEY_RINGTONE_URI, uri.toString()).apply()
+        ringtoneFlowMutable.value = uri
+    }
 }
