@@ -38,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.tonyxlab.R
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.presentation.components.ChipsRow
@@ -63,7 +64,8 @@ fun SettingsScreen(
     isSaveButtonEnabled: Boolean,
     isVibrationEnabled: Boolean,
     onVibrationModeChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: SettingsViewModel = hiltViewModel()
 ) {
 
     Scaffold { innerPadding ->
@@ -77,7 +79,11 @@ fun SettingsScreen(
                 isSaveButtonEnabled = isSaveButtonEnabled,
                 isVibrationEnabled = isVibrationEnabled,
                 onVibrationModeChange = onVibrationModeChange,
-                modifier = modifier.padding(innerPadding)
+                modifier = modifier.padding(innerPadding),
+                onSelectRingtone = {
+
+                    viewModel.selectRingtone()
+                }
         )
     }
 
@@ -94,6 +100,7 @@ fun SettingsScreenContent(
     isSaveButtonEnabled: Boolean,
     isVibrationEnabled: Boolean,
     onVibrationModeChange: (Boolean) -> Unit,
+    onSelectRingtone: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
@@ -361,7 +368,8 @@ private fun SettingsScreenContentPreview() {
                 isSaveButtonEnabled = false,
                 volume = .7f,
                 isVibrationEnabled = false,
-                onVibrationModeChange = {}
+                onVibrationModeChange = {},
+                onSelectRingtone = {}
         )
     }
 }

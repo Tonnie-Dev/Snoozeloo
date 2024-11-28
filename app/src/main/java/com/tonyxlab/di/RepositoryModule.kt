@@ -1,5 +1,6 @@
 package com.tonyxlab.di
 
+import androidx.activity.ComponentActivity
 import com.tonyxlab.data.database.converters.JsonSerializerImpl
 import com.tonyxlab.data.receiver.AlarmHandlerImpl
 import com.tonyxlab.data.repository.AlarmRepositoryImpl
@@ -44,4 +45,10 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun provideRingtonePickerContract(ringtonePickerImpl: RingtonePickerImpl): RingtonePicker
+
+    @Binds
+    abstract fun bindComponentActivity(activity: ComponentActivity): ComponentActivity
+
+
+
 }

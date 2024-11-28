@@ -1,5 +1,6 @@
 package com.tonyxlab.data.ringtoneimpl
 
+import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
@@ -7,20 +8,23 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 
 import com.tonyxlab.domain.ringtone.RingtonePicker
+import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import javax.inject.Inject
 
-class RingtonePickerImpl(
-    private val activity: ComponentActivity
+class RingtonePickerImpl @Inject constructor(
+   activity: ComponentActivity
 ) : RingtonePicker {
-
-    private val ringtoneResultFlow = MutableStateFlow<Uri?>(null)
-
-    private val ringtonePickerLauncher = activity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private val ringtonePickerLauncher = activity.registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) { result ->
         val selectedRingtoneUri: Uri? = result.data?.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
         ringtoneResultFlow.value = selectedRingtoneUri
     }
+
+    private val ringtoneResultFlow = MutableStateFlow<Uri?>(null)
 
     override suspend fun pickRingtone(): Uri? {
         val intent = Intent(RingtoneManager.ACTION_RINGTONE_PICKER).apply {

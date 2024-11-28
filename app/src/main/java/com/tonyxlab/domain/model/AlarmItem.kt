@@ -21,3 +21,6 @@ data class AlarmItem(
 
 @Serializable
 data class DayChipState(val day:String, val isEnabled: Boolean)
+
+data class Ringtone (val ringtoneName: String, val ringtoneUri:Uri)
+
