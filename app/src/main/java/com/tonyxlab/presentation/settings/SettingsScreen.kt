@@ -82,7 +82,6 @@ fun SettingsScreen(
                 modifier = modifier.padding(innerPadding),
                 onSelectRingtone = {
 
-                    viewModel.selectRingtone()
                 }
         )
     }
