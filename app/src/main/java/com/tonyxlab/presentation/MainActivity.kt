@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.presentation.home.HomeScreen
+import com.tonyxlab.presentation.settings.RingtoneScreen
 import com.tonyxlab.presentation.settings.SettingsScreen
 import com.tonyxlab.presentation.settings.SettingsScreenContent
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
@@ -68,8 +69,16 @@ class MainActivity : ComponentActivity() {
                                 isSaveButtonEnabled = false,
                                 isVibrationEnabled = false,
                                 onVibrationModeChange = {},
+                                onSelectRingtone = {
+                                    navController.navigate(RingtoneScreenObject)
+                                }
                         )
 
+                    }
+
+                    composable<RingtoneScreenObject> {
+
+                        RingtoneScreen()
                     }
                 }
             }
@@ -83,3 +92,6 @@ object HomeScreenObject
 
 @Serializable
 data class SettingsScreenObject(val id: String)
+
+@Serializable
+object RingtoneScreenObject

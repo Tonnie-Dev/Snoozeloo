@@ -64,6 +64,7 @@ fun SettingsScreen(
     isSaveButtonEnabled: Boolean,
     isVibrationEnabled: Boolean,
     onVibrationModeChange: (Boolean) -> Unit,
+    onSelectRingtone: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -80,9 +81,7 @@ fun SettingsScreen(
                 isVibrationEnabled = isVibrationEnabled,
                 onVibrationModeChange = onVibrationModeChange,
                 modifier = modifier.padding(innerPadding),
-                onSelectRingtone = {
-
-                }
+                onSelectRingtone = onSelectRingtone
         )
     }
 
@@ -185,10 +184,9 @@ fun SettingsScreenContent(
                         )
                     }
                 },
-                onClickComponent = {
+                onClickComponent = onSelectRingtone
 
-                    // TODO: Show ringtone picker using an intent
-                }
+
         )
 
         //Alarm Volume Setting
