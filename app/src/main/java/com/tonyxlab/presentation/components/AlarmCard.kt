@@ -43,24 +43,23 @@ fun AlarmCard(
 
     val spacing = LocalSpacing.current
 
-        Column (
+    Column(
             modifier = modifier
                     .clip(RoundedCornerShape(spacing.spaceSmall))
                     .fillMaxWidth()
                     .clickable { onAlarmItemClick(alarmItem.id) }
                     .background(MaterialTheme.colorScheme.surface)
                     .padding(spacing.spaceMedium)
-        ){
+    ) {
 
-            AlarmFace(alarmItem = alarmItem)
-            Spacer(modifier = Modifier.height(spacing.spaceSmall))
-            ChipsRow(
-                    alarmItem = alarmItem,
-                    onDayChipClick = onDayChipClick
-            )
-        }
+        AlarmFace(alarmItem = alarmItem)
+        Spacer(modifier = Modifier.height(spacing.spaceSmall))
+        ChipsRow(
+                alarmItem = alarmItem,
+                onDayChipClick = onDayChipClick
+        )
     }
-
+}
 
 
 @Composable
@@ -147,15 +146,15 @@ private fun AlarmFacePreview() {
 @Composable
 private fun AlarmCardPreview() {
     SnoozelooTheme {
-Surface {
+        Surface {
 
 
-    AlarmCard(
-            alarmItem = getRandomAlarmItem(),
-            onAlarmItemClick = {},
-            onDayChipClick = {}
-    )
+            AlarmCard(
+                    alarmItem = getRandomAlarmItem(),
+                    onAlarmItemClick = {},
+                    onDayChipClick = {}
+            )
 
-}
+        }
     }
 }

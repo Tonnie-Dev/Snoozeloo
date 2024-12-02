@@ -1,6 +1,5 @@
 package com.tonyxlab.presentation.settings
 
-import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +35,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tonyxlab.R
@@ -70,7 +68,9 @@ fun SettingsScreen(
 ) {
 
     Scaffold { innerPadding ->
+
         SettingsScreenContent(
+                modifier = modifier.padding(innerPadding),
                 alarmItem = alarmItem,
                 onClose = onClose,
                 onSave = onSave,
@@ -80,7 +80,6 @@ fun SettingsScreen(
                 isSaveButtonEnabled = isSaveButtonEnabled,
                 isVibrationEnabled = isVibrationEnabled,
                 onVibrationModeChange = onVibrationModeChange,
-                modifier = modifier.padding(innerPadding),
                 onSelectRingtone = onSelectRingtone
         )
     }
@@ -349,7 +348,6 @@ fun TitlePanel(
 }
 
 
-@Preview(showBackground = true)
 @PreviewLightDark
 @Composable
 private fun SettingsScreenContentPreview() {

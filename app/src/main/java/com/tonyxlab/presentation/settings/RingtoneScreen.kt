@@ -1,5 +1,6 @@
 package com.tonyxlab.presentation.settings
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tonyxlab.presentation.components.CircularCheckbox
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 
@@ -37,11 +39,11 @@ fun RingtoneScreen(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
-
+val spacing = LocalSpacing.current
     val ringtones by viewModel.ringtones.collectAsState()
     Scaffold { innerPadding ->
 
-        LazyColumn(modifier = Modifier.padding(innerPadding)) {
+        LazyColumn(modifier = modifier. padding(innerPadding)) {
 
             item {
 
@@ -53,9 +55,9 @@ fun RingtoneScreen(
             }
             items(items = ringtones, key = { it.ringtoneName }) {
 
-                RingtoneRow(
+                RingtoneRow(modifier = Modifier.padding(spacing.spaceSmall),
                         ringtoneTitle = it.ringtoneName,
-                        isChecked = false,
+                        isChecked = true,
                         onCheckChange = {}
                 )
             }
@@ -77,7 +79,13 @@ fun RingtoneRow(
     val spacing = LocalSpacing.current
 
     Row(
-            modifier = modifier.fillMaxWidth(),
+            modifier = modifier
+                    .background(MaterialTheme.colorScheme.surface)
+                    .fillMaxWidth()
+                    .padding(
+                            vertical = spacing.spaceSmall,
+                            horizontal = spacing.spaceMedium
+                    ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -100,7 +108,7 @@ fun RingtoneRow(
             )
         }
 
-        Checkbox(
+        CircularCheckbox(
                 modifier = Modifier.clip(CircleShape),
                 checked = isChecked,
                 onCheckedChange = onCheckChange
@@ -116,7 +124,7 @@ private fun RingtoneRowPreview() {
 
 
         Surface {
-            Column {
+            Column(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
 
                 RingtoneRow(
                         ringtoneTitle = "Blue Hills",
