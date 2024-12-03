@@ -56,6 +56,8 @@ dependencies {
     implementation(AndroidX.compose.ui)
     implementation(AndroidX.compose.ui.graphics)
     implementation(AndroidX.compose.ui.toolingPreview)
+
+    //Material 3
     implementation(AndroidX.compose.material3)
 
     //Splash Screen

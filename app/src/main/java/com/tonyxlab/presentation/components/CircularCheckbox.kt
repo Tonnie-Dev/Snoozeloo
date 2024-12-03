@@ -44,7 +44,9 @@ fun CircularCheckbox(
                     imageVector = Icons.Default.Check,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier
+                            .align(Alignment.Center)
+                            .size(spacing.spaceMedium)
             )
         }
     }
