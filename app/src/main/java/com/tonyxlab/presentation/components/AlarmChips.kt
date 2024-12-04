@@ -66,6 +66,7 @@ fun DayChip(
 ) {
     val spacing = LocalSpacing.current
     var isSelected by remember { mutableStateOf(selected) }
+
     Box(
             modifier = modifier
                     .clip(RoundedCornerShape(spacing.spaceMedium + spacing.spaceExtraSmall))

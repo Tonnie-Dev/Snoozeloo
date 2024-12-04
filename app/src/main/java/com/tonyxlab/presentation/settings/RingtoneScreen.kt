@@ -2,6 +2,7 @@ package com.tonyxlab.presentation.settings
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,30 +11,32 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.traceEventEnd
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tonyxlab.R
@@ -49,38 +52,78 @@ fun RingtoneScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val ringtones by viewModel.ringtones.collectAsState()
-    RingtoneScreenContent(ringtones = ringtones)
+    val isPlaying by viewModel.isPlaying.collectAsState()
+    RingtoneScreenContent(
+            modifier = modifier,
+            ringtones = ringtones,
+            isPlaying = isPlaying,
+            onPlayRingtone = viewModel::play,
+            onStopPlay = viewModel::stop
+
+    )
 }
 
 @Composable
 fun RingtoneScreenContent(
     ringtones: List<Ringtone>,
-    modifier: Modifier = Modifier
+    onPlayRingtone: (Uri) -> Unit,
+    onStopPlay: () -> Unit,
+    modifier: Modifier = Modifier,
+    isPlaying: Boolean
 ) {
 
     val spacing = LocalSpacing.current
+
+    var selectedIndex by remember { mutableIntStateOf(-1) }
+    var currentPlayingIndex by remember { mutableIntStateOf(-1) }
     Scaffold { innerPadding ->
 
-        LazyColumn(modifier = Modifier.padding(innerPadding), contentPadding = PaddingValues( horizontal = spacing.spaceMedium)) {
+        LazyColumn(
+                modifier = modifier.padding(innerPadding),
+                contentPadding = PaddingValues(horizontal = spacing.spaceMedium)
+        ) {
 
             item {
 
                 RingtoneRow(
                         modifier = Modifier.padding(spacing.spaceSmall),
                         ringtoneTitle = "Silent",
-                        isChecked = false,
-                        onCheckChange = {},
-                        icon = painterResource(R.drawable.notification_silent)
+                        isSilent = true,
+                        isSelected = false,
+                        onSelectRingtone = {
+
+                            // TODO: Implement Silent Functionality
+                        },
                 )
             }
-            items(items = ringtones, key = { it.ringtoneName }) {
+            itemsIndexed(items = ringtones) { i, ringtone ->
 
+                val isSelected = selectedIndex == i
                 RingtoneRow(
                         modifier = Modifier.padding(spacing.spaceSmall),
-                        ringtoneTitle = it.ringtoneName,
-                        isChecked = true,
-                        onCheckChange = {},
-                        icon = painterResource(R.drawable.notification_ringing)
+                        ringtoneTitle = ringtone.ringtoneName,
+                        isSilent = false,
+                        isSelected = isSelected,
+                        onSelectRingtone = {
+                            selectedIndex = i
+
+                            if (currentPlayingIndex == i) {
+                                if (isPlaying) {
+                                    onStopPlay()
+                                    currentPlayingIndex = -1
+                                } else {
+                                    onPlayRingtone(ringtone.ringtoneUri)
+                                    currentPlayingIndex = i
+                                }
+                            } else {
+                                if (isPlaying) {
+                                    onStopPlay()
+                                }
+                                onPlayRingtone(ringtone.ringtoneUri)
+                                currentPlayingIndex = i
+                            }
+
+                        },
                 )
             }
 
@@ -92,10 +135,10 @@ fun RingtoneScreenContent(
 @Composable
 fun RingtoneRow(
     ringtoneTitle: String,
-    isChecked: Boolean,
-    onCheckChange: (Boolean) -> Unit,
+    isSilent: Boolean,
+    onSelectRingtone: () -> Unit,
+    isSelected: Boolean,
     modifier: Modifier = Modifier,
-    icon: Painter
 ) {
 
     val spacing = LocalSpacing.current
@@ -104,31 +147,37 @@ fun RingtoneRow(
             modifier = modifier
                     .clip(RoundedCornerShape(spacing.spaceSmall))
                     .background(MaterialTheme.colorScheme.surface)
+                    .clickable {
+                        onSelectRingtone()
+                    }
                     .fillMaxWidth()
                     .padding(
                             vertical = spacing.spaceMedium,
                             horizontal = spacing.spaceMedium
-                    )
-                    ,
+                    ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
-        Row(modifier = Modifier.padding(
+        Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+        ) {
 
-        ),verticalAlignment = Alignment.CenterVertically) {
-
-            Box(modifier = Modifier
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.background)
-                    .padding(spacing.spaceSmall),contentAlignment = Alignment.Center){
-
+            Box(
+                    modifier = Modifier
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.background)
+                            .padding(spacing.spaceSmall), contentAlignment = Alignment.Center
+            ) {
 
                 Icon(
                         modifier = Modifier
-
                                 .padding(spacing.spaceSmall),
-                        painter = painterResource(R.drawable.notification_ringing),
+                        painter = if (isSilent)
+                            painterResource(R.drawable.notification_silent)
+                        else
+                            painterResource(R.drawable.notification_ringing),
                         contentDescription = ""
                 )
             }
@@ -139,13 +188,14 @@ fun RingtoneRow(
                     text = ringtoneTitle,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.W600
+                    , overflow = TextOverflow.Clip,
+                    maxLines = 1
             )
         }
 
         CircularCheckbox(
                 modifier = Modifier.clip(CircleShape),
-                checked = isChecked,
-                onCheckedChange = onCheckChange
+                checked = isSelected
         )
     }
 }
@@ -156,21 +206,20 @@ fun RingtoneRow(
 private fun RingtoneRowPreview() {
     SnoozelooTheme {
 
-
         Surface {
             Column {
 
                 RingtoneRow(
                         ringtoneTitle = "Blue Hills",
-                        isChecked = true,
-                        onCheckChange = {},
-                        icon = painterResource(R.drawable.notification_ringing)
+                        isSilent = true,
+                        isSelected = true,
+                        onSelectRingtone = {},
                 )
                 RingtoneRow(
                         ringtoneTitle = "Blue Hills",
-                        isChecked = false,
-                        onCheckChange = {},
-                        icon = painterResource(R.drawable.notification_silent)
+                        isSilent = false,
+                        isSelected = false,
+                        onSelectRingtone = {},
                 )
             }
         }
@@ -186,7 +235,12 @@ private fun RingtoneContentPreview() {
 
     SnoozelooTheme {
 
-        RingtoneScreenContent(ringtones = getRandomRingtones())
+        RingtoneScreenContent(
+                ringtones = getRandomRingtones(),
+                onPlayRingtone = {},
+                isPlaying = false,
+                onStopPlay = {}
+        )
     }
 }
 
@@ -205,7 +259,7 @@ fun getRandomRingtones(count: Int = 18): List<Ringtone> {
 
             add(
                     Ringtone(
-                            ringtoneName = "$ringtoneTitle ${it +1}",
+                            ringtoneName = "$ringtoneTitle ${it + 1}",
                             ringtoneUri = Uri.parse(ringtoneTitle)
                     )
             )

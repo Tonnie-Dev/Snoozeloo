@@ -1,5 +1,7 @@
 package com.tonyxlab.presentation.settings
 
+import android.net.Uri
+import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tonyxlab.domain.model.Ringtone
@@ -17,6 +19,8 @@ class SettingsViewModel @Inject constructor(
     private val ringtoneFetcher: RingtoneFetcher
 ) : ViewModel() {
 
+    private val _isPlaying = MutableStateFlow(false)
+    val isPlaying = _isPlaying.asStateFlow()
 
     private val _ringtones = MutableStateFlow<List<Ringtone>>(emptyList())
     val ringtones = _ringtones.asStateFlow()
@@ -29,6 +33,18 @@ class SettingsViewModel @Inject constructor(
                     _ringtones.value = it
                 }
                 .launchIn(viewModelScope)
+    }
+
+    fun play(uri: Uri) {
+
+        ringtoneFetcher.startPlay(uri)
+        _isPlaying.value = true
+    }
+
+    fun stop() {
+
+        ringtoneFetcher.stopPlay()
+        _isPlaying.value = false
     }
 }
 

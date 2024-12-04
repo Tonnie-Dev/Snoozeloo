@@ -1,7 +1,9 @@
 package com.tonyxlab.data.repository
 
 import android.content.Context
+import android.media.MediaPlayer
 import android.media.RingtoneManager
+import android.net.Uri
 import com.tonyxlab.domain.model.Ringtone
 import com.tonyxlab.domain.ringtone.RingtoneFetcher
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -13,6 +15,8 @@ class RingtoneFetcherImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) :
     RingtoneFetcher {
+
+    private var player: MediaPlayer? = null
 
     override fun fetchRingtone(): Flow<MutableList<Ringtone>> = flow {
 
@@ -43,5 +47,38 @@ class RingtoneFetcherImpl @Inject constructor(
         cursor.close()
 
         emit(ringtones)
+    }
+
+    override fun startPlay(uri: Uri) {
+
+        player?.release()
+        player = MediaPlayer.create(context, uri)
+                .apply {
+
+                    setOnCompletionListener {
+
+                        if (isLooping) {
+
+                            stop()
+                            release()
+                        } else {
+                            isLooping = true
+                            start()
+                        }
+                    }
+
+                    start()
+                }
+    }
+
+    override fun stopPlay() {
+        player?.stop()
+        player?.release()
+        player = null
+    }
+
+    override fun release() {
+        player?.release()
+        player = null
     }
 }
