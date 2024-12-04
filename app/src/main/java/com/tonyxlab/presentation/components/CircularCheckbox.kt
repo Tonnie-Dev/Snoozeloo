@@ -26,14 +26,12 @@ import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 @Composable
 fun CircularCheckbox(
     checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
     Box(
             modifier = modifier
                     .clip(CircleShape)
-                    .clickable { onCheckedChange(!checked) }
                     .background(if (checked) MaterialTheme.colorScheme.primary else Color.Transparent)
                     .size(spacing.spaceLarge)
                     .padding(spacing.spaceExtraSmall),
@@ -65,13 +63,11 @@ private fun CircularCheckboxPreview() {
 
                 CircularCheckbox(
                         checked = true,
-                        onCheckedChange = {},
                 )
                 Spacer(modifier = Modifier.height(spacing.spaceMedium))
 
                 CircularCheckbox(
                         checked = false,
-                        onCheckedChange = {},
                 )
             }
         }
