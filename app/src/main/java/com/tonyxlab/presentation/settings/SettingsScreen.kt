@@ -112,24 +112,7 @@ fun SettingsScreenContent(
 
         //Top Buttons
 
-        Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-        ) {
-            SmallButton(
-                    icon = Icons.Default.Close,
-                    onClickIcon = onClose,
-                    isEnabled = isCloseButtonEnabled,
-                    contentDescription = stringResource(R.string.close_window_text),
-            )
 
-            MediumButton(
-                    text = stringResource(id = R.string.save_text),
-                    onClick = onSave,
-                    isEnabled = isSaveButtonEnabled
-            )
-        }
         //Set Time Setting
         TimePanel(
                 alarmItem = alarmItem,
