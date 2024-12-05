@@ -46,6 +46,12 @@ class SettingsViewModel @Inject constructor(
         ringtoneFetcher.stopPlay()
         _isPlaying.value = false
     }
+
+
+    override fun onCleared() {
+        super.onCleared()
+        ringtoneFetcher.release()
+    }
 }
 
 

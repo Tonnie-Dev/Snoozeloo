@@ -1,6 +1,7 @@
 package com.tonyxlab.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -47,11 +48,10 @@ fun SmallButton(
     Box(
             modifier = modifier
                     .clip(RoundedCornerShape(spacing.spaceSmall))
-
                     .background(
                             color = if (isEnabled) MaterialTheme.colorScheme.primary
                             else MaterialTheme.colorScheme.onSurface.copy(alpha = .12f)
-                    )
+                    ).clickable { onClickIcon() }
                     ,
             contentAlignment = Alignment.Center
     ) {

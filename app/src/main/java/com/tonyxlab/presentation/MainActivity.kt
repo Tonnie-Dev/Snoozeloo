@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
     private val viewModel by viewModels<MainScreenViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+       // enableEdgeToEdge()
         installSplashScreen().apply {
 
             zoomSplashAnimation(viewModel.launchApp.value)
@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
 
                     composable<RingtoneScreenObject> {
 
-                        RingtoneScreen()
+                        RingtoneScreen(onCloseWindow = { navController.popBackStack() })
                     }
                 }
             }

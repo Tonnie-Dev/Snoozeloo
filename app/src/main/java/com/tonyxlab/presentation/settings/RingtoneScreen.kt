@@ -16,6 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -37,6 +39,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tonyxlab.R
 import com.tonyxlab.domain.model.Ringtone
+import com.tonyxlab.presentation.components.AppTopBar
 import com.tonyxlab.presentation.components.CircularCheckbox
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
@@ -45,6 +48,7 @@ import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 @Composable
 fun RingtoneScreen(
     modifier: Modifier = Modifier,
+    onCloseWindow: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val ringtones by viewModel.ringtones.collectAsState()
@@ -53,6 +57,7 @@ fun RingtoneScreen(
             modifier = modifier,
             ringtones = ringtones,
             isPlaying = isPlaying,
+            onCloseWindow = onCloseWindow,
             onPlayRingtone = viewModel::play,
             onStopPlay = viewModel::stop
 
@@ -64,6 +69,7 @@ fun RingtoneScreenContent(
     ringtones: List<Ringtone>,
     onPlayRingtone: (Uri) -> Unit,
     onStopPlay: () -> Unit,
+    onCloseWindow:() -> Unit,
     modifier: Modifier = Modifier,
     isPlaying: Boolean
 ) {
@@ -72,11 +78,18 @@ fun RingtoneScreenContent(
 
     var selectedIndex by remember { mutableIntStateOf(-1) }
     var currentPlayingIndex by remember { mutableIntStateOf(-1) }
-    Scaffold { innerPadding ->
+    Scaffold (topBar = {
+
+        AppTopBar(
+                isSmallButtonEnabled = true,
+                onClickSmallButton = onCloseWindow,
+                smallButtonIcon = Icons.AutoMirrored.Filled.ArrowBack
+        )
+    }) { innerPadding ->
 
         LazyColumn(
                 modifier = modifier.padding(innerPadding),
-                contentPadding = PaddingValues(horizontal = spacing.spaceMedium)
+                contentPadding = PaddingValues(horizontal = spacing.spaceSmall)
         ) {
 
             item {
@@ -229,6 +242,7 @@ private fun RingtoneContentPreview() {
                 ringtones = getRandomRingtones(),
                 onPlayRingtone = {},
                 isPlaying = false,
+                onCloseWindow = {},
                 onStopPlay = {}
         )
     }
