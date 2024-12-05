@@ -39,11 +39,11 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tonyxlab.R
 import com.tonyxlab.domain.model.AlarmItem
+import com.tonyxlab.presentation.components.AppTopBar
 import com.tonyxlab.presentation.components.ChipsRow
 import com.tonyxlab.presentation.components.MediumButton
 import com.tonyxlab.presentation.components.ModalDialog
 import com.tonyxlab.presentation.components.NumberInputField
-import com.tonyxlab.presentation.components.SmallButton
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.alarmIn
@@ -66,25 +66,22 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
-
-    Scaffold { innerPadding ->
-
-        SettingsScreenContent(
-                modifier = modifier.padding(innerPadding),
-                alarmItem = alarmItem,
-                onClose = onClose,
-                onSave = onSave,
-                volume = volume,
-                onDayChipClick = onDayChipClick,
-                isCloseButtonEnabled = isCloseButtonEnabled,
-                isSaveButtonEnabled = isSaveButtonEnabled,
-                isVibrationEnabled = isVibrationEnabled,
-                onVibrationModeChange = onVibrationModeChange,
-                onSelectRingtone = onSelectRingtone
-        )
-    }
-
+    val spacing = LocalSpacing.current
+    SettingsScreenContent(
+            modifier = modifier.padding(spacing.spaceMedium),
+            alarmItem = alarmItem,
+            onClose = onClose,
+            onSave = onSave,
+            volume = volume,
+            onDayChipClick = onDayChipClick,
+            isCloseButtonEnabled = isCloseButtonEnabled,
+            isSaveButtonEnabled = isSaveButtonEnabled,
+            isVibrationEnabled = isVibrationEnabled,
+            onVibrationModeChange = onVibrationModeChange,
+            onSelectRingtone = onSelectRingtone
+    )
 }
+
 
 @Composable
 fun SettingsScreenContent(
@@ -103,101 +100,119 @@ fun SettingsScreenContent(
     val spacing = LocalSpacing.current
     var showDialog by remember { mutableStateOf(false) }
 
-    Column(
-            modifier = modifier
-                    .padding(spacing.spaceMedium)
-                    .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(spacing.spaceMedium)
-    ) {
+    Scaffold(
+            topBar = {
 
-        //Top Buttons
+                AppTopBar(
+
+                        isSmallButtonEnabled = isCloseButtonEnabled,
+                        onClickSmallButton = onSave,
+                        smallButtonIcon = Icons.Default.Close,
+
+                        mediumButton = {
+                            MediumButton(
+                                    text = stringResource(id = R.string.save_text),
+                                    onClick = onSave,
+                                    isEnabled = isSaveButtonEnabled
+                            )
+                        }
+                )
+            }) { innerPadding ->
+
+        Column(
+                modifier = modifier
+                        .padding(innerPadding)
+                        .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(spacing.spaceMedium)
+        ) {
 
 
-        //Set Time Setting
-        TimePanel(
-                alarmItem = alarmItem,
-                onHourBoxClick = {},
-                onMinuteBoxClick = {}
-        )
+            //Set Time Setting
+            TimePanel(
+                    alarmItem = alarmItem,
+                    onHourBoxClick = {},
+                    onMinuteBoxClick = {}
+            )
 
-        //Alarm Name Setting
-        TitlePanel(
-                mainText = stringResource(R.string.alarm_name_text),
-                subText = alarmItem.name,
-                sideContent = { text ->
+            //Alarm Name Setting
+            TitlePanel(
+                    mainText = stringResource(R.string.alarm_name_text),
+                    subText = alarmItem.name,
+                    sideContent = { text ->
 
-                    text?.let {
-                        Text(
-                                text = it,
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.W500
+                        text?.let {
+                            Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.W500
+                            )
+                        }
+
+
+                    },
+                    onClickComponent = { showDialog = true }
+            )
+
+            //Chips-Day Setting
+            TitlePanel(
+                    mainText = stringResource(R.string.repeat_text),
+                    bottomContent = {
+                        ChipsRow(
+                                modifier = Modifier,
+                                alarmItem = alarmItem,
+                                onDayChipClick = onDayChipClick
                         )
                     }
+            )
 
 
-                },
-                onClickComponent = { showDialog = true }
-        )
+            //Ringtone Setting
+            TitlePanel(
+                    mainText = stringResource(id = R.string.alarm_ringtone_text),
+                    subText = "Default", // TODO: Fix Alarm Ringtone Name
+                    sideContent = { text ->
 
-        //Chips-Day Setting
-        TitlePanel(
-                mainText = stringResource(R.string.repeat_text),
-                bottomContent = {
-                    ChipsRow(
-                            modifier = Modifier,
-                            alarmItem = alarmItem,
-                            onDayChipClick = onDayChipClick
-                    )
-                }
-        )
+                        text?.let {
+                            Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.W500
+                            )
+                        }
+                    },
+                    onClickComponent = onSelectRingtone
 
 
-        //Ringtone Setting
-        TitlePanel(
-                mainText = stringResource(id = R.string.alarm_ringtone_text),
-                subText = "Default", // TODO: Fix Alarm Ringtone Name
-                sideContent = { text ->
+            )
 
-                    text?.let {
-                        Text(
-                                text = it,
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.W500
+            //Alarm Volume Setting
+            TitlePanel(
+                    mainText = stringResource(R.string.alarm_volume_text),
+                    bottomContent = { Slider(value = volume, onValueChange = {}) }
+            )
+
+            //Vibration Setting
+            TitlePanel(
+                    mainText = stringResource(R.string.vibrate_text),
+                    sideContent = {
+                        Switch(
+                                checked = isVibrationEnabled,
+                                onCheckedChange = onVibrationModeChange
                         )
                     }
-                },
-                onClickComponent = onSelectRingtone
+            )
 
+            // Modal Dialog
+            ModalDialog(
+                    title = stringResource(id = R.string.alarm_name_text),
+                    isShowDialog = showDialog,
+                    onConfirmDialog = {
+                        // TODO: Call Save Name Here - from view model
+                        showDialog = false
+                    },
+                    onDismissDialog = { showDialog = false })
 
-        )
-
-        //Alarm Volume Setting
-        TitlePanel(
-                mainText = stringResource(R.string.alarm_volume_text),
-                bottomContent = { Slider(value = volume, onValueChange = {}) }
-        )
-
-        //Vibration Setting
-        TitlePanel(
-                mainText = stringResource(R.string.vibrate_text),
-                sideContent = {
-                    Switch(
-                            checked = isVibrationEnabled,
-                            onCheckedChange = onVibrationModeChange
-                    )
-                }
-        )
-
-        // Modal Dialog
-        ModalDialog(
-                title = stringResource(id = R.string.alarm_name_text),
-                isShowDialog = showDialog,
-                onConfirmDialog = {
-                    // TODO: Call Save Name Here - from view model
-                    showDialog = false
-                },
-                onDismissDialog = { showDialog = false })
-
+        }
     }
 }
 
