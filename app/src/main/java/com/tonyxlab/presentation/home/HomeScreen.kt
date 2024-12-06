@@ -41,7 +41,8 @@ fun HomeScreen(
         FloatingActionButton(
                 modifier = Modifier
                         .clip(CircleShape)
-                        .size(spacing.spaceExtraLarge), onClick = onClickAddItem
+                        .size(spacing.spaceExtraLarge),
+                onClick = onClickAddItem
         ) {
             Icon(
                     imageVector = Icons.Default.Add,
@@ -82,7 +83,7 @@ fun HomeScreenContent(
                     style = MaterialTheme.typography.headlineSmall
             )
         }
-        items(items = items, key = { it.id }, ) {
+        items(items = items, key = { it.id }) {
 
 
             AlarmCard(

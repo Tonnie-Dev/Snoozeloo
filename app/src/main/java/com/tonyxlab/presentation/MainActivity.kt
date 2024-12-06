@@ -59,6 +59,7 @@ class MainActivity : ComponentActivity() {
                     composable<SettingsScreenObject> {
 
                         val args = it.id
+
                         SettingsScreen(
                                 alarmItem = getRandomAlarmItem(),
                                 onClose = {},
@@ -91,7 +92,7 @@ class MainActivity : ComponentActivity() {
 object HomeScreenObject
 
 @Serializable
-data class SettingsScreenObject(val id: String)
+data class SettingsScreenObject(val id: String?)
 
 @Serializable
 object RingtoneScreenObject
