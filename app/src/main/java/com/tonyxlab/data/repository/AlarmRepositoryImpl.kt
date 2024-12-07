@@ -19,7 +19,6 @@ import javax.inject.Inject
 class AlarmRepositoryImpl @Inject constructor(
     private val dao: AlarmDao,
     private val scheduler: AlarmScheduler,
-    private val sharedPreferences: SharedPreferences,
     private val dispatchers: AppCoroutineDispatchers
 ) : AlarmRepository {
 
@@ -104,15 +103,13 @@ class AlarmRepositoryImpl @Inject constructor(
     }
 
     init {
-        val savedUriString = sharedPreferences.getString(KEY_RINGTONE_URI, null)
-        ringtoneFlowMutable.value = savedUriString?.let { Uri.parse(it) }
+
     }
 
     override val ringtoneFlow: Flow<Uri?>
         get() = ringtoneFlowMutable
 
     override suspend fun saveRingtone(uri: Uri) {
-        sharedPreferences.edit().putString(KEY_RINGTONE_URI, uri.toString()).apply()
-        ringtoneFlowMutable.value = uri
+
     }
 }
