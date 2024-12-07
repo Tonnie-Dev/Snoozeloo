@@ -62,11 +62,12 @@ class MainActivity : ComponentActivity() {
 
                         SettingsScreen(
                                 alarmItem = getRandomAlarmItem(),
-                                onClose = {},
+                                onClose = {
+                                    navController.popBackStack()
+                                },
                                 onSave = {},
                                 volume = 0.0f,
                                 onDayChipClick = {},
-                                isCloseButtonEnabled = false,
                                 isSaveButtonEnabled = false,
                                 isVibrationEnabled = false,
                                 onVibrationModeChange = {},

@@ -58,7 +58,6 @@ fun SettingsScreen(
     onClose: () -> Unit,
     volume: Float,
     onDayChipClick: () -> Unit,
-    isCloseButtonEnabled: Boolean,
     isSaveButtonEnabled: Boolean,
     isVibrationEnabled: Boolean,
     onVibrationModeChange: (Boolean) -> Unit,
@@ -77,7 +76,6 @@ fun SettingsScreen(
             onSave = onSave,
             volume = volume,
             onDayChipClick = onDayChipClick,
-            isCloseButtonEnabled = isCloseButtonEnabled,
             isSaveButtonEnabled = isSaveButtonEnabled,
             isVibrationEnabled = isVibrationEnabled,
             onVibrationModeChange = onVibrationModeChange,
@@ -97,7 +95,6 @@ fun SettingsScreenContent(
     hourFieldValue: TextFieldValue<String>,
     minuteFieldValue: TextFieldValue<String>,
     onDayChipClick: () -> Unit,
-    isCloseButtonEnabled: Boolean,
     isSaveButtonEnabled: Boolean,
     isVibrationEnabled: Boolean,
     onVibrationModeChange: (Boolean) -> Unit,
@@ -112,8 +109,8 @@ fun SettingsScreenContent(
 
                 AppTopBar(
 
-                        isSmallButtonEnabled = isCloseButtonEnabled,
-                        onClickSmallButton = onSave,
+                        isSmallButtonEnabled = true,
+                        onClickSmallButton = onClose,
                         smallButtonIcon = Icons.Default.Close,
 
                         mediumButton = {
@@ -371,7 +368,6 @@ private fun SettingsScreenContentPreview() {
                 onClose = {},
                 onSave = {},
                 onDayChipClick = {},
-                isCloseButtonEnabled = false,
                 isSaveButtonEnabled = false,
                 volume = .7f,
                 isVibrationEnabled = false,
