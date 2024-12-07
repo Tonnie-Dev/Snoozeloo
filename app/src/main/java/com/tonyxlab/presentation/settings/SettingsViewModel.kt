@@ -1,8 +1,6 @@
 package com.tonyxlab.presentation.settings
 
 import android.net.Uri
-import androidx.compose.material3.TextField
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tonyxlab.domain.model.Ringtone
@@ -26,7 +24,7 @@ class SettingsViewModel @Inject constructor(
     private val ringtoneFetcher: RingtoneFetcher
 ) : ViewModel() {
 
-    var hourField = MutableStateFlow(
+    var hourFieldValue = MutableStateFlow(
             TextFieldValue(
                     value = "",
                     onValueChange = this::setHourField,
@@ -35,7 +33,7 @@ class SettingsViewModel @Inject constructor(
 
     )
         private set
-    var minuteField = MutableStateFlow(
+    var minuteFieldValue = MutableStateFlow(
             TextFieldValue(
                     value = "",
                     onValueChange = this::setMinuteField,
@@ -94,18 +92,25 @@ class SettingsViewModel @Inject constructor(
 
 
     private fun setHourField(value: String) {
-        hourField.update {
-            it.copy(value = value, isError = isFieldError(value, hourField.value))
+
+        if (value.length <= 2) {
+            hourFieldValue.update {
+                it.copy(value = value, isError = isFieldError(value, hourFieldValue.value))
+            }
         }
 
     }
 
     private fun setMinuteField(value: String) {
-        minuteField.update {
-            it.copy(value = value, isError = isFieldError(value, minuteField.value))
+
+        if (value.length <= 2) {
+            minuteFieldValue.update {
+                it.copy(value = value, isError = isFieldError(value, minuteFieldValue.value))
+            }
         }
 
     }
+
     private fun isFieldError(newInput: String, field: TextFieldValue<String>): Boolean {
 
         return newInput.toIntOrNull()
