@@ -1,10 +1,11 @@
 package com.tonyxlab.data.database.entity
 
-import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.tonyxlab.domain.model.DayChipState
+import com.tonyxlab.domain.model.Ringtone
+import com.tonyxlab.domain.model.SILENT_RINGTONE
 import kotlinx.datetime.LocalDateTime
 
 
@@ -24,9 +25,9 @@ data class AlarmEntity(
     @ColumnInfo(name = "days_active")
     val daysActive: List<DayChipState> = emptyList(),
     @ColumnInfo(name = "ringtone")
-    val ringtone: Uri? = null,
+    val ringtone: Ringtone = SILENT_RINGTONE,
     @ColumnInfo(name = "volume")
-    val volume: Int = 0,
+    val volume: Float = 0f,
     @ColumnInfo(name = "is_haptic_on")
     val isHapticsOn: Boolean = false,
     @ColumnInfo(name = "wake_up_time")

@@ -1,6 +1,7 @@
 package com.tonyxlab.di
 
 import com.tonyxlab.domain.model.DayChipState
+import com.tonyxlab.domain.model.Ringtone
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,13 +21,19 @@ object SerializerModule {
     }
 
 
-    @Provides
+   /* @Provides
     @Singleton
-    fun provideListSerializer(): KSerializer<List<DayChipState>> {
+    fun provideDayChipStateListSerializer(): KSerializer<List<DayChipState>> {
 
         return ListSerializer(DayChipState.serializer())
-    }
+    }*/
 
 
+    /*@Provides
+    @Singleton
+    fun providerRingtoneSerializer():KSerializer<Ringtone> {
+
+        return Ringtone.serializer()
+    }*/
 
 }
