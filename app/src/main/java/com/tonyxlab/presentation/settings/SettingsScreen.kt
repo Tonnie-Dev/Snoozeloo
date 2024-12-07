@@ -25,6 +25,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,9 +47,8 @@ import com.tonyxlab.presentation.components.ModalDialog
 import com.tonyxlab.presentation.components.NumberInputField
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
+import com.tonyxlab.utils.TextFieldValue
 import com.tonyxlab.utils.alarmIn
-import com.tonyxlab.utils.getHourString
-import com.tonyxlab.utils.getMinuteString
 import com.tonyxlab.utils.getRandomAlarmItem
 
 @Composable
@@ -67,7 +67,8 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
-
+    val hourFieldValue by viewModel.hourFieldValue.collectAsState()
+    val minuteFieldValue by viewModel.minuteFieldValue.collectAsState()
 
     SettingsScreenContent(
             modifier = modifier.padding(spacing.spaceMedium),
@@ -80,7 +81,9 @@ fun SettingsScreen(
             isSaveButtonEnabled = isSaveButtonEnabled,
             isVibrationEnabled = isVibrationEnabled,
             onVibrationModeChange = onVibrationModeChange,
-            onSelectRingtone = onSelectRingtone
+            onSelectRingtone = onSelectRingtone,
+            hourFieldValue = hourFieldValue,
+            minuteFieldValue = minuteFieldValue
     )
 }
 
@@ -91,6 +94,8 @@ fun SettingsScreenContent(
     onClose: () -> Unit,
     onSave: () -> Unit,
     volume: Float,
+    hourFieldValue: TextFieldValue<String>,
+    minuteFieldValue: TextFieldValue<String>,
     onDayChipClick: () -> Unit,
     isCloseButtonEnabled: Boolean,
     isSaveButtonEnabled: Boolean,
@@ -133,7 +138,9 @@ fun SettingsScreenContent(
             TimePanel(
                     alarmItem = alarmItem,
                     onHourBoxClick = {},
-                    onMinuteBoxClick = {}
+                    onMinuteBoxClick = {},
+                    hourFieldValue = hourFieldValue,
+                    minuteFieldValue = minuteFieldValue
             )
 
             //Alarm Name Setting
@@ -224,6 +231,8 @@ fun TimePanel(
     alarmItem: AlarmItem,
     onHourBoxClick: () -> Unit,
     onMinuteBoxClick: () -> Unit,
+    hourFieldValue: TextFieldValue<String>,
+    minuteFieldValue: TextFieldValue<String>,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
@@ -252,8 +261,9 @@ fun TimePanel(
 
                 NumberInputField(
                         modifier = Modifier.wrapContentSize(),
-                        initialText = alarmItem.triggerTime.getHourString(),
-                        range = (0..23)
+                        value = hourFieldValue.value,
+                        onValueChanged = hourFieldValue.onValueChange,
+                        isError = hourFieldValue.isError
                 )
             }
 
@@ -275,8 +285,10 @@ fun TimePanel(
             ) {
                 NumberInputField(
                         modifier = Modifier.wrapContentSize(),
-                        initialText = alarmItem.triggerTime.getMinuteString(),
-                        range = (0..59)
+                        value = minuteFieldValue.value,
+                        onValueChanged = minuteFieldValue.onValueChange,
+                        isError = minuteFieldValue.isError
+
                 )
             }
         }
@@ -364,7 +376,17 @@ private fun SettingsScreenContentPreview() {
                 volume = .7f,
                 isVibrationEnabled = false,
                 onVibrationModeChange = {},
-                onSelectRingtone = {}
+                onSelectRingtone = {},
+                hourFieldValue = TextFieldValue(
+                        value = "13",
+                        onValueChange = {},
+                        isError = false
+                ),
+                minuteFieldValue = TextFieldValue(
+                        value = "13",
+                        onValueChange = {},
+                        isError = false
+                )
         )
     }
 }
