@@ -15,8 +15,18 @@ object SerializerModule {
 
     @Provides
     @Singleton
+    fun provideDayChipStateSerializer(): KSerializer<DayChipState> {
+        return DayChipState.serializer()
+    }
+
+
+    @Provides
+    @Singleton
     fun provideListSerializer(): KSerializer<List<DayChipState>> {
 
         return ListSerializer(DayChipState.serializer())
     }
+
+
+
 }
