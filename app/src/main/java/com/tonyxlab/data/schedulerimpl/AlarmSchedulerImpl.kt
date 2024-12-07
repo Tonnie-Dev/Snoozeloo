@@ -9,10 +9,11 @@ import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.domain.scheduler.AlarmScheduler
 import com.tonyxlab.utils.Constants.ALARM_ID
 import com.tonyxlab.utils.fromLocalDateTimeToMillis
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class AlarmSchedulerImpl @Inject constructor(
-    private val context: Context
+  @ApplicationContext  private val  context: Context
 ) : AlarmScheduler {
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
