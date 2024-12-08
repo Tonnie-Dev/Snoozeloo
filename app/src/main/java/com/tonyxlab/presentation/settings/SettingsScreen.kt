@@ -42,6 +42,7 @@ import com.tonyxlab.R
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.presentation.components.AppTopBar
 import com.tonyxlab.presentation.components.ChipsRow
+import com.tonyxlab.presentation.components.CustomSlider
 import com.tonyxlab.presentation.components.MediumButton
 import com.tonyxlab.presentation.components.ModalDialog
 import com.tonyxlab.presentation.components.NumberInputField
@@ -194,7 +195,7 @@ fun SettingsScreenContent(
             //Alarm Volume Setting
             TitlePanel(
                     mainText = stringResource(R.string.alarm_volume_text),
-                    bottomContent = { Slider(value = volume, onValueChange = {}) }
+                    bottomContent = { CustomSlider(value = volume, onValueChange = {}) }
             )
 
             //Vibration Setting

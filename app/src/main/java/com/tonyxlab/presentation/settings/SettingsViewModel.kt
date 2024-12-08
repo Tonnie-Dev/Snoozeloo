@@ -53,6 +53,8 @@ class SettingsViewModel @Inject constructor(
         private set
 
 
+
+
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying = _isPlaying.asStateFlow()
 
@@ -116,6 +118,11 @@ class SettingsViewModel @Inject constructor(
             }
         }
 
+    }
+
+    fun setVolume(volume:Float){
+
+        _alarmUiState.update { it.copy(volume = volume) }
     }
 
     private fun isFieldError(newInput: String, field: TextFieldValue<String>): Boolean {
