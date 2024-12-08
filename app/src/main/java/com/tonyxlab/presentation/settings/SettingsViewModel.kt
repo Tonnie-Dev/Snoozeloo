@@ -59,7 +59,14 @@ class SettingsViewModel @Inject constructor(
             )
     )
         private set
-
+    var volumeFieldValue = MutableStateFlow(
+            TextFieldValue(
+                    value = _alarmUiState.value.volume,
+                    onValueChange = this::setVolume,
+                    isConfirmButtonEnabled = _alarmUiState.value.isDialogSaveButtonEnabled
+            )
+    )
+        private set
     private val _isPlaying = MutableStateFlow(false)
 
 
@@ -127,18 +134,20 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun setAlarmName(value: String) {
-        if (value.isNotBlank()){
+        if (value.isNotBlank()) {
 
-          nameFieldValue.update { it.copy(value = value, isConfirmButtonEnabled = true) }
+            nameFieldValue.update { it.copy(value = value, isConfirmButtonEnabled = true) }
 
         }
 
     }
 
-    fun setVolume(volume: Float) {
+    private fun setVolume(value: Float) {
 
-        _alarmUiState.update { it.copy(volume = volume) }
+        volumeFieldValue.update { it.copy(value = value) }
+
     }
+
 
     private fun isFieldError(newInput: String, field: TextFieldValue<String>): Boolean {
 

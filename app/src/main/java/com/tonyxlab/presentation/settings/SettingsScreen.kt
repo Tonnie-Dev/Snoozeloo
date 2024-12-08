@@ -21,7 +21,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,10 +41,10 @@ import com.tonyxlab.R
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.presentation.components.AppTopBar
 import com.tonyxlab.presentation.components.ChipsRow
-import com.tonyxlab.presentation.components.CustomSlider
 import com.tonyxlab.presentation.components.MediumButton
 import com.tonyxlab.presentation.components.ModalDialog
 import com.tonyxlab.presentation.components.NumberInputField
+import com.tonyxlab.presentation.components.VolumeSlider
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.TextFieldValue
@@ -71,6 +70,7 @@ fun SettingsScreen(
     val hourFieldValue by viewModel.hourFieldValue.collectAsState()
     val minuteFieldValue by viewModel.minuteFieldValue.collectAsState()
     val nameFieldValue by viewModel.nameFieldValue.collectAsState()
+    val volumeFieldValue by viewModel.volumeFieldValue.collectAsState()
 
     SettingsScreenContent(
             modifier = modifier.padding(spacing.spaceMedium),
@@ -86,8 +86,9 @@ fun SettingsScreen(
             hourFieldValue = hourFieldValue,
             minuteFieldValue = minuteFieldValue,
             nameFieldValue = nameFieldValue,
+            volumeFieldValue = volumeFieldValue
 
-    )
+            )
 }
 
 
@@ -100,6 +101,7 @@ fun SettingsScreenContent(
     hourFieldValue: TextFieldValue<String>,
     minuteFieldValue: TextFieldValue<String>,
     nameFieldValue: TextFieldValue<String>,
+    volumeFieldValue: TextFieldValue<Float>,
     onDayChipClick: () -> Unit,
     isSaveButtonEnabled: Boolean,
     isVibrationEnabled: Boolean,
@@ -200,7 +202,12 @@ fun SettingsScreenContent(
             //Alarm Volume Setting
             TitlePanel(
                     mainText = stringResource(R.string.alarm_volume_text),
-                    bottomContent = { CustomSlider(value = volume, onValueChange = {}) }
+                    bottomContent = {
+                        VolumeSlider(
+                                value = volumeFieldValue.value,
+                                onValueChange = volumeFieldValue.onValueChange
+                        )
+                    }
             )
 
             //Vibration Setting
@@ -395,6 +402,12 @@ private fun SettingsScreenContentPreview() {
                 ),
                 nameFieldValue = TextFieldValue(
                         value = "Wake Up",
+                        onValueChange = {},
+                        isError = false,
+                        isConfirmButtonEnabled = false
+                ),
+                volumeFieldValue = TextFieldValue(
+                        value = .7f,
                         onValueChange = {},
                         isError = false,
                         isConfirmButtonEnabled = false

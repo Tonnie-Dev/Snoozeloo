@@ -18,6 +18,34 @@ import androidx.compose.ui.unit.dp
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun VolumeSlider(
+    value: Float,
+    onValueChange: ((Float) -> Unit)?,
+    modifier: Modifier = Modifier
+) {
+    Slider(
+            value = value,
+            onValueChange = {onValueChange?.invoke(it)},
+            modifier = modifier,
+            thumb = {
+                RoundSliderThumb()
+            },
+            track = {
+
+                Track(
+                        modifier = Modifier.height(8.dp),
+                        sliderState = it,
+                        colors = SliderDefaults.colors(),
+                        thumbTrackGapSize = 0.dp,
+                        trackInsideCornerSize = 0.dp,
+                        drawStopIndicator = null
+                )
+            }
+    )
+}
+
 @Composable
 fun RoundSliderThumb() {
 
@@ -37,41 +65,13 @@ fun RoundSliderThumb() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CustomSlider(
-    value: Float,
-    onValueChange: (Float) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Slider(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = modifier,
-            thumb = {
-                RoundSliderThumb()
-            },
-            track = {
-
-                Track(
-                        modifier = Modifier.height(8.dp),
-                        sliderState = it,
-                        colors = SliderDefaults.colors(),
-                        thumbTrackGapSize = 0.dp,
-                        trackInsideCornerSize = 0.dp,
-                        drawStopIndicator = null
-                )
-            }
-    )
-}
-
 
 @PreviewLightDark
 @Composable
 private fun SliderPreview() {
     SnoozelooTheme {
         Surface {
-            CustomSlider(
+            VolumeSlider(
                     value = .5f,
                     onValueChange = {}
             )
