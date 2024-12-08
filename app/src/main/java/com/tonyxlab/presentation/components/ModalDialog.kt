@@ -7,10 +7,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -25,12 +21,13 @@ import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 fun ModalDialog(
     title: String,
     isShowDialog: Boolean,
-    modifier: Modifier = Modifier,
+    textValue: String,
+    isDialogSaveButtonEnabled: Boolean,
     onConfirmDialog: () -> Unit,
     onDismissDialog: () -> Unit,
+    onValueChange: ((String) -> Unit)?,
+    modifier: Modifier = Modifier,
 ) {
-    var textValue by remember { mutableStateOf("") }
-    var isSaveEnabled by remember { mutableStateOf(false) }
 
     if (isShowDialog) {
 
@@ -42,12 +39,7 @@ fun ModalDialog(
                     OutlinedTextField(
                             modifier = Modifier.fillMaxWidth(),
                             value = textValue,
-                            onValueChange = {
-                                textValue = it
-                                if (it.isNotEmpty()) {
-                                    isSaveEnabled = true
-                                }
-                            },
+                            onValueChange = { onValueChange?.invoke(it) },
                             singleLine = true,
                             textStyle = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.W500)
                     )
@@ -61,7 +53,7 @@ fun ModalDialog(
                         MediumButton(
                                 text = stringResource(id = R.string.save_text),
                                 onClick = { onConfirmDialog() },
-                                isEnabled = isSaveEnabled
+                                isEnabled = isDialogSaveButtonEnabled
                         )
                     }
                 },
@@ -81,8 +73,11 @@ private fun ModalDialogPreview() {
             ModalDialog(
                     title = stringResource(id = R.string.alarm_name_text),
                     isShowDialog = true,
+                    textValue = "Name",
+                    isDialogSaveButtonEnabled = true,
                     onConfirmDialog = {},
                     onDismissDialog = {},
+                    onValueChange = {}
             )
         }
     }

@@ -67,8 +67,10 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
+
     val hourFieldValue by viewModel.hourFieldValue.collectAsState()
     val minuteFieldValue by viewModel.minuteFieldValue.collectAsState()
+    val nameFieldValue by viewModel.nameFieldValue.collectAsState()
 
     SettingsScreenContent(
             modifier = modifier.padding(spacing.spaceMedium),
@@ -82,7 +84,9 @@ fun SettingsScreen(
             onVibrationModeChange = onVibrationModeChange,
             onSelectRingtone = onSelectRingtone,
             hourFieldValue = hourFieldValue,
-            minuteFieldValue = minuteFieldValue
+            minuteFieldValue = minuteFieldValue,
+            nameFieldValue = nameFieldValue,
+
     )
 }
 
@@ -95,6 +99,7 @@ fun SettingsScreenContent(
     volume: Float,
     hourFieldValue: TextFieldValue<String>,
     minuteFieldValue: TextFieldValue<String>,
+    nameFieldValue: TextFieldValue<String>,
     onDayChipClick: () -> Unit,
     isSaveButtonEnabled: Boolean,
     isVibrationEnabled: Boolean,
@@ -144,7 +149,7 @@ fun SettingsScreenContent(
             //Alarm Name Setting
             TitlePanel(
                     mainText = stringResource(R.string.alarm_name_text),
-                    subText = alarmItem.name,
+                    subText = nameFieldValue,
                     sideContent = { text ->
 
                         text?.let {
@@ -176,7 +181,7 @@ fun SettingsScreenContent(
             //Ringtone Setting
             TitlePanel(
                     mainText = stringResource(id = R.string.alarm_ringtone_text),
-                    subText = "Default", // TODO: Fix Alarm Ringtone Name
+                    subText = null, // TODO: Fix Alarm Ringtone Name
                     sideContent = { text ->
 
                         text?.let {
@@ -213,10 +218,14 @@ fun SettingsScreenContent(
             ModalDialog(
                     title = stringResource(id = R.string.alarm_name_text),
                     isShowDialog = showDialog,
+                    textValue = nameFieldValue.value,
+                    onValueChange = nameFieldValue.onValueChange,
                     onConfirmDialog = {
-                        // TODO: Call Save Name Here - from view model
+
                         showDialog = false
+
                     },
+                    isDialogSaveButtonEnabled = nameFieldValue.isConfirmButtonEnabled,
                     onDismissDialog = { showDialog = false })
 
         }
@@ -310,7 +319,7 @@ fun TimePanel(
 fun TitlePanel(
     mainText: String,
     modifier: Modifier = Modifier,
-    subText: String? = null,
+    subText: TextFieldValue<String>? = null,
     onClickComponent: (() -> Unit)? = null,
     onClickChip: (() -> Unit)? = null,
     onSelectRingtone: (() -> Unit)? = null,
@@ -348,7 +357,7 @@ fun TitlePanel(
                     fontWeight = FontWeight.W600
             )
 
-            sideContent?.invoke(subText)
+            sideContent?.invoke(subText?.value)
 
 
         }
@@ -383,7 +392,13 @@ private fun SettingsScreenContentPreview() {
                         value = "13",
                         onValueChange = {},
                         isError = false
-                )
+                ),
+                nameFieldValue = TextFieldValue(
+                        value = "Wake Up",
+                        onValueChange = {},
+                        isError = false,
+                        isConfirmButtonEnabled = false
+                ),
         )
     }
 }

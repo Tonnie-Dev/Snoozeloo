@@ -3,6 +3,7 @@ package com.tonyxlab.presentation.settings
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.domain.model.DayChipState
 import com.tonyxlab.domain.model.Ringtone
+import com.tonyxlab.domain.model.SILENT_RINGTONE
 import com.tonyxlab.utils.now
 import kotlinx.datetime.LocalDateTime
 
@@ -13,10 +14,12 @@ data class AlarmUiState(
     val triggerTime: LocalDateTime = LocalDateTime.now(),
     val durationToNextTrigger: Long = 0L,
     val daysActive: List<DayChipState> = listOf(),
-    val ringtone: Ringtone? = null,
+    val ringtone: Ringtone? = SILENT_RINGTONE,
     val volume: Float = 0f,
     val isHapticsOn: Boolean = false,
-    val wakeUpTime: String? = null
+    val wakeUpTime: String? = null,
+    val isSaveEnabled:Boolean = false,
+    val isDialogSaveButtonEnabled:Boolean = false
 )
 
 

@@ -28,7 +28,6 @@ class SettingsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val id: String? = savedStateHandle["id"]
 
     private val _alarmUiState = MutableStateFlow(AlarmUiState())
     private val alarmUiState = _alarmUiState.asStateFlow()
@@ -52,19 +51,25 @@ class SettingsViewModel @Inject constructor(
     )
         private set
 
-
-
+    var nameFieldValue = MutableStateFlow(
+            TextFieldValue(
+                    value = _alarmUiState.value.name,
+                    onValueChange = this::setAlarmName,
+                    isConfirmButtonEnabled = _alarmUiState.value.isDialogSaveButtonEnabled
+            )
+    )
+        private set
 
     private val _isPlaying = MutableStateFlow(false)
+
+
     val isPlaying = _isPlaying.asStateFlow()
-
     private val _ringtones = MutableStateFlow<List<Ringtone>>(emptyList())
+
     val ringtones = _ringtones.asStateFlow()
-
     private val _selectedRingtone = MutableStateFlow<Ringtone?>(null)
+
     private val selectedRingtone = _selectedRingtone.asStateFlow()
-
-
     private fun readAlarmInfo(alarmId: String?) {
 
         alarmId ?: return
@@ -93,12 +98,12 @@ class SettingsViewModel @Inject constructor(
         _isPlaying.value = true
     }
 
+
     fun stop() {
 
         ringtoneFetcher.stopPlay()
         _isPlaying.value = false
     }
-
 
     private fun setHourField(value: String) {
 
@@ -110,6 +115,7 @@ class SettingsViewModel @Inject constructor(
 
     }
 
+
     private fun setMinuteField(value: String) {
 
         if (value.length <= 2) {
@@ -120,7 +126,16 @@ class SettingsViewModel @Inject constructor(
 
     }
 
-    fun setVolume(volume:Float){
+    private fun setAlarmName(value: String) {
+        if (value.isNotBlank()){
+
+          nameFieldValue.update { it.copy(value = value, isConfirmButtonEnabled = true) }
+
+        }
+
+    }
+
+    fun setVolume(volume: Float) {
 
         _alarmUiState.update { it.copy(volume = volume) }
     }
