@@ -1,6 +1,7 @@
 package com.tonyxlab.presentation.settings
 
 import android.net.Uri
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tonyxlab.domain.model.Ringtone
@@ -8,6 +9,8 @@ import com.tonyxlab.domain.ringtone.RingtoneFetcher
 import com.tonyxlab.domain.usecases.GetAlarmByIdUseCase
 import com.tonyxlab.utils.Resource
 import com.tonyxlab.utils.TextFieldValue
+import com.tonyxlab.utils.getHourString
+import com.tonyxlab.utils.getMinuteString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,12 +24,18 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val getAlarmByIdUseCase: GetAlarmByIdUseCase,
-    private val ringtoneFetcher: RingtoneFetcher
+    private val ringtoneFetcher: RingtoneFetcher,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val id: String? = savedStateHandle["id"]
+
+    private val _alarmUiState = MutableStateFlow(AlarmUiState())
+    private val alarmUiState = _alarmUiState.asStateFlow()
 
     var hourFieldValue = MutableStateFlow(
             TextFieldValue(
-                    value = "",
+                    value = _alarmUiState.value.triggerTime.getHourString(),
                     onValueChange = this::setHourField,
                     range = 0..23
             )
@@ -35,15 +44,14 @@ class SettingsViewModel @Inject constructor(
         private set
     var minuteFieldValue = MutableStateFlow(
             TextFieldValue(
-                    value = "",
+                    value = _alarmUiState.value.triggerTime.getMinuteString(),
                     onValueChange = this::setMinuteField,
                     range = 0..59
             )
 
     )
         private set
-    private val _alarmState = MutableStateFlow(AlarmItemState())
-    private val alarmState = _alarmState.asStateFlow()
+
 
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying = _isPlaying.asStateFlow()
@@ -57,26 +65,25 @@ class SettingsViewModel @Inject constructor(
 
     private fun readAlarmInfo(alarmId: String?) {
 
-
-        alarmId?.let {
-
-            viewModelScope.launch {
+        alarmId ?: return
 
 
-                when (val result = getAlarmByIdUseCase(alarmId = alarmId)) {
-                    is Resource.Success -> {}
-                    is Resource.Error -> Unit
+        viewModelScope.launch {
+
+
+            when (val result = getAlarmByIdUseCase(alarmId = alarmId)) {
+                is Resource.Success -> {
+                    _alarmUiState.value = result.data.toAlarmUiState()
 
                 }
+
+                is Resource.Error -> Unit
+
             }
-
-        } ?: run {
-
-
         }
 
-
     }
+
 
     fun play(uri: Uri) {
 
@@ -124,7 +131,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     init {
-
+        readAlarmInfo(savedStateHandle.get<String>("id"))
         ringtoneFetcher.fetchRingtone()
                 .onEach {
 
