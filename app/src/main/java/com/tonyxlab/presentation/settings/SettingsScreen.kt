@@ -56,11 +56,8 @@ fun SettingsScreen(
     alarmItem: AlarmItem,
     onSave: () -> Unit,
     onClose: () -> Unit,
-    volume: Float,
     onDayChipClick: () -> Unit,
     isSaveButtonEnabled: Boolean,
-    isVibrationEnabled: Boolean,
-    onVibrationModeChange: (Boolean) -> Unit,
     onSelectRingtone: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel()
@@ -71,24 +68,21 @@ fun SettingsScreen(
     val minuteFieldValue by viewModel.minuteFieldValue.collectAsState()
     val nameFieldValue by viewModel.nameFieldValue.collectAsState()
     val volumeFieldValue by viewModel.volumeFieldValue.collectAsState()
+    val hapticsFieldValue by viewModel.hapticsFieldValue.collectAsState()
 
     SettingsScreenContent(
             modifier = modifier.padding(spacing.spaceMedium),
             alarmItem = alarmItem,
             onClose = onClose,
             onSave = onSave,
-            volume = volume,
             onDayChipClick = onDayChipClick,
             isSaveButtonEnabled = isSaveButtonEnabled,
-            isVibrationEnabled = isVibrationEnabled,
-            onVibrationModeChange = onVibrationModeChange,
             onSelectRingtone = onSelectRingtone,
             hourFieldValue = hourFieldValue,
             minuteFieldValue = minuteFieldValue,
             nameFieldValue = nameFieldValue,
-            volumeFieldValue = volumeFieldValue
-
-            )
+            volumeFieldValue = volumeFieldValue, hapticsFieldValue = hapticsFieldValue
+    )
 }
 
 
@@ -97,15 +91,13 @@ fun SettingsScreenContent(
     alarmItem: AlarmItem,
     onClose: () -> Unit,
     onSave: () -> Unit,
-    volume: Float,
     hourFieldValue: TextFieldValue<String>,
     minuteFieldValue: TextFieldValue<String>,
     nameFieldValue: TextFieldValue<String>,
     volumeFieldValue: TextFieldValue<Float>,
+    hapticsFieldValue: TextFieldValue<Boolean>,
     onDayChipClick: () -> Unit,
     isSaveButtonEnabled: Boolean,
-    isVibrationEnabled: Boolean,
-    onVibrationModeChange: (Boolean) -> Unit,
     onSelectRingtone: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -142,8 +134,6 @@ fun SettingsScreenContent(
             //Set Time Setting
             TimePanel(
                     alarmItem = alarmItem,
-                    onHourBoxClick = {},
-                    onMinuteBoxClick = {},
                     hourFieldValue = hourFieldValue,
                     minuteFieldValue = minuteFieldValue
             )
@@ -215,8 +205,8 @@ fun SettingsScreenContent(
                     mainText = stringResource(R.string.vibrate_text),
                     sideContent = {
                         Switch(
-                                checked = isVibrationEnabled,
-                                onCheckedChange = onVibrationModeChange
+                                checked = hapticsFieldValue.value,
+                                onCheckedChange = hapticsFieldValue.onValueChange
                         )
                     }
             )
@@ -243,8 +233,6 @@ fun SettingsScreenContent(
 @Composable
 fun TimePanel(
     alarmItem: AlarmItem,
-    onHourBoxClick: () -> Unit,
-    onMinuteBoxClick: () -> Unit,
     hourFieldValue: TextFieldValue<String>,
     minuteFieldValue: TextFieldValue<String>,
     modifier: Modifier = Modifier
@@ -308,6 +296,7 @@ fun TimePanel(
         }
 
         Spacer(modifier = Modifier.height(spacing.spaceMedium))
+
         Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(
@@ -330,7 +319,6 @@ fun TitlePanel(
     onClickComponent: (() -> Unit)? = null,
     onClickChip: (() -> Unit)? = null,
     onSelectRingtone: (() -> Unit)? = null,
-    onAdjustVolume: (() -> Unit)? = null,
     onToggleVibration: (() -> Unit)? = null,
     sideContent: @Composable ((text: String?) -> Unit)? = null,
     bottomContent: @Composable (() -> Unit)? = null,
@@ -386,9 +374,6 @@ private fun SettingsScreenContentPreview() {
                 onSave = {},
                 onDayChipClick = {},
                 isSaveButtonEnabled = false,
-                volume = .7f,
-                isVibrationEnabled = false,
-                onVibrationModeChange = {},
                 onSelectRingtone = {},
                 hourFieldValue = TextFieldValue(
                         value = "13",
@@ -412,6 +397,12 @@ private fun SettingsScreenContentPreview() {
                         isError = false,
                         isConfirmButtonEnabled = false
                 ),
+                hapticsFieldValue = TextFieldValue(
+                        value = true,
+                        onValueChange = {},
+                        isError = false,
+                        isConfirmButtonEnabled = false
+                )
         )
     }
 }

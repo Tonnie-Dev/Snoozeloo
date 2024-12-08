@@ -67,6 +67,17 @@ class SettingsViewModel @Inject constructor(
             )
     )
         private set
+
+
+    var hapticsFieldValue = MutableStateFlow(
+            TextFieldValue(
+                    value = _alarmUiState.value.isHapticsOn,
+                    onValueChange = this::setHaptics,
+                    isConfirmButtonEnabled = _alarmUiState.value.isDialogSaveButtonEnabled
+            )
+    )
+        private set
+
     private val _isPlaying = MutableStateFlow(false)
 
 
@@ -149,6 +160,11 @@ class SettingsViewModel @Inject constructor(
     }
 
 
+    private fun setHaptics(value: Boolean) {
+
+        hapticsFieldValue.update { it.copy(value = value) }
+
+    }
     private fun isFieldError(newInput: String, field: TextFieldValue<String>): Boolean {
 
         return newInput.toIntOrNull()

@@ -66,11 +66,8 @@ class MainActivity : ComponentActivity() {
                                     navController.popBackStack()
                                 },
                                 onSave = {},
-                                volume = 0.0f,
                                 onDayChipClick = {},
                                 isSaveButtonEnabled = false,
-                                isVibrationEnabled = false,
-                                onVibrationModeChange = {},
                                 onSelectRingtone = {
                                     navController.navigate(RingtoneScreenObject)
                                 }
