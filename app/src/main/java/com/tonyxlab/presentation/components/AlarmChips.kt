@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.domain.model.AlarmItem
+import com.tonyxlab.domain.model.DayChipState
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.getRandomAlarmItem
@@ -30,7 +31,7 @@ import com.tonyxlab.utils.getRandomAlarmItem
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChipsRow(
-    alarmItem: AlarmItem,
+   daysActive:List<DayChipState>,
     onDayChipClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -44,7 +45,7 @@ fun ChipsRow(
             horizontalArrangement = Arrangement.spacedBy(spacing.spaceExtraSmall)
     ) {
 
-        alarmItem.daysActive.forEachIndexed { i, state ->
+       daysActive.forEachIndexed { i, state ->
 
             DayChip(
                     text = daysOfWeek[i],
@@ -136,7 +137,10 @@ private fun WeekRowPreview() {
 
         Surface {
 
-            ChipsRow(onDayChipClick = {}, alarmItem = getRandomAlarmItem())
+            ChipsRow(
+                    onDayChipClick = {},
+                    daysActive = getRandomAlarmItem().daysActive
+            )
         }
     }
 }
