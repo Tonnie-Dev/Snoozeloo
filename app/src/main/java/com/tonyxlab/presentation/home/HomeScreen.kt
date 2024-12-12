@@ -1,6 +1,6 @@
 package com.tonyxlab.presentation.home
 
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,10 +16,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.tonyxlab.R
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.presentation.components.AlarmCard
@@ -29,68 +33,80 @@ import com.tonyxlab.utils.getRandomAlarmItems
 
 @Composable
 fun HomeScreen(
-    items: List<AlarmItem>,
-    onAlarmItemClick: (id: String) -> Unit,
-    onClickAddItem: () -> Unit,
-    modifier: Modifier = Modifier
+    onAddNewAlarm: () -> Unit,
+    onAlarmItemClick: (String?) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
 
     val spacing = LocalSpacing.current
-    Scaffold(floatingActionButton = {
+    val alarmItems by viewModel.alarms.collectAsState()
 
-        FloatingActionButton(
-                modifier = Modifier
-                        .clip(CircleShape)
-                        .size(spacing.spaceExtraLarge),
-                onClick = onClickAddItem
-        ) {
-            Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.add_alarm_item_text)
-            )
-        }
-
-    }, floatingActionButtonPosition = FabPosition.Center) { innerPadding ->
-
-
-        items.ifEmpty { EmptyScreen() }
-
-        HomeScreenContent(
-                modifier = modifier.padding(paddingValues = innerPadding),
-                onAlarmItemClick = onAlarmItemClick,
-                items = items
-        )
-    }
+    HomeScreenContent(
+            modifier = modifier,
+            alarmItems = alarmItems,
+            onAlarmItemClick = onAlarmItemClick,
+            onAddNewAlarm = onAddNewAlarm
+    )
 }
 
 @Composable
 fun HomeScreenContent(
-    items: List<AlarmItem>,
+    alarmItems: List<AlarmItem>,
     onAlarmItemClick: (id: String) -> Unit,
+    onAddNewAlarm: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
     val spacing = LocalSpacing.current
 
 
-    LazyColumn(
-            modifier = modifier,
-            contentPadding = PaddingValues(spacing.spaceSmall)
-    ) {
-        item {
-            Text(
-                    stringResource(R.string.your_alarms_header_text),
-                    style = MaterialTheme.typography.headlineSmall
-            )
+    Scaffold(
+            floatingActionButton = {
+
+                FloatingActionButton(
+                        modifier = Modifier
+                                .clip(CircleShape)
+                                .size(spacing.spaceExtraLarge),
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                        onClick = onAddNewAlarm
+                ) {
+                    Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = stringResource(R.string.add_alarm_item_text)
+                    )
+                }
+
+            },
+            floatingActionButtonPosition = FabPosition.Center
+    ) { innerPadding ->
+
+        if (alarmItems.isEmpty()) {
+
+            EmptyScreen(modifier = modifier.padding(spacing.spaceMedium))
+
         }
-        items(items = items, key = { it.id }) {
 
+        LazyColumn(
+                modifier = modifier.padding(innerPadding).padding(spacing.spaceMedium),
+                contentPadding = innerPadding
+        ) {
 
-            AlarmCard(
-                    modifier = Modifier.padding(spacing.spaceSmall),
-                    alarmItem = it,
-                    onAlarmItemClick = onAlarmItemClick,
-                    onDayChipClick = {})
+            item {
+                Text(
+                        stringResource(R.string.your_alarms_header_text),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.W500
+                )
+            }
+            items(items = alarmItems, key = { it.id }) {
+
+                AlarmCard(modifier = Modifier.padding(spacing.spaceSmall),
+                        alarmItem = it,
+                        onAlarmItemClick = onAlarmItemClick,
+                        onDayChipClick = {})
+            }
         }
     }
 }
@@ -102,10 +118,11 @@ private fun EmptyHomeScreenPreview() {
 
         Surface {
 
-            HomeScreen(
-                    items = emptyList(),
+            HomeScreenContent(
+                    onAddNewAlarm = {},
+                    alarmItems = emptyList(),
                     onAlarmItemClick = {},
-                    onClickAddItem = {}
+                    modifier = Modifier.fillMaxSize()
             )
         }
     }
@@ -115,11 +132,14 @@ private fun EmptyHomeScreenPreview() {
 @Composable
 private fun FilledHomeScreenPreview() {
     SnoozelooTheme {
-        HomeScreen(
-                items = getRandomAlarmItems(10),
+
+        HomeScreenContent(
+                onAddNewAlarm = {},
+                alarmItems = getRandomAlarmItems(),
                 onAlarmItemClick = {},
-                onClickAddItem = {}
+                modifier = Modifier.fillMaxSize()
         )
 
     }
 }
+
