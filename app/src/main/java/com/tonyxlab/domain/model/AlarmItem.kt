@@ -24,7 +24,12 @@ data class AlarmItem(
 data class DayChipState(val day: String, val isEnabled: Boolean)
 
 @Serializable
-data class Ringtone(val ringtoneName: String, @Contextual val ringtoneUri: Uri)
+data class Ringtone(val ringtoneName: String, @Contextual val ringtoneUri: Uri){
+
+    override fun toString(): String {
+        return ringtoneName
+    }
+}
 
 val SILENT_RINGTONE = Ringtone(ringtoneName = "Silent", ringtoneUri = Uri.EMPTY)
 

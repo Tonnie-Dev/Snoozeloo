@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +40,8 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tonyxlab.R
 import com.tonyxlab.domain.model.AlarmItem
+import com.tonyxlab.domain.model.Ringtone
+import com.tonyxlab.domain.model.SILENT_RINGTONE
 import com.tonyxlab.presentation.components.AppTopBar
 import com.tonyxlab.presentation.components.ChipsRow
 import com.tonyxlab.presentation.components.MediumButton
@@ -50,6 +53,7 @@ import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.TextFieldValue
 import com.tonyxlab.utils.alarmIn
 import com.tonyxlab.utils.getRandomAlarmItem
+import timber.log.Timber
 
 @Composable
 fun SettingsScreen(
@@ -69,6 +73,14 @@ fun SettingsScreen(
     val nameFieldValue by viewModel.nameFieldValue.collectAsState()
     val volumeFieldValue by viewModel.volumeFieldValue.collectAsState()
     val hapticsFieldValue by viewModel.hapticsFieldValue.collectAsState()
+    val ringtoneFieldValue by viewModel.ringtoneFieldValue.collectAsState()
+
+    val currentRingtone by viewModel.currentRingtone.collectAsState()
+    Timber.i("ViewModel Hash: ${viewModel.hashCode()}")
+    Timber.d("Volume Reading: ${volumeFieldValue.value}")
+    Timber.d("Haptics Reading: ${hapticsFieldValue.value}")
+    Timber.d("Ringtone 1 Reading: ${ringtoneFieldValue.value}")
+    Timber.d("Ringtone 2 Reading: $currentRingtone")
 
     SettingsScreenContent(
             modifier = modifier.padding(spacing.spaceMedium),
@@ -81,7 +93,9 @@ fun SettingsScreen(
             hourFieldValue = hourFieldValue,
             minuteFieldValue = minuteFieldValue,
             nameFieldValue = nameFieldValue,
-            volumeFieldValue = volumeFieldValue, hapticsFieldValue = hapticsFieldValue
+            volumeFieldValue = volumeFieldValue,
+            hapticsFieldValue = hapticsFieldValue,
+            ringtoneFieldValue = ringtoneFieldValue
     )
 }
 
@@ -96,6 +110,7 @@ fun SettingsScreenContent(
     nameFieldValue: TextFieldValue<String>,
     volumeFieldValue: TextFieldValue<Float>,
     hapticsFieldValue: TextFieldValue<Boolean>,
+    ringtoneFieldValue: TextFieldValue<Ringtone>,
     onDayChipClick: () -> Unit,
     isSaveButtonEnabled: Boolean,
     onSelectRingtone: () -> Unit,
@@ -103,7 +118,6 @@ fun SettingsScreenContent(
 ) {
     val spacing = LocalSpacing.current
     var showDialog by remember { mutableStateOf(false) }
-
     Scaffold(
             topBar = {
 
@@ -141,7 +155,7 @@ fun SettingsScreenContent(
             //Alarm Name Setting
             TitlePanel(
                     mainText = stringResource(R.string.alarm_name_text),
-                    subText = nameFieldValue,
+                    subText = nameFieldValue.value,
                     sideContent = { text ->
 
                         text?.let {
@@ -160,7 +174,9 @@ fun SettingsScreenContent(
             //Chips-Day Setting
             TitlePanel(
                     mainText = stringResource(R.string.repeat_text),
+
                     bottomContent = {
+
                         ChipsRow(
                                 modifier = Modifier,
                                 alarmItem = alarmItem,
@@ -171,9 +187,11 @@ fun SettingsScreenContent(
 
 
             //Ringtone Setting
+
+
             TitlePanel(
                     mainText = stringResource(id = R.string.alarm_ringtone_text),
-                    subText = null, // TODO: Fix Alarm Ringtone Name
+                    subText = ringtoneFieldValue.value.ringtoneName,
                     sideContent = { text ->
 
                         text?.let {
@@ -310,12 +328,58 @@ fun TimePanel(
 
 }
 
+@Composable
+fun RingtonePanel(
+    ringtoneTitle: Ringtone,
+    onRingtoneTitleChange: ((Ringtone) -> Unit)?,
+    onClickComponent: (() -> Unit),
+    modifier: Modifier = Modifier
+) {
+    val spacing = LocalSpacing.current
+    var currentRingtoneTitle by remember { mutableStateOf(ringtoneTitle) }
+
+    // Observe the ringtoneTitle value and update the state
+    LaunchedEffect(ringtoneTitle) {
+        if (currentRingtoneTitle != ringtoneTitle) {
+            currentRingtoneTitle = ringtoneTitle
+            onRingtoneTitleChange?.invoke(ringtoneTitle)
+        }
+    }
+    Row(
+            modifier = modifier
+                    .fillMaxWidth()
+                    .clickable { onClickComponent() }
+                    .padding(vertical = spacing.spaceSmall),
+            Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+    ) {
+
+
+        Text(
+                text = stringResource(id = R.string.alarm_ringtone_text),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.W600
+        )
+
+
+
+        Text(
+                text = currentRingtoneTitle.ringtoneName,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.W500
+        )
+
+    }
+
+}
+
+
 
 @Composable
 fun TitlePanel(
     mainText: String,
     modifier: Modifier = Modifier,
-    subText: TextFieldValue<String>? = null,
+    subText: String? = null,
     onClickComponent: (() -> Unit)? = null,
     onClickChip: (() -> Unit)? = null,
     onSelectRingtone: (() -> Unit)? = null,
@@ -352,7 +416,7 @@ fun TitlePanel(
                     fontWeight = FontWeight.W600
             )
 
-            sideContent?.invoke(subText?.value)
+            sideContent?.invoke(subText)
 
 
         }
@@ -399,6 +463,12 @@ private fun SettingsScreenContentPreview() {
                 ),
                 hapticsFieldValue = TextFieldValue(
                         value = true,
+                        onValueChange = {},
+                        isError = false,
+                        isConfirmButtonEnabled = false
+                ),
+                ringtoneFieldValue = TextFieldValue(
+                        value = SILENT_RINGTONE,
                         onValueChange = {},
                         isError = false,
                         isConfirmButtonEnabled = false

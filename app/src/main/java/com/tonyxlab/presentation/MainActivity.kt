@@ -11,14 +11,19 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.presentation.home.HomeScreen
+import com.tonyxlab.presentation.navigation.HomeScreenObject
+import com.tonyxlab.presentation.navigation.appDestinations
 import com.tonyxlab.presentation.settings.RingtoneScreen
 import com.tonyxlab.presentation.settings.SettingsScreen
 import com.tonyxlab.presentation.settings.SettingsScreenContent
+import com.tonyxlab.presentation.settings.SettingsViewModel
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.getRandomAlarmItem
 import com.tonyxlab.utils.getRandomAlarmItems
@@ -46,51 +51,11 @@ class MainActivity : ComponentActivity() {
                 NavHost(
                         navController = navController,
                         startDestination = HomeScreenObject
-                ) {
+                ){
 
-                    composable<HomeScreenObject> {
-
-                        HomeScreen(
-                                items = getRandomAlarmItems(),
-                                onAlarmItemClick = { navController.navigate(SettingsScreenObject(it)) },
-                                onClickAddItem = {}
-                        )
-                    }
-                    composable<SettingsScreenObject> {
-
-                        val args = it.id
-
-                        SettingsScreen(
-                                alarmItem = getRandomAlarmItem(),
-                                onClose = {
-                                    navController.popBackStack()
-                                },
-                                onSave = {},
-                                onDayChipClick = {},
-                                isSaveButtonEnabled = false,
-                                onSelectRingtone = {
-                                    navController.navigate(RingtoneScreenObject)
-                                }
-                        )
-
-                    }
-
-                    composable<RingtoneScreenObject> {
-
-                        RingtoneScreen(onCloseWindow = { navController.popBackStack() })
-                    }
+                    appDestinations(navController)
                 }
-            }
         }
     }
-}
+}}
 
-
-@Serializable
-object HomeScreenObject
-
-@Serializable
-data class SettingsScreenObject(val id: String?)
-
-@Serializable
-object RingtoneScreenObject

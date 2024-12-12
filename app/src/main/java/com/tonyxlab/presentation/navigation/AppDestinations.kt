@@ -25,8 +25,8 @@ fun NavGraphBuilder.appDestinations(navController: NavController) {
     }
     navigation <NestedSettingsScreens>(startDestination = SettingsScreenObject) {
         composable<SettingsScreenObject> {
+            val viewModel: SettingsViewModel = hiltViewModel(navController.getBackStackEntry(NestedSettingsScreens))
 
-            val viewModel:SettingsViewModel = hiltViewModel()
 
             SettingsScreen(
                     alarmItem = getRandomAlarmItem(),
@@ -41,9 +41,9 @@ fun NavGraphBuilder.appDestinations(navController: NavController) {
         composable<RingtoneScreenObject> {
 
 
-            val viewModel:SettingsViewModel = hiltViewModel()
+            val viewModel: SettingsViewModel = hiltViewModel(navController.getBackStackEntry(NestedSettingsScreens))
             RingtoneScreen(
-                    onCloseWindow = { navController.navigateUp() },
+                    onCloseWindow = { navController.navigate(route = SettingsScreenObject) },
                     viewModel = viewModel
             )
 

@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tonyxlab.domain.model.Ringtone
+import com.tonyxlab.domain.model.SILENT_RINGTONE
 import com.tonyxlab.domain.ringtone.RingtoneFetcher
 import com.tonyxlab.domain.usecases.GetAlarmByIdUseCase
 import com.tonyxlab.utils.Resource
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -78,16 +80,27 @@ class SettingsViewModel @Inject constructor(
     )
         private set
 
+    var ringtoneFieldValue = MutableStateFlow(
+            TextFieldValue(
+                    value = _alarmUiState.value.ringtone,
+                    onValueChange = this::setRingtone,
+
+                    )
+    )
+        private set
+
+
     private val _isPlaying = MutableStateFlow(false)
-
-
     val isPlaying = _isPlaying.asStateFlow()
+
     private val _ringtones = MutableStateFlow<List<Ringtone>>(emptyList())
-
     val ringtones = _ringtones.asStateFlow()
-    private val _selectedRingtone = MutableStateFlow<Ringtone?>(null)
 
-    private val selectedRingtone = _selectedRingtone.asStateFlow()
+
+    private val _currentRingtone = MutableStateFlow(SILENT_RINGTONE)
+    val currentRingtone = _currentRingtone.asStateFlow()
+
+
     private fun readAlarmInfo(alarmId: String?) {
 
         alarmId ?: return
@@ -165,6 +178,14 @@ class SettingsViewModel @Inject constructor(
         hapticsFieldValue.update { it.copy(value = value) }
 
     }
+
+    fun setRingtone(value: Ringtone) {
+        Timber.d("ViewModel:setRingtone() called with: $value")
+        _currentRingtone.value = value
+        ringtoneFieldValue.update { it.copy(value = value) }
+        Timber.d("ViewModel: ringtone updated with: ${ringtoneFieldValue.value.value}")
+    }
+
     private fun isFieldError(newInput: String, field: TextFieldValue<String>): Boolean {
 
         return newInput.toIntOrNull()
@@ -172,12 +193,22 @@ class SettingsViewModel @Inject constructor(
 
     }
 
-    override fun onCleared() {
-        super.onCleared()
+    fun onNavigateBackToSettingsScreen() {
+
+        ringtoneFetcher.stopPlay()
         ringtoneFetcher.release()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        ringtoneFetcher.release()
+        Timber.d("ViewModel CLEARED!!")
+    }
+
     init {
+        Timber.d("ViewModel: init block - R: ${ringtoneFieldValue.value.value}")
+        Timber.d("ViewModel: init block - H: ${hapticsFieldValue.value.value}")
+        Timber.d("ViewModel: init block - N: ${nameFieldValue.value.value}")
         readAlarmInfo(savedStateHandle.get<String>("id"))
         ringtoneFetcher.fetchRingtone()
                 .onEach {

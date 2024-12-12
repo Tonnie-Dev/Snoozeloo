@@ -14,7 +14,7 @@ data class AlarmUiState(
     val triggerTime: LocalDateTime = LocalDateTime.now(),
     val durationToNextTrigger: Long = 0L,
     val daysActive: List<DayChipState> = listOf(),
-    val ringtone: Ringtone? = SILENT_RINGTONE,
+    val ringtone: Ringtone = SILENT_RINGTONE,
     val volume: Float = 0f,
     val isHapticsOn: Boolean = false,
     val wakeUpTime: String? = null,
