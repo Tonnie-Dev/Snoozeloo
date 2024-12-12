@@ -1,10 +1,12 @@
 package com.tonyxlab.presentation.navigation
 
+import android.media.Ringtone
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
 import com.tonyxlab.presentation.home.HomeScreen
 import com.tonyxlab.presentation.settings.RingtoneScreen
 import com.tonyxlab.presentation.settings.SettingsScreen
@@ -34,7 +36,10 @@ fun NavGraphBuilder.appDestinations(navController: NavController) {
                     onSave = {},
                     onDayChipClick = {},
                     isSaveButtonEnabled = false,
-                    onSelectRingtone = { navController.navigate(route = RingtoneScreenObject) },
+                    onSelectRingtone = {
+
+                        navController.navigate(route =RingtoneScreenObject)
+                                                               },
                     viewModel = viewModel
             )
         }
@@ -42,9 +47,12 @@ fun NavGraphBuilder.appDestinations(navController: NavController) {
 
 
             val viewModel: SettingsViewModel = hiltViewModel(navController.getBackStackEntry(NestedSettingsScreens))
+            val selectedRingtone  = it.toRoute<RingtoneScreenObject>()
+
             RingtoneScreen(
                     onCloseWindow = { navController.navigate(route = SettingsScreenObject) },
-                    viewModel = viewModel
+                    viewModel = viewModel,
+
             )
 
         }

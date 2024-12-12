@@ -62,7 +62,7 @@ fun SettingsScreen(
     onClose: () -> Unit,
     onDayChipClick: () -> Unit,
     isSaveButtonEnabled: Boolean,
-    onSelectRingtone: () -> Unit,
+    onSelectRingtone: (String?) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -113,7 +113,7 @@ fun SettingsScreenContent(
     ringtoneFieldValue: TextFieldValue<Ringtone>,
     onDayChipClick: () -> Unit,
     isSaveButtonEnabled: Boolean,
-    onSelectRingtone: () -> Unit,
+    onSelectRingtone: (String?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
@@ -202,7 +202,7 @@ fun SettingsScreenContent(
                             )
                         }
                     },
-                    onClickComponent = onSelectRingtone
+                    onClickComponent = {onSelectRingtone(ringtoneFieldValue.value.ringtoneName)}
 
 
             )

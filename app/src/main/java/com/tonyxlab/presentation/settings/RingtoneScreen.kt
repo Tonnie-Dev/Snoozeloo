@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -51,16 +53,20 @@ import timber.log.Timber
 fun RingtoneScreen(
     modifier: Modifier = Modifier,
     onCloseWindow: () -> Unit,
+
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
 
     Timber.i("ViewModel Hash: ${viewModel.hashCode()}")
     val ringtones by viewModel.ringtones.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
+    val selectedRingtone by viewModel.currentRingtone.collectAsState()
+
     RingtoneScreenContent(
             modifier = modifier,
             ringtones = ringtones,
             isPlaying = isPlaying,
+            selectedRingtone = selectedRingtone,
             onCloseWindow = {
                 viewModel.onNavigateBackToSettingsScreen()
                 onCloseWindow()
@@ -78,6 +84,7 @@ fun RingtoneScreenContent(
     ringtones: List<Ringtone>,
     onPlayRingtone: (Uri) -> Unit,
     onStopPlay: () -> Unit,
+    selectedRingtone: Ringtone,
     onChangeRingtone: (Ringtone) -> Unit,
     onCloseWindow: () -> Unit,
     modifier: Modifier = Modifier,
@@ -86,12 +93,23 @@ fun RingtoneScreenContent(
 
     val spacing = LocalSpacing.current
 
-    var selectedIndex by remember { mutableIntStateOf(-1) }
     var currentPlayingIndex by remember { mutableIntStateOf(-1) }
 
     val ringtonesWithSilentOption =
         mutableListOf(SILENT_RINGTONE).apply { addAll(ringtones) }
 
+    val initialSelectedIndex = ringtonesWithSilentOption.indexOfFirst { it == selectedRingtone }
+
+
+    var selectedIndex by remember { mutableIntStateOf(initialSelectedIndex) }
+
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(selectedIndex) {
+        if (selectedIndex >= 0) {
+            listState.animateScrollToItem(selectedIndex)
+        }
+    }
     Scaffold(topBar = {
 
         AppTopBar(
@@ -102,12 +120,12 @@ fun RingtoneScreenContent(
     }) { innerPadding ->
 
         LazyColumn(
+                state = listState,
                 modifier = modifier.padding(innerPadding),
                 contentPadding = PaddingValues(horizontal = spacing.spaceSmall)
         ) {
 
             itemsIndexed(items = ringtonesWithSilentOption) { i, ringtone ->
-
                 val isSelected = selectedIndex == i
 
                 RingtoneRow(
@@ -250,6 +268,7 @@ private fun RingtoneContentPreview() {
                 isPlaying = false,
                 onCloseWindow = {},
                 onStopPlay = {},
+                selectedRingtone = SILENT_RINGTONE,
                 onChangeRingtone = {}
 
         )
