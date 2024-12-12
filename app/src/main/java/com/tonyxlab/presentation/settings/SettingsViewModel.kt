@@ -97,8 +97,8 @@ class SettingsViewModel @Inject constructor(
     val ringtones = _ringtones.asStateFlow()
 
 
-    private val _currentRingtone = MutableStateFlow(SILENT_RINGTONE)
-    val currentRingtone = _currentRingtone.asStateFlow()
+    private val _selectedRingtone = MutableStateFlow(SILENT_RINGTONE)
+    val selectedRingtone = _selectedRingtone.asStateFlow()
 
 
     private fun readAlarmInfo(alarmId: String?) {
@@ -160,7 +160,12 @@ class SettingsViewModel @Inject constructor(
     private fun setAlarmName(value: String) {
         if (value.isNotBlank()) {
 
-            nameFieldValue.update { it.copy(value = value, isConfirmButtonEnabled = true) }
+            nameFieldValue.update {
+                it.copy(
+                        value = value,
+                        isConfirmButtonEnabled = value.isNotBlank()
+                )
+            }
 
         }
 
@@ -181,7 +186,7 @@ class SettingsViewModel @Inject constructor(
 
     fun setRingtone(value: Ringtone) {
         Timber.d("ViewModel:setRingtone() called with: $value")
-        _currentRingtone.value = value
+        _selectedRingtone.value = value
         ringtoneFieldValue.update { it.copy(value = value) }
         Timber.d("ViewModel: ringtone updated with: ${ringtoneFieldValue.value.value}")
     }
@@ -197,6 +202,13 @@ class SettingsViewModel @Inject constructor(
 
         ringtoneFetcher.stopPlay()
         ringtoneFetcher.release()
+    }
+
+    fun onDeleteAlarmText() {
+
+        nameFieldValue.update { it.copy(value = "") }
+        _alarmUiState.update { it.copy(isDialogSaveButtonEnabled = false) }
+
     }
 
     override fun onCleared() {

@@ -1,12 +1,10 @@
 package com.tonyxlab.presentation.navigation
 
-import android.media.Ringtone
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import androidx.navigation.toRoute
 import com.tonyxlab.presentation.home.HomeScreen
 import com.tonyxlab.presentation.settings.RingtoneScreen
 import com.tonyxlab.presentation.settings.SettingsScreen
@@ -25,10 +23,11 @@ fun NavGraphBuilder.appDestinations(navController: NavController) {
                 onClickAddItem = {}
         )
     }
-    navigation <NestedSettingsScreens>(startDestination = SettingsScreenObject) {
+    navigation<NestedSettingsScreens>(startDestination = SettingsScreenObject) {
         composable<SettingsScreenObject> {
-            val viewModel: SettingsViewModel = hiltViewModel(navController.getBackStackEntry(NestedSettingsScreens))
 
+            val viewModel: SettingsViewModel =
+                hiltViewModel(navController.getBackStackEntry(NestedSettingsScreens))
 
             SettingsScreen(
                     alarmItem = getRandomAlarmItem(),
@@ -38,22 +37,21 @@ fun NavGraphBuilder.appDestinations(navController: NavController) {
                     isSaveButtonEnabled = false,
                     onSelectRingtone = {
 
-                        navController.navigate(route =RingtoneScreenObject)
-                                                               },
+                        navController.navigate(route = RingtoneScreenObject)
+                    },
                     viewModel = viewModel
             )
         }
         composable<RingtoneScreenObject> {
 
-
-            val viewModel: SettingsViewModel = hiltViewModel(navController.getBackStackEntry(NestedSettingsScreens))
-            val selectedRingtone  = it.toRoute<RingtoneScreenObject>()
+            val viewModel: SettingsViewModel =
+                hiltViewModel(navController.getBackStackEntry(NestedSettingsScreens))
 
             RingtoneScreen(
                     onCloseWindow = { navController.navigate(route = SettingsScreenObject) },
                     viewModel = viewModel,
 
-            )
+                    )
 
         }
     }

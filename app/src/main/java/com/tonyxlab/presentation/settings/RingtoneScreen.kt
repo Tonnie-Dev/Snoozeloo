@@ -60,7 +60,7 @@ fun RingtoneScreen(
     Timber.i("ViewModel Hash: ${viewModel.hashCode()}")
     val ringtones by viewModel.ringtones.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
-    val selectedRingtone by viewModel.currentRingtone.collectAsState()
+    val selectedRingtone by viewModel.selectedRingtone.collectAsState()
 
     RingtoneScreenContent(
             modifier = modifier,
