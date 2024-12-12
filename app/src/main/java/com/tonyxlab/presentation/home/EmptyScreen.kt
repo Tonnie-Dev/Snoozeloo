@@ -27,7 +27,7 @@ fun EmptyScreen(modifier: Modifier = Modifier) {
     val spacing = LocalSpacing.current
 
     Column(
-            modifier = Modifier
+            modifier = modifier
                     .fillMaxSize()
                     .padding(spacing.spaceMedium),
             verticalArrangement = Arrangement.Center,
