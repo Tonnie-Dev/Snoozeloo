@@ -39,10 +39,12 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tonyxlab.R
 import com.tonyxlab.domain.model.Ringtone
+import com.tonyxlab.domain.model.SILENT_RINGTONE
 import com.tonyxlab.presentation.components.AppTopBar
 import com.tonyxlab.presentation.components.CircularCheckbox
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
+import timber.log.Timber
 
 
 @Composable
@@ -51,15 +53,22 @@ fun RingtoneScreen(
     onCloseWindow: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
+
+    Timber.i("ViewModel Hash: ${viewModel.hashCode()}")
     val ringtones by viewModel.ringtones.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
     RingtoneScreenContent(
             modifier = modifier,
             ringtones = ringtones,
             isPlaying = isPlaying,
-            onCloseWindow = onCloseWindow,
+            onCloseWindow = {
+                viewModel.onNavigateBackToSettingsScreen()
+                onCloseWindow()
+            },
             onPlayRingtone = viewModel::play,
-            onStopPlay = viewModel::stop
+            onStopPlay = viewModel::stop,
+            onChangeRingtone = viewModel::setRingtone
+
 
     )
 }
@@ -69,7 +78,8 @@ fun RingtoneScreenContent(
     ringtones: List<Ringtone>,
     onPlayRingtone: (Uri) -> Unit,
     onStopPlay: () -> Unit,
-    onCloseWindow:() -> Unit,
+    onChangeRingtone: (Ringtone) -> Unit,
+    onCloseWindow: () -> Unit,
     modifier: Modifier = Modifier,
     isPlaying: Boolean
 ) {
@@ -78,7 +88,11 @@ fun RingtoneScreenContent(
 
     var selectedIndex by remember { mutableIntStateOf(-1) }
     var currentPlayingIndex by remember { mutableIntStateOf(-1) }
-    Scaffold (topBar = {
+
+    val ringtonesWithSilentOption =
+        mutableListOf(SILENT_RINGTONE).apply { addAll(ringtones) }
+
+    Scaffold(topBar = {
 
         AppTopBar(
                 isSmallButtonEnabled = true,
@@ -92,22 +106,10 @@ fun RingtoneScreenContent(
                 contentPadding = PaddingValues(horizontal = spacing.spaceSmall)
         ) {
 
-            item {
-
-                RingtoneRow(
-                        modifier = Modifier.padding(spacing.spaceSmall),
-                        ringtoneTitle = "Silent",
-                        isSilent = true,
-                        isSelected = false,
-                        onSelectRingtone = {
-
-                            // TODO: Implement Silent Functionality
-                        },
-                )
-            }
-            itemsIndexed(items = ringtones) { i, ringtone ->
+            itemsIndexed(items = ringtonesWithSilentOption) { i, ringtone ->
 
                 val isSelected = selectedIndex == i
+
                 RingtoneRow(
                         modifier = Modifier.padding(spacing.spaceSmall),
                         ringtoneTitle = ringtone.ringtoneName,
@@ -116,14 +118,19 @@ fun RingtoneScreenContent(
                         onSelectRingtone = {
                             selectedIndex = i
 
-
                             if (currentPlayingIndex == i && isPlaying) {
                                 onStopPlay()
                                 currentPlayingIndex = -1
                             } else {
-                                if (isPlaying) onStopPlay()
-                                onPlayRingtone(ringtone.ringtoneUri)
+
+                                if (isPlaying) {
+                                    onStopPlay()
+                                }
+                                if (ringtone.ringtoneUri != Uri.EMPTY)
+                                    onPlayRingtone(ringtone.ringtoneUri)
+
                                 currentPlayingIndex = i
+                                onChangeRingtone(ringtone)
                             }
 
                         },
@@ -190,8 +197,7 @@ fun RingtoneRow(
             Text(
                     text = ringtoneTitle,
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.W600
-                    , overflow = TextOverflow.Clip,
+                    fontWeight = FontWeight.W600, overflow = TextOverflow.Clip,
                     maxLines = 1
             )
         }
@@ -243,7 +249,9 @@ private fun RingtoneContentPreview() {
                 onPlayRingtone = {},
                 isPlaying = false,
                 onCloseWindow = {},
-                onStopPlay = {}
+                onStopPlay = {},
+                onChangeRingtone = {}
+
         )
     }
 }
