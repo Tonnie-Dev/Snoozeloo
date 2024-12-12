@@ -9,17 +9,20 @@ import kotlinx.datetime.LocalDateTime
 
 data class AlarmUiState(
     val id: String = "",
-    val name: String = "",
+    val name: String = "Work",
     val isEnabled: Boolean = false,
     val triggerTime: LocalDateTime = LocalDateTime.now(),
     val durationToNextTrigger: Long = 0L,
-    val daysActive: List<DayChipState> = listOf(),
+    val daysActive: List<DayChipState> =
+        List(7) { i ->
+        DayChipState(day = i, isEnabled = i <= 4)
+    },
     val ringtone: Ringtone = SILENT_RINGTONE,
     val volume: Float = 0f,
     val isHapticsOn: Boolean = false,
     val wakeUpTime: String? = null,
-    val isSaveEnabled:Boolean = false,
-    val isDialogSaveButtonEnabled:Boolean = false
+    val isSaveEnabled: Boolean = false,
+    val isDialogSaveButtonEnabled: Boolean = false
 )
 
 
