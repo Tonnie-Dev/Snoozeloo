@@ -25,6 +25,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TextFieldValue
@@ -34,6 +35,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
+import com.tonyxlab.utils.getPrimaryColor
 
 
 @Composable
@@ -103,6 +105,7 @@ fun NumberInputField(
                         },
                 value = value,
                 onValueChange = { onValueChanged?.invoke(it) },
+
                 visualTransformation = { annotatedString ->
                     if (isError) {
                         TransformedText(
@@ -116,7 +119,14 @@ fun NumberInputField(
                                 offsetMapping = OffsetMapping.Identity
                         )
                     } else {
-                        TransformedText(annotatedString, OffsetMapping.Identity)
+                        TransformedText(
+                                text = AnnotatedString.Builder()
+                                .apply {
+                                    withStyle(style = SpanStyle(color = getPrimaryColor())){
+                                        append(annotatedString.text)
+                                    }
+                                }.toAnnotatedString(),
+                                offsetMapping =  OffsetMapping.Identity)
                     }
 
                 },

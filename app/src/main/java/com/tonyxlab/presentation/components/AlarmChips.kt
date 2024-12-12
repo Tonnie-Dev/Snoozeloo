@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.domain.model.DayChipState
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
@@ -31,12 +30,12 @@ import com.tonyxlab.utils.getRandomAlarmItem
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChipsRow(
-   daysActive:List<DayChipState>,
+    daysActive: List<DayChipState>,
     onDayChipClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
-    
+
     FlowRow(
             modifier = modifier
                     .fillMaxWidth(),
@@ -44,11 +43,11 @@ fun ChipsRow(
             horizontalArrangement = Arrangement.spacedBy(spacing.spaceExtraSmall)
     ) {
 
-       daysActive.forEachIndexed { i, state ->
+        daysActive.forEachIndexed { i, state ->
 
-         val dayOfWeek = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa")[i]
+            val dayOfWeek = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")[i]
             DayChip(
-                    text =dayOfWeek,
+                    text = dayOfWeek,
                     onSelectChip = onDayChipClick,
                     selected = state.isEnabled,
                     modifier = Modifier.weight(1f)

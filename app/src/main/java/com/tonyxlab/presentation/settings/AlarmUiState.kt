@@ -15,14 +15,15 @@ data class AlarmUiState(
     val durationToNextTrigger: Long = 0L,
     val daysActive: List<DayChipState> =
         List(7) { i ->
-        DayChipState(day = i, isEnabled = i <= 4)
-    },
+            DayChipState(day = i, isEnabled = i <= 4)
+        },
     val ringtone: Ringtone = SILENT_RINGTONE,
     val volume: Float = 0f,
     val isHapticsOn: Boolean = false,
     val wakeUpTime: String? = null,
     val isSaveEnabled: Boolean = false,
-    val isDialogSaveButtonEnabled: Boolean = false
+    val isDialogSaveButtonEnabled: Boolean = false,
+    val showAlarmIn: Boolean = false
 )
 
 

@@ -20,7 +20,9 @@ fun getRandomAlarmItem(): AlarmItem = AlarmItem(
                 nanosecond = 100
         ),
         durationToNextTrigger = 0L,
-        daysActive = populateDaysActiveList(),
+        daysActive =List(7){i ->
+            DayChipState(day = i, isEnabled = i>=4)
+        },
 )
 
 
@@ -33,14 +35,3 @@ fun getRandomAlarmItems(count: Int = 10): List<AlarmItem> =
         }
     }
 
-fun populateDaysActiveList(): List<DayChipState> {
-
-    val daysOfWeek = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
-    return buildList {
-
-        (0..6).forEach { i ->
-
-            add(DayChipState(day = daysOfWeek[i], isEnabled = i % 2 == 0))
-        }
-    }
-}
