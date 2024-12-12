@@ -3,7 +3,6 @@ package com.tonyxlab.domain.usecases
 import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.domain.repository.AlarmRepository
 import com.tonyxlab.utils.Resource
-import java.util.Locale.Category
 import javax.inject.Inject
 
 class GetAlarmByIdUseCase @Inject constructor(private val repository: AlarmRepository) {

@@ -36,8 +36,7 @@ fun ChipsRow(
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
-    val daysOfWeek = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")
-
+    
     FlowRow(
             modifier = modifier
                     .fillMaxWidth(),
@@ -47,8 +46,9 @@ fun ChipsRow(
 
        daysActive.forEachIndexed { i, state ->
 
+         val dayOfWeek = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa")[i]
             DayChip(
-                    text = daysOfWeek[i],
+                    text =dayOfWeek,
                     onSelectChip = onDayChipClick,
                     selected = state.isEnabled,
                     modifier = Modifier.weight(1f)

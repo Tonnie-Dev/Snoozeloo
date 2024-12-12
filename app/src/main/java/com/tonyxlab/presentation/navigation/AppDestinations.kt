@@ -5,12 +5,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import androidx.navigation.toRoute
 import com.tonyxlab.presentation.home.HomeScreen
 import com.tonyxlab.presentation.settings.RingtoneScreen
 import com.tonyxlab.presentation.settings.SettingsScreen
 import com.tonyxlab.presentation.settings.SettingsViewModel
 import com.tonyxlab.utils.getRandomAlarmItem
-import com.tonyxlab.utils.getRandomAlarmItems
 import kotlinx.serialization.Serializable
 
 fun NavGraphBuilder.appDestinations(navController: NavController) {
@@ -18,19 +18,24 @@ fun NavGraphBuilder.appDestinations(navController: NavController) {
     composable<HomeScreenObject> {
 
         HomeScreen(
-                items = getRandomAlarmItems(),
                 onAlarmItemClick = { navController.navigate(NestedSettingsScreens) },
-                onClickAddItem = {}
+                onAddNewAlarm = { navController.navigate(NestedSettingsScreens) },
         )
     }
-    navigation<NestedSettingsScreens>(startDestination = SettingsScreenObject) {
+    navigation<NestedSettingsScreens>(startDestination = SettingsScreenObject()) {
+
         composable<SettingsScreenObject> {
+
 
             val viewModel: SettingsViewModel =
                 hiltViewModel(navController.getBackStackEntry(NestedSettingsScreens))
 
+
+val item = it.toRoute<SettingsScreenObject>()
+
+
             SettingsScreen(
-                    alarmItem = getRandomAlarmItem(),
+
                     onClose = { navController.navigate(route = HomeScreenObject) },
                     onSave = {},
                     onDayChipClick = {},
@@ -48,7 +53,7 @@ fun NavGraphBuilder.appDestinations(navController: NavController) {
                 hiltViewModel(navController.getBackStackEntry(NestedSettingsScreens))
 
             RingtoneScreen(
-                    onCloseWindow = { navController.navigate(route = SettingsScreenObject) },
+                    onCloseWindow = { navController.navigate(route = SettingsScreenObject()) },
                     viewModel = viewModel,
 
                     )
@@ -66,7 +71,7 @@ data object HomeScreenObject
 data object NestedSettingsScreens
 
 @Serializable
-data object SettingsScreenObject
+data class SettingsScreenObject(val id: String? = null)
 
 @Serializable
 data object RingtoneScreenObject
