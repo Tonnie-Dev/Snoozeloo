@@ -3,7 +3,13 @@ package com.tonyxlab.domain.model
 import android.net.Uri
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Contextual
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
 
 data class AlarmItem(
@@ -21,10 +27,14 @@ data class AlarmItem(
 
 
 @Serializable
-data class DayChipState(val day: String, val isEnabled: Boolean)
+data class DayChipState(val day: Int, val isEnabled: Boolean)
 
 @Serializable
-data class Ringtone(val ringtoneName: String, @Contextual val ringtoneUri: Uri){
+data class Ringtone(
+    val ringtoneName: String,
+    @Serializable(with = UriSerializer::class)
+    val ringtoneUri: Uri
+){
 
     override fun toString(): String {
         return ringtoneName
@@ -33,3 +43,15 @@ data class Ringtone(val ringtoneName: String, @Contextual val ringtoneUri: Uri){
 
 val SILENT_RINGTONE = Ringtone(ringtoneName = "Silent", ringtoneUri = Uri.EMPTY)
 
+object UriSerializer : KSerializer<Uri> {
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("Uri", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: Uri) {
+        encoder.encodeString(value.toString())
+    }
+
+    override fun deserialize(decoder: Decoder): Uri {
+        return Uri.parse(decoder.decodeString())
+    }
+}
