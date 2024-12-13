@@ -4,14 +4,20 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
+import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.domain.model.Ringtone
 import com.tonyxlab.domain.model.SILENT_RINGTONE
 import com.tonyxlab.domain.ringtone.RingtoneFetcher
+import com.tonyxlab.domain.usecases.CreateAlarmUseCase
 import com.tonyxlab.domain.usecases.GetAlarmByIdUseCase
+import com.tonyxlab.domain.usecases.UpdateAlarmUseCase
+import com.tonyxlab.presentation.navigation.SettingsScreenObject
 import com.tonyxlab.utils.Resource
 import com.tonyxlab.utils.TextFieldValue
 import com.tonyxlab.utils.getHourString
 import com.tonyxlab.utils.getMinuteString
+import com.tonyxlab.utils.setTriggerTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,23 +26,27 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.UUID
 import javax.inject.Inject
 
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val getAlarmByIdUseCase: GetAlarmByIdUseCase,
+    private val createAlarmUseCase: CreateAlarmUseCase,
+    private val updateAlarmUseCase: UpdateAlarmUseCase,
     private val ringtoneFetcher: RingtoneFetcher,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
 
-    private val _alarmUiState = MutableStateFlow(AlarmUiState())
-    private val alarmUiState = _alarmUiState.asStateFlow()
+    private var alarmItem: AlarmItem? = null
+    private val _uiState = MutableStateFlow(AlarmUiState())
+    val uiState = _uiState.asStateFlow()
 
     var hourFieldValue = MutableStateFlow(
             TextFieldValue(
-                    value = _alarmUiState.value.triggerTime.getHourString(),
+                    value = _uiState.value.triggerTime.getHourString(),
                     onValueChange = this::setHourField,
                     range = 0..23
             )
@@ -45,7 +55,7 @@ class SettingsViewModel @Inject constructor(
         private set
     var minuteFieldValue = MutableStateFlow(
             TextFieldValue(
-                    value = _alarmUiState.value.triggerTime.getMinuteString(),
+                    value = _uiState.value.triggerTime.getMinuteString(),
                     onValueChange = this::setMinuteField,
                     range = 0..59
             )
@@ -53,19 +63,20 @@ class SettingsViewModel @Inject constructor(
     )
         private set
 
+
     var nameFieldValue = MutableStateFlow(
             TextFieldValue(
-                    value = _alarmUiState.value.name,
+                    value = _uiState.value.name,
                     onValueChange = this::setAlarmName,
-                    isConfirmButtonEnabled = _alarmUiState.value.isDialogSaveButtonEnabled
+                    isConfirmButtonEnabled = _uiState.value.isDialogSaveButtonEnabled
             )
     )
         private set
     var volumeFieldValue = MutableStateFlow(
             TextFieldValue(
-                    value = _alarmUiState.value.volume,
+                    value = _uiState.value.volume,
                     onValueChange = this::setVolume,
-                    isConfirmButtonEnabled = _alarmUiState.value.isDialogSaveButtonEnabled
+                    isConfirmButtonEnabled = _uiState.value.isDialogSaveButtonEnabled
             )
     )
         private set
@@ -73,19 +84,10 @@ class SettingsViewModel @Inject constructor(
 
     var hapticsFieldValue = MutableStateFlow(
             TextFieldValue(
-                    value = _alarmUiState.value.isHapticsOn,
+                    value = _uiState.value.isHapticsOn,
                     onValueChange = this::setHaptics,
-                    isConfirmButtonEnabled = _alarmUiState.value.isDialogSaveButtonEnabled
+                    isConfirmButtonEnabled = _uiState.value.isDialogSaveButtonEnabled
             )
-    )
-        private set
-
-    var ringtoneFieldValue = MutableStateFlow(
-            TextFieldValue(
-                    value = _alarmUiState.value.ringtone,
-                    onValueChange = this::setRingtone,
-
-                    )
     )
         private set
 
@@ -111,7 +113,8 @@ class SettingsViewModel @Inject constructor(
 
             when (val result = getAlarmByIdUseCase(alarmId = alarmId)) {
                 is Resource.Success -> {
-                    _alarmUiState.value = result.data.toAlarmUiState()
+                    alarmItem = result.data
+                    _uiState.value = result.data.toAlarmUiState()
 
                 }
 
@@ -143,7 +146,7 @@ class SettingsViewModel @Inject constructor(
                 it.copy(value = value, isError = isFieldError(value, hourFieldValue.value))
             }
         }
-
+        _uiState.update { it.copy(showAlarmIn = true, isSaveEnabled = true) }
     }
 
 
@@ -154,6 +157,23 @@ class SettingsViewModel @Inject constructor(
                 it.copy(value = value, isError = isFieldError(value, minuteFieldValue.value))
             }
         }
+
+        _uiState.update { it.copy(showAlarmIn = true, isSaveEnabled = true) }
+    }
+
+    private fun isFieldError(newInput: String, field: TextFieldValue<String>): Boolean {
+
+        val isError = newInput.toIntOrNull()
+                ?.let { int -> int !in field.range } ?: true
+
+
+
+        if (isError) {
+
+            _uiState.update { it.copy(isSaveEnabled = false) }
+        }
+
+        return isError
 
     }
 
@@ -168,12 +188,14 @@ class SettingsViewModel @Inject constructor(
             }
 
         }
-
+        _uiState.update { it.copy(isSaveEnabled = true) }
     }
 
     private fun setVolume(value: Float) {
 
         volumeFieldValue.update { it.copy(value = value) }
+
+        _uiState.update { it.copy(isSaveEnabled = true) }
 
     }
 
@@ -182,21 +204,16 @@ class SettingsViewModel @Inject constructor(
 
         hapticsFieldValue.update { it.copy(value = value) }
 
+        _uiState.update { it.copy(isSaveEnabled = true) }
+
     }
 
     fun setRingtone(value: Ringtone) {
-        Timber.d("ViewModel:setRingtone() called with: $value")
+
         _selectedRingtone.value = value
-        ringtoneFieldValue.update { it.copy(value = value) }
-        Timber.d("ViewModel: ringtone updated with: ${ringtoneFieldValue.value.value}")
+        _uiState.update { it.copy(isSaveEnabled = true) }
     }
 
-    private fun isFieldError(newInput: String, field: TextFieldValue<String>): Boolean {
-
-        return newInput.toIntOrNull()
-                ?.let { int -> int !in field.range } ?: true
-
-    }
 
     fun onNavigateBackToSettingsScreen() {
 
@@ -207,21 +224,83 @@ class SettingsViewModel @Inject constructor(
     fun onDeleteAlarmText() {
 
         nameFieldValue.update { it.copy(value = "") }
-        _alarmUiState.update { it.copy(isDialogSaveButtonEnabled = false) }
+        _uiState.update { it.copy(isDialogSaveButtonEnabled = false) }
 
+    }
+
+
+    private fun resetState() {
+
+        _uiState.value = AlarmUiState()
     }
 
     override fun onCleared() {
         super.onCleared()
         ringtoneFetcher.release()
-        Timber.d("ViewModel CLEARED!!")
+        resetState()
+    }
+
+
+    fun onSaveButtonClick() {
+
+        val isSave = _uiState.value.isSaveEnabled
+        if (isSave){
+
+            doSave()
+        }
+
+    }
+
+    private fun doSave() {
+
+        val alarmItem = AlarmItem(
+                id = this.alarmItem?.id ?: UUID.randomUUID()
+                        .toString(),
+                name = nameFieldValue.value.value,
+                isEnabled = hapticsFieldValue.value.value,
+                triggerTime = setTriggerTime(
+                        hour = hourFieldValue.value.value.toInt(),
+                        minute = minuteFieldValue.value.value.toInt()
+                ),
+                durationToNextTrigger = _uiState.value.durationToNextTrigger,
+                daysActive = _uiState.value.daysActive,
+                ringtone = _selectedRingtone.value,
+                volume = volumeFieldValue.value.value,
+                isHapticsOn = hapticsFieldValue.value.value,
+                wakeUpTime = null
+        )
+
+        viewModelScope.launch {
+
+          val result =  if (this@SettingsViewModel.alarmItem != null) {
+                updateAlarmUseCase(alarmItem = alarmItem)
+            } else {
+                createAlarmUseCase(alarmItem = alarmItem)
+            }
+
+            when(result){
+
+                is Resource.Error -> {
+
+                    Timber.d("Save Error: ${result.exception.message}")
+                }
+                is Resource.Success -> {
+
+
+                    Timber.d("Save Success")
+                    _uiState.update { it.copy(isSaveEnabled = false) }
+                }
+            }
+
+        }
+
     }
 
     init {
-        Timber.d("ViewModel: init block - R: ${ringtoneFieldValue.value.value}")
-        Timber.d("ViewModel: init block - H: ${hapticsFieldValue.value.value}")
-        Timber.d("ViewModel: init block - N: ${nameFieldValue.value.value}")
-        readAlarmInfo(savedStateHandle.get<String>("id"))
+        val id = savedStateHandle.toRoute<SettingsScreenObject>().id
+
+        Timber.i("Init Block Id is: $id")
+        readAlarmInfo(id)
         ringtoneFetcher.fetchRingtone()
                 .onEach {
 

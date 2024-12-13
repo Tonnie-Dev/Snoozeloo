@@ -10,7 +10,6 @@ import com.tonyxlab.presentation.home.HomeScreen
 import com.tonyxlab.presentation.settings.RingtoneScreen
 import com.tonyxlab.presentation.settings.SettingsScreen
 import com.tonyxlab.presentation.settings.SettingsViewModel
-import com.tonyxlab.utils.getRandomAlarmItem
 import kotlinx.serialization.Serializable
 
 fun NavGraphBuilder.appDestinations(navController: NavController) {
@@ -31,17 +30,13 @@ fun NavGraphBuilder.appDestinations(navController: NavController) {
                 hiltViewModel(navController.getBackStackEntry(NestedSettingsScreens))
 
 
-val item = it.toRoute<SettingsScreenObject>()
+            val item = it.toRoute<SettingsScreenObject>()
 
 
             SettingsScreen(
-
                     onClose = { navController.navigate(route = HomeScreenObject) },
-                    onSave = {},
                     onDayChipClick = {},
-                    isSaveButtonEnabled = false,
                     onSelectRingtone = {
-
                         navController.navigate(route = RingtoneScreenObject)
                     },
                     viewModel = viewModel

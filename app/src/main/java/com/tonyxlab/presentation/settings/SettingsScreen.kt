@@ -1,5 +1,6 @@
 package com.tonyxlab.presentation.settings
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tonyxlab.R
-import com.tonyxlab.domain.model.AlarmItem
+import com.tonyxlab.domain.model.DayChipState
 import com.tonyxlab.domain.model.Ringtone
 import com.tonyxlab.domain.model.SILENT_RINGTONE
 import com.tonyxlab.presentation.components.AppTopBar
@@ -52,20 +53,18 @@ import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.TextFieldValue
 import com.tonyxlab.utils.alarmIn
-import com.tonyxlab.utils.getRandomAlarmItem
 
 @Composable
 fun SettingsScreen(
-    alarmItem: AlarmItem,
-    onSave: () -> Unit,
     onClose: () -> Unit,
     onDayChipClick: () -> Unit,
-    isSaveButtonEnabled: Boolean,
     onSelectRingtone: (String?) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val spacing = LocalSpacing.current
+
+    val uiState by viewModel.uiState.collectAsState()
 
     val hourFieldValue by viewModel.hourFieldValue.collectAsState()
     val minuteFieldValue by viewModel.minuteFieldValue.collectAsState()
@@ -77,11 +76,13 @@ fun SettingsScreen(
 
     SettingsScreenContent(
             modifier = modifier.padding(spacing.spaceMedium),
-            alarmItem = alarmItem,
+            durationToNextTrigger = uiState.durationToNextTrigger,
+            daysActive = uiState.daysActive,
+            showAlarmIn = uiState.showAlarmIn,
             onClose = onClose,
-            onSave = onSave,
+            onSave = viewModel::onSaveButtonClick,
             onDayChipClick = onDayChipClick,
-            isSaveButtonEnabled = isSaveButtonEnabled,
+            isSaveButtonEnabled = uiState.isSaveEnabled,
             onSelectRingtone = onSelectRingtone,
             hourFieldValue = hourFieldValue,
             minuteFieldValue = minuteFieldValue,
@@ -96,9 +97,11 @@ fun SettingsScreen(
 
 @Composable
 fun SettingsScreenContent(
-    alarmItem: AlarmItem,
+    durationToNextTrigger: Long,
+    daysActive: List<DayChipState>,
     onClose: () -> Unit,
     onSave: () -> Unit,
+    showAlarmIn: Boolean,
     hourFieldValue: TextFieldValue<String>,
     minuteFieldValue: TextFieldValue<String>,
     nameFieldValue: TextFieldValue<String>,
@@ -142,9 +145,10 @@ fun SettingsScreenContent(
 
             //Set Time Setting
             TimePanel(
-                    alarmItem = alarmItem,
+                    durationToNextTrigger = durationToNextTrigger,
                     hourFieldValue = hourFieldValue,
-                    minuteFieldValue = minuteFieldValue
+                    minuteFieldValue = minuteFieldValue,
+                    showAlarmIn = showAlarmIn
             )
 
             //Alarm Name Setting
@@ -172,7 +176,7 @@ fun SettingsScreenContent(
                     bottomContent = {
                         ChipsRow(
                                 modifier = Modifier,
-                                alarmItem = alarmItem,
+                                daysActive = daysActive,
                                 onDayChipClick = onDayChipClick
                         )
                     }
@@ -248,9 +252,10 @@ fun SettingsScreenContent(
 
 @Composable
 fun TimePanel(
-    alarmItem: AlarmItem,
+    durationToNextTrigger: Long,
     hourFieldValue: TextFieldValue<String>,
     minuteFieldValue: TextFieldValue<String>,
+    showAlarmIn:Boolean,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
@@ -313,14 +318,18 @@ fun TimePanel(
 
         Spacer(modifier = Modifier.height(spacing.spaceMedium))
 
-        Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(
-                        id = R.string.alarm_in_text,
-                        alarmItem.durationToNextTrigger.alarmIn()
-                ),
-                textAlign = TextAlign.Center
-        )
+        AnimatedVisibility(visible = showAlarmIn) {
+
+
+            Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(
+                            id = R.string.alarm_in_text,
+                            durationToNextTrigger.alarmIn()
+                    ),
+                    textAlign = TextAlign.Center
+            )
+        }
     }
 
 
@@ -373,8 +382,9 @@ private fun SettingsScreenContentPreview() {
 
     SnoozelooTheme {
         SettingsScreenContent(
+
                 modifier = Modifier.fillMaxSize(),
-                alarmItem = getRandomAlarmItem(),
+                durationToNextTrigger = 0L,
                 onClose = {},
                 onSave = {},
                 onDayChipClick = {},
@@ -409,7 +419,9 @@ private fun SettingsScreenContentPreview() {
                         isError = false,
                         isConfirmButtonEnabled = false
                 ),
-                selectedRingtone = SILENT_RINGTONE
+                daysActive = emptyList(),
+                showAlarmIn = false,
+                selectedRingtone = SILENT_RINGTONE,
         )
     }
 }

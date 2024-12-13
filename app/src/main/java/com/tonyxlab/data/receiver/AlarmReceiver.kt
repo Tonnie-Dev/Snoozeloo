@@ -6,11 +6,16 @@ import android.content.Intent
 import com.tonyxlab.domain.scheduler.AlarmHandler
 import javax.inject.Inject
 
-class AlarmReceiver @Inject constructor(private val handler: AlarmHandler) : BroadcastReceiver() {
-
+class AlarmReceiver  : BroadcastReceiver() {
+@Inject
+ lateinit var handler:AlarmHandler
 
     override fun onReceive(context: Context?, intent: Intent?) {
 
-        handler.onAlarmTriggered(intent)
+        if (::handler.isInitialized){
+
+            handler.onAlarmTriggered(intent)
+        }
+
     }
 }

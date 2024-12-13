@@ -57,7 +57,6 @@ fun RingtoneScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
 
-    Timber.i("ViewModel Hash: ${viewModel.hashCode()}")
     val ringtones by viewModel.ringtones.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
     val selectedRingtone by viewModel.selectedRingtone.collectAsState()
