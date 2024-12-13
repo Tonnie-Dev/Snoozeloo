@@ -4,12 +4,14 @@ package com.tonyxlab.utils
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.min
 import kotlin.time.Duration
 
 
@@ -104,4 +106,15 @@ fun LocalDateTime.getMinuteString():String {
 
     val minuteInt = this.minute
     return if (minuteInt in 0..9) "0$minuteInt" else "$minuteInt"
+}
+
+fun setTriggerTime(hour: Int, minute: Int): LocalDateTime {
+    val now = LocalDateTime.now()
+    return LocalDateTime(
+        year = now.year,
+        month = now.month,
+        dayOfMonth = now.dayOfMonth,
+        hour = hour,
+        minute = minute
+    )
 }
