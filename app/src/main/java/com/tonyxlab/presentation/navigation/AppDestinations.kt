@@ -1,11 +1,11 @@
 package com.tonyxlab.presentation.navigation
 
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import androidx.navigation.toRoute
 import com.tonyxlab.presentation.home.HomeScreen
 import com.tonyxlab.presentation.settings.RingtoneScreen
 import com.tonyxlab.presentation.settings.SettingsScreen
@@ -17,41 +17,44 @@ fun NavGraphBuilder.appDestinations(navController: NavController) {
     composable<HomeScreenObject> {
 
         HomeScreen(
-                onAlarmItemClick = { navController.navigate(NestedSettingsScreens) },
-                onAddNewAlarm = { navController.navigate(NestedSettingsScreens) },
+                onAlarmItemClick = { itemId ->
+                    navController.navigate(NestedScreens(id = itemId))
+
+                },
+                onAddNewAlarm = { navController.navigate(NestedScreens()) },
         )
     }
-    navigation<NestedSettingsScreens>(startDestination = SettingsScreenObject()) {
 
-        composable<SettingsScreenObject> {
+    navigation<NestedScreens>(startDestination = SettingsScreenObject) {
 
+        composable<SettingsScreenObject> { backStackEntry ->
 
-            val viewModel: SettingsViewModel =
-                hiltViewModel(navController.getBackStackEntry(NestedSettingsScreens))
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry<NestedScreens>()
+            }
 
-
-            val item = it.toRoute<SettingsScreenObject>()
-
+            val viewModel: SettingsViewModel = hiltViewModel(parentEntry)
 
             SettingsScreen(
                     onClose = { navController.navigate(route = HomeScreenObject) },
                     onDayChipClick = {},
-                    onSelectRingtone = {
-                        navController.navigate(route = RingtoneScreenObject)
-                    },
+                    onSelectRingtone = { navController.navigate(route = RingtoneScreenObject) },
                     viewModel = viewModel
             )
         }
-        composable<RingtoneScreenObject> {
 
-            val viewModel: SettingsViewModel =
-                hiltViewModel(navController.getBackStackEntry(NestedSettingsScreens))
+        composable<RingtoneScreenObject> { backStackEntry ->
+
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry<NestedScreens>()
+            }
+
+            val viewModel: SettingsViewModel = hiltViewModel(parentEntry)
 
             RingtoneScreen(
-                    onCloseWindow = { navController.navigate(route = SettingsScreenObject()) },
-                    viewModel = viewModel,
-
-                    )
+                    onCloseWindow = { navController.navigate(SettingsScreenObject) },
+                    viewModel = viewModel
+            )
 
         }
     }
@@ -63,10 +66,11 @@ fun NavGraphBuilder.appDestinations(navController: NavController) {
 data object HomeScreenObject
 
 @Serializable
-data object NestedSettingsScreens
+
+data class NestedScreens(val id: String? = null)
 
 @Serializable
-data class SettingsScreenObject(val id: String? = null)
+data object SettingsScreenObject
 
 @Serializable
 data object RingtoneScreenObject

@@ -12,7 +12,7 @@ import com.tonyxlab.domain.ringtone.RingtoneFetcher
 import com.tonyxlab.domain.usecases.CreateAlarmUseCase
 import com.tonyxlab.domain.usecases.GetAlarmByIdUseCase
 import com.tonyxlab.domain.usecases.UpdateAlarmUseCase
-import com.tonyxlab.presentation.navigation.SettingsScreenObject
+import com.tonyxlab.presentation.navigation.NestedScreens
 import com.tonyxlab.utils.Resource
 import com.tonyxlab.utils.TextFieldValue
 import com.tonyxlab.utils.getHourString
@@ -42,6 +42,24 @@ class SettingsViewModel @Inject constructor(
 
     private var alarmItem: AlarmItem? = null
     private val _uiState = MutableStateFlow(AlarmUiState())
+    private val _ringtones = MutableStateFlow<List<Ringtone>>(emptyList())
+    val ringtones = _ringtones.asStateFlow()
+    init {
+
+
+        val id = savedStateHandle.toRoute<NestedScreens>().id
+
+        Timber.i("Init Block Id is: $id")
+        readAlarmInfo(id)
+        ringtoneFetcher.fetchRingtone()
+                .onEach {
+
+                    _ringtones.value = it
+                }
+                .launchIn(viewModelScope)
+    }
+
+
     val uiState = _uiState.asStateFlow()
 
     var hourFieldValue = MutableStateFlow(
@@ -95,8 +113,6 @@ class SettingsViewModel @Inject constructor(
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying = _isPlaying.asStateFlow()
 
-    private val _ringtones = MutableStateFlow<List<Ringtone>>(emptyList())
-    val ringtones = _ringtones.asStateFlow()
 
 
     private val _selectedRingtone = MutableStateFlow(SILENT_RINGTONE)
@@ -105,6 +121,8 @@ class SettingsViewModel @Inject constructor(
 
     private fun readAlarmInfo(alarmId: String?) {
 
+
+        Timber.i("AlarmId at readInfo(): $alarmId")
         alarmId ?: return
 
 
@@ -116,9 +134,15 @@ class SettingsViewModel @Inject constructor(
                     alarmItem = result.data
                     _uiState.value = result.data.toAlarmUiState()
 
+                    setHourField(_uiState.value.triggerTime.getHourString())
+                    setMinuteField(_uiState.value.triggerTime.getMinuteString())
+                    Timber.i("ReadInfo() success")
                 }
 
-                is Resource.Error -> Unit
+                is Resource.Error -> {
+
+                    Timber.i("ReadInfo(): error ${result.exception.message}")
+                }
 
             }
         }
@@ -140,7 +164,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun setHourField(value: String) {
-
+Timber.i("setHourField() called")
         if (value.length <= 2) {
             hourFieldValue.update {
                 it.copy(value = value, isError = isFieldError(value, hourFieldValue.value))
@@ -151,7 +175,7 @@ class SettingsViewModel @Inject constructor(
 
 
     private fun setMinuteField(value: String) {
-
+        Timber.i("setHourField() called")
         if (value.length <= 2) {
             minuteFieldValue.update {
                 it.copy(value = value, isError = isFieldError(value, minuteFieldValue.value))
@@ -296,18 +320,7 @@ class SettingsViewModel @Inject constructor(
 
     }
 
-    init {
-        val id = savedStateHandle.toRoute<SettingsScreenObject>().id
 
-        Timber.i("Init Block Id is: $id")
-        readAlarmInfo(id)
-        ringtoneFetcher.fetchRingtone()
-                .onEach {
-
-                    _ringtones.value = it
-                }
-                .launchIn(viewModelScope)
-    }
 }
 
 
