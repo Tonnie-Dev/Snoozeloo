@@ -1,15 +1,28 @@
 package com.tonyxlab.utils
 
 import kotlinx.datetime.LocalDateTime
-import kotlin.text.*
+import kotlinx.datetime.TimeZone
 
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class DateUtilsKtTest {
+// write a test for fromLocalDateTimeToMillis for TimeZone.currentSystemDefault() and UTC Time
 
-
+@Test
+fun `Test from_LocalDate_Time_To_Millis function when system default time is passed`() {
+    val utcTimeStamp =1734501000000 // 18 Dec 2024 05:50:00
+    val time = LocalDateTime(
+            year = 2024,
+            monthNumber = 12,
+            dayOfMonth = 18,
+            hour = 5,
+            minute = 50,
+            second = 0
+    )
+    assertEquals(expected = utcTimeStamp, actual = time.fromLocalDateTimeToMillis(timeZone = TimeZone.UTC))
+}
 
     @Test
     fun `Test get_Hour_String function`(){

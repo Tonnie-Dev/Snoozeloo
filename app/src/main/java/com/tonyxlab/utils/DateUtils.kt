@@ -4,14 +4,12 @@ package com.tonyxlab.utils
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.math.min
 import kotlin.time.Duration
 
 
@@ -23,6 +21,22 @@ fun LocalDateTime.fromLocalDateTimeToMillis(
             .toEpochMilliseconds()
 }
 
+fun Long.fromLocalToUTCTimeStamp(): Long {
+
+    return Instant.fromEpochMilliseconds(this)
+            .toLocalDateTime(timeZone = TimeZone.currentSystemDefault())
+            .toInstant(timeZone = TimeZone.UTC)
+            .toEpochMilliseconds()
+}
+
+
+fun Long.fromUTCToLocalTimeStamp(): Long {
+
+    return Instant.fromEpochMilliseconds(this)
+            .toLocalDateTime(TimeZone.UTC)
+            .toInstant(timeZone = TimeZone.currentSystemDefault())
+            .toEpochMilliseconds()
+}
 fun Long.fromMillisToLocalDateTime(
     timeZone: TimeZone = TimeZone.currentSystemDefault()
 ): LocalDateTime {
