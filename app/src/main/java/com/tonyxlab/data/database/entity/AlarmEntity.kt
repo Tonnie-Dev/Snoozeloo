@@ -19,7 +19,7 @@ data class AlarmEntity(
     @ColumnInfo(name = "is_enabled")
     val isEnabled: Boolean,
     @ColumnInfo(name = "trigger_time")
-    val triggerTime: LocalDateTime,
+    val triggerTime: Long,
     @ColumnInfo(name = "duration_to_next_trigger")
     val durationToNextTrigger: Long,
     @ColumnInfo(name = "days_active")

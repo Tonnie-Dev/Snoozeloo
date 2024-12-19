@@ -2,6 +2,9 @@ package com.tonyxlab.data.mappers
 
 import com.tonyxlab.data.database.entity.AlarmEntity
 import com.tonyxlab.domain.model.AlarmItem
+import com.tonyxlab.utils.fromLocalToUtcTimeStamp
+import com.tonyxlab.utils.fromMillisToLocalDateTime
+import kotlinx.datetime.TimeZone
 
 fun AlarmItem.toEntityModel(): AlarmEntity {
 
@@ -9,7 +12,7 @@ fun AlarmItem.toEntityModel(): AlarmEntity {
             id = id,
             name = name,
             isEnabled = isEnabled,
-            triggerTime = triggerTime,
+            triggerTime = triggerTime.fromLocalToUtcTimeStamp(),
             durationToNextTrigger = durationToNextTrigger,
             daysActive = daysActive,
             ringtone = ringtone,
@@ -19,13 +22,13 @@ fun AlarmItem.toEntityModel(): AlarmEntity {
     )
 }
 
-fun AlarmEntity.toDomainModel():AlarmItem {
+fun AlarmEntity.toDomainModel(): AlarmItem {
 
     return AlarmItem(
             id = id,
             name = name,
             isEnabled = isEnabled,
-            triggerTime = triggerTime,
+            triggerTime = triggerTime.fromMillisToLocalDateTime(),
             durationToNextTrigger = durationToNextTrigger,
             daysActive = daysActive,
             ringtone = ringtone,

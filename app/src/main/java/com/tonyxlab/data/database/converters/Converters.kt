@@ -6,14 +6,6 @@ import androidx.room.TypeConverter
 import com.tonyxlab.domain.json.JsonSerializer
 import com.tonyxlab.domain.model.DayChipState
 import com.tonyxlab.domain.model.Ringtone
-import com.tonyxlab.utils.fromLocalDateTimeToMillis
-import com.tonyxlab.utils.fromLocalToUTCTimeStamp
-import com.tonyxlab.utils.fromMillisToLocalDateTime
-import com.tonyxlab.utils.fromUTCToLocalTimeStamp
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import javax.inject.Inject
@@ -23,16 +15,16 @@ class Converters @Inject constructor(
     private val serializer: JsonSerializer
 ) {
 
-    @TypeConverter
-fun writeLocalDateTimeToLong(time: LocalDateTime?): Long? {
+    /*    @TypeConverter
+    fun writeLocalDateTimeToLong(time: LocalDateTime?): Long? {
 
-    return time?.fromLocalDateTimeToMillis()?.fromLocalToUTCTimeStamp()
-}
-    @TypeConverter
-    fun readMillisToLocalDateTimeDefault(value: Long): LocalDateTime {
-
-        return Instant.fromEpochMilliseconds(value).toLocalDateTime(TimeZone.currentSystemDefault())
+        return time?.fromLocalDateTimeToMillis(TimeZone.UTC)
     }
+        @TypeConverter
+        fun readMillisToLocalDateTimeDefault(value: Long): LocalDateTime {
+
+            return value.fromMillisToLocalDateTime()
+        }*/
 
     @TypeConverter
 
@@ -40,13 +32,11 @@ fun writeLocalDateTimeToLong(time: LocalDateTime?): Long? {
 
         return serializer.toJson(chipsListSerializer, list)
     }
+
     private val chipsListSerializer: KSerializer<List<DayChipState>> =
         ListSerializer(DayChipState.serializer())
 
-    private val ringtoneSerializer:KSerializer<Ringtone> = Ringtone.serializer()
-
-
-
+    private val ringtoneSerializer: KSerializer<Ringtone> = Ringtone.serializer()
 
 
     @TypeConverter
@@ -56,13 +46,13 @@ fun writeLocalDateTimeToLong(time: LocalDateTime?): Long? {
     }
 
     @TypeConverter
-    fun writeRingtone(ringtone: Ringtone):String {
+    fun writeRingtone(ringtone: Ringtone): String {
 
         return serializer.toJson(ringtoneSerializer, ringtone)
     }
 
     @TypeConverter
-    fun readRingtone(json: String):Ringtone{
+    fun readRingtone(json: String): Ringtone {
 
         return serializer.fromJson(ringtoneSerializer, json)
     }

@@ -21,6 +21,23 @@ fun LocalDateTime.fromLocalDateTimeToMillis(
             .toEpochMilliseconds()
 }
 
+
+fun LocalDateTime.fromLocalToUtcTimeStamp(): Long {
+
+    return this.toInstant(timeZone = TimeZone.currentSystemDefault())
+            .toLocalDateTime(timeZone = TimeZone.currentSystemDefault())
+            .toInstant(TimeZone.UTC)
+            .toEpochMilliseconds()
+
+}
+fun Long.fromMillisToLocalDateTime(
+
+): LocalDateTime {
+    return Instant.fromEpochMilliseconds(this)
+            .toLocalDateTime(timeZone = TimeZone.UTC)
+            .toInstant(timeZone = TimeZone.currentSystemDefault())
+            .toLocalDateTime(timeZone = TimeZone.currentSystemDefault())
+}
 fun Long.fromLocalToUTCTimeStamp(): Long {
 
     return Instant.fromEpochMilliseconds(this)
@@ -29,6 +46,15 @@ fun Long.fromLocalToUTCTimeStamp(): Long {
             .toEpochMilliseconds()
 }
 
+/*
+fun LocalDateTime.fromLocalDateTimeToUtcTimeStamp(): Long {
+
+
+    return this.toInstant(timeZone = TimeZone.UTC)
+            .toEpochMilliseconds()
+}
+
+*/
 
 fun Long.fromUTCToLocalTimeStamp(): Long {
 
@@ -37,12 +63,8 @@ fun Long.fromUTCToLocalTimeStamp(): Long {
             .toInstant(timeZone = TimeZone.currentSystemDefault())
             .toEpochMilliseconds()
 }
-fun Long.fromMillisToLocalDateTime(
-    timeZone: TimeZone = TimeZone.currentSystemDefault()
-): LocalDateTime {
-    return Instant.fromEpochMilliseconds(this)
-            .toLocalDateTime(timeZone)
-}
+
+
 
 fun LocalDateTime.Companion.now(): LocalDateTime {
     val instant = Clock.System.now()
@@ -116,19 +138,23 @@ fun LocalDateTime.getHourString(): String {
 
 }
 
-fun LocalDateTime.getMinuteString():String {
+fun LocalDateTime.getMinuteString(): String {
 
     val minuteInt = this.minute
     return if (minuteInt in 0..9) "0$minuteInt" else "$minuteInt"
 }
 
 fun setTriggerTime(hour: Int, minute: Int): LocalDateTime {
+
+    val clock: LocalDateTime = Clock.System.now()
+            .toLocalDateTime(timeZone = TimeZone.currentSystemDefault())
     val now = LocalDateTime.now()
     return LocalDateTime(
-        year = now.year,
-        month = now.month,
-        dayOfMonth = now.dayOfMonth,
-        hour = hour,
-        minute = minute
+            year = clock.year,
+            month = clock.month,
+            dayOfMonth = clock.dayOfMonth,
+            hour = hour,
+            minute = minute
     )
+
 }
