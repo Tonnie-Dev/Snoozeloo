@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 import com.tonyxlab.domain.model.DayChipState
 import com.tonyxlab.domain.model.Ringtone
 import com.tonyxlab.domain.model.SILENT_RINGTONE
-import kotlinx.datetime.LocalDateTime
 
 
 @Entity(tableName = "alarms_table")

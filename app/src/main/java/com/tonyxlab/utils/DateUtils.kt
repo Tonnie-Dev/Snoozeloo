@@ -30,6 +30,7 @@ fun LocalDateTime.fromLocalToUtcTimeStamp(): Long {
             .toEpochMilliseconds()
 
 }
+
 fun Long.fromMillisToLocalDateTime(
 
 ): LocalDateTime {
@@ -38,6 +39,7 @@ fun Long.fromMillisToLocalDateTime(
             .toInstant(timeZone = TimeZone.currentSystemDefault())
             .toLocalDateTime(timeZone = TimeZone.currentSystemDefault())
 }
+
 fun Long.fromLocalToUTCTimeStamp(): Long {
 
     return Instant.fromEpochMilliseconds(this)
@@ -45,25 +47,6 @@ fun Long.fromLocalToUTCTimeStamp(): Long {
             .toInstant(timeZone = TimeZone.UTC)
             .toEpochMilliseconds()
 }
-
-/*
-fun LocalDateTime.fromLocalDateTimeToUtcTimeStamp(): Long {
-
-
-    return this.toInstant(timeZone = TimeZone.UTC)
-            .toEpochMilliseconds()
-}
-
-*/
-
-fun Long.fromUTCToLocalTimeStamp(): Long {
-
-    return Instant.fromEpochMilliseconds(this)
-            .toLocalDateTime(TimeZone.UTC)
-            .toInstant(timeZone = TimeZone.currentSystemDefault())
-            .toEpochMilliseconds()
-}
-
 
 
 fun LocalDateTime.Companion.now(): LocalDateTime {
@@ -79,9 +62,7 @@ fun LocalDateTime.toAmPmTime(): String {
 
 fun Long.alarmIn(): String {
 
-
     val duration = durationToNextAlarm(this)
-
 
     val totalNoOfMinutes = duration.inWholeMinutes
 
@@ -94,7 +75,6 @@ fun Long.alarmIn(): String {
         hoursToGo > 0 -> "$hoursToGo h, $minutesToGo min"
         else -> "$minutesToGo min"
     }
-
 }
 
 
@@ -124,7 +104,6 @@ fun LocalDateTime.addOneDayToLocalDateTime(): Long {
 }
 
 fun Long.addOneDayToMilliTime(): Long {
-
 
     val dayInMillis = 24 * 60 * 60 * 1000
     return this.plus(dayInMillis)

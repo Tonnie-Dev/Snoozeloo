@@ -1,6 +1,5 @@
 package com.tonyxlab.data.database.converters
 
-import android.net.Uri
 import androidx.room.ProvidedTypeConverter
 import androidx.room.TypeConverter
 import com.tonyxlab.domain.json.JsonSerializer
@@ -15,29 +14,17 @@ class Converters @Inject constructor(
     private val serializer: JsonSerializer
 ) {
 
-    /*    @TypeConverter
-    fun writeLocalDateTimeToLong(time: LocalDateTime?): Long? {
-
-        return time?.fromLocalDateTimeToMillis(TimeZone.UTC)
-    }
-        @TypeConverter
-        fun readMillisToLocalDateTimeDefault(value: Long): LocalDateTime {
-
-            return value.fromMillisToLocalDateTime()
-        }*/
-
-    @TypeConverter
-
-    fun writeDayChipStateList(list: List<DayChipState>): String {
-
-        return serializer.toJson(chipsListSerializer, list)
-    }
-
     private val chipsListSerializer: KSerializer<List<DayChipState>> =
         ListSerializer(DayChipState.serializer())
 
     private val ringtoneSerializer: KSerializer<Ringtone> = Ringtone.serializer()
 
+
+    @TypeConverter
+    fun writeDayChipStateList(list: List<DayChipState>): String {
+
+        return serializer.toJson(chipsListSerializer, list)
+    }
 
     @TypeConverter
     fun readDayChipStateList(json: String): List<DayChipState> {
@@ -57,13 +44,4 @@ class Converters @Inject constructor(
         return serializer.fromJson(ringtoneSerializer, json)
     }
 
-    @TypeConverter
-    fun writeUri(uri: Uri?): String? {
-        return uri?.toString()
-    }
-
-    @TypeConverter
-    fun readUri(uriString: String?): Uri? {
-        return uriString?.let { Uri.parse(it) }
-    }
 }
