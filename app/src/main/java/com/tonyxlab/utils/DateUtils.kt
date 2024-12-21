@@ -40,14 +40,6 @@ fun Long.fromMillisToLocalDateTime(
             .toLocalDateTime(timeZone = TimeZone.currentSystemDefault())
 }
 
-fun Long.fromLocalToUTCTimeStamp(): Long {
-
-    return Instant.fromEpochMilliseconds(this)
-            .toLocalDateTime(timeZone = TimeZone.currentSystemDefault())
-            .toInstant(timeZone = TimeZone.UTC)
-            .toEpochMilliseconds()
-}
-
 
 fun LocalDateTime.Companion.now(): LocalDateTime {
     val instant = Clock.System.now()
@@ -55,9 +47,9 @@ fun LocalDateTime.Companion.now(): LocalDateTime {
 }
 
 fun LocalDateTime.toAmPmTime(): String {
-    val pattern = "HH:mm a"
+    val pattern = "hh:mm aa"
     val date = Date(this.fromLocalDateTimeToMillis())
-    return SimpleDateFormat(pattern, Locale.getDefault()).format(date)
+    return SimpleDateFormat(pattern, Locale.getDefault()).format(date).uppercase()
 }
 
 fun Long.alarmIn(): String {
@@ -111,12 +103,36 @@ fun Long.addOneDayToMilliTime(): Long {
 
 fun LocalDateTime.getHourString(): String {
 
-    val hourInt = this.hour
+    return when (val hourInt = this.hour) {
 
-    return if (hourInt in 0..9) "0$hourInt" else "$hourInt"
+        in 0..9 -> "0$hourInt"
+
+
+        else -> "$hourInt"
+    }
+
 
 }
 
+
+
+fun String.displayTime():String {
+
+    return runCatching {
+
+       when(val hourInt = toIntOrNull()){
+
+           in 1..9 -> "0$hourInt"
+           in 10..12 ->"hourInt"
+           in 13 .. 23 -> "0${hourInt?.minus(12)}"
+
+           else -> "12"
+
+
+       }
+    }.getOrNull() ?: ""
+
+}
 fun LocalDateTime.getMinuteString(): String {
 
     val minuteInt = this.minute
@@ -125,13 +141,11 @@ fun LocalDateTime.getMinuteString(): String {
 
 fun setTriggerTime(hour: Int, minute: Int): LocalDateTime {
 
-    val clock: LocalDateTime = Clock.System.now()
-            .toLocalDateTime(timeZone = TimeZone.currentSystemDefault())
     val now = LocalDateTime.now()
     return LocalDateTime(
-            year = clock.year,
-            month = clock.month,
-            dayOfMonth = clock.dayOfMonth,
+            year = now.year,
+            month = now.month,
+            dayOfMonth = now.dayOfMonth,
             hour = hour,
             minute = minute
     )

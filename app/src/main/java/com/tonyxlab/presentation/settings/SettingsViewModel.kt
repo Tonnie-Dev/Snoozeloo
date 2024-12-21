@@ -121,13 +121,9 @@ class SettingsViewModel @Inject constructor(
 
     private fun readAlarmInfo(alarmId: String?) {
 
-
-        Timber.i("AlarmId at readInfo(): $alarmId")
         alarmId ?: return
 
-
         viewModelScope.launch {
-
 
             when (val result = getAlarmByIdUseCase(alarmId = alarmId)) {
                 is Resource.Success -> {
@@ -136,13 +132,13 @@ class SettingsViewModel @Inject constructor(
 
                     setHourField(_uiState.value.triggerTime.getHourString())
                     setMinuteField(_uiState.value.triggerTime.getMinuteString())
-                    Timber.i("ReadInfo() success")
+                    setAlarmName(_uiState.value.name)
+                    setRingtone(_uiState.value.ringtone)
+                    setVolume(_uiState.value.volume)
+                    setHaptics(_uiState.value.isHapticsOn)
                 }
 
-                is Resource.Error -> {
-
-                    Timber.i("ReadInfo(): error ${result.exception.message}")
-                }
+                is Resource.Error -> Unit
 
             }
         }
@@ -164,7 +160,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun setHourField(value: String) {
-Timber.i("setHourField() called")
+
         if (value.length <= 2) {
             hourFieldValue.update {
                 it.copy(value = value, isError = isFieldError(value, hourFieldValue.value))
@@ -175,7 +171,7 @@ Timber.i("setHourField() called")
 
 
     private fun setMinuteField(value: String) {
-        Timber.i("setHourField() called")
+
         if (value.length <= 2) {
             minuteFieldValue.update {
                 it.copy(value = value, isError = isFieldError(value, minuteFieldValue.value))
