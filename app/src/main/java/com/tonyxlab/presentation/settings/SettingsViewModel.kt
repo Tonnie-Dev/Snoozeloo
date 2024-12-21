@@ -166,7 +166,7 @@ class SettingsViewModel @Inject constructor(
                 it.copy(value = value, isError = isFieldError(value, hourFieldValue.value))
             }
         }
-        _uiState.update { it.copy(showAlarmIn = true, isSaveEnabled = true) }
+     //   _uiState.update { it.copy(showAlarmIn = true, isSaveEnabled = true) }
     }
 
 
@@ -178,7 +178,7 @@ class SettingsViewModel @Inject constructor(
             }
         }
 
-        _uiState.update { it.copy(showAlarmIn = true, isSaveEnabled = true) }
+      //  _uiState.update { it.copy(showAlarmIn = true, isSaveEnabled = true) }
     }
 
     private fun isFieldError(newInput: String, field: TextFieldValue<String>): Boolean {
@@ -267,6 +267,7 @@ class SettingsViewModel @Inject constructor(
         if (isSave){
 
             doSave()
+            _uiState.update { it.copy(showAlarmIn = true, isSaveEnabled = true) }
         }
 
     }
