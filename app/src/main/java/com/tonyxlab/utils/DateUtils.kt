@@ -9,12 +9,10 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.datetime.toLocalDateTime
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.time.Duration
-
 
 fun LocalDateTime.fromLocalDateTimeToMillis(
     timeZone: TimeZone = TimeZone.currentSystemDefault()
@@ -23,7 +21,6 @@ fun LocalDateTime.fromLocalDateTimeToMillis(
     return this.toInstant(timeZone)
             .toEpochMilliseconds()
 }
-
 
 fun LocalDateTime.fromLocalToUtcTimeStamp(): Long {
 
@@ -56,30 +53,7 @@ fun LocalDateTime.toAmPmTime(): String {
             .uppercase()
 }
 
-
-fun LocalDateTime.alarmIn(): String {
-
-
-    val timeStamp = this.toInstant(timeZone = TimeZone.currentSystemDefault())
-            .toEpochMilliseconds()
-
-    val duration = durationToNextAlarm(timeStamp)
-    val totalNoOfMinutes = duration.inWholeMinutes
-
-
-    val daysToGo = duration.inWholeDays
-    val hoursToGo = (totalNoOfMinutes % 1440) / 60
-    val minutesToGo = totalNoOfMinutes % 60
-    Timber.i("D: $daysToGo, Hours: $hoursToGo, Minutes: $minutesToGo to go ")
-    return when {
-        daysToGo > 0 -> "$daysToGo days, $hoursToGo h, $minutesToGo min"
-        hoursToGo > 0 -> "$hoursToGo h, $minutesToGo min"
-        else -> "$minutesToGo min"
-    }
-}
-
-
-fun LocalDateTime.timeToNextAlarm():String {
+fun LocalDateTime.timeToNextAlarm(): String {
     val timeInMillis = this.fromLocalDateTimeToMillis()
     val duration = durationToNextAlarm(timeInMillis)
 
@@ -94,10 +68,7 @@ fun LocalDateTime.timeToNextAlarm():String {
         hoursToGo > 0 -> "$hoursToGo h, $minutesToGo min"
         else -> "$minutesToGo min"
     }
-
-
-    }
-
+}
 
 fun Long.alarmIn(): String {
 
@@ -121,14 +92,11 @@ fun durationToNextAlarm(nextAlarmTime: Long): Duration {
 
     val nowInMillis = LocalDateTime.now()
             .fromLocalDateTimeToMillis()
-
     val nextTriggerTime = when {
-        nextAlarmTime < nowInMillis -> nextAlarmTime.addOneDayToMilliTime()
-        else -> nextAlarmTime.minus(nowInMillis)
+        nextAlarmTime <= nowInMillis -> nextAlarmTime.addOneDayToMilliTime()
+        else -> nextAlarmTime
 
     }
-
-
     val nowAsInstant = Clock.System.now()
     val triggerTimeInstant = Instant.fromEpochMilliseconds(nextTriggerTime)
 
@@ -161,29 +129,9 @@ fun LocalDateTime.getHourString(): String {
 
         in 0..9 -> "0$hourInt"
 
-
         else -> "$hourInt"
     }
 
-
-}
-
-
-fun String.displayTime(): String {
-
-    return runCatching {
-
-        when (val hourInt = toIntOrNull()) {
-
-            in 1..9 -> "0$hourInt"
-            in 10..12 -> "hourInt"
-            in 13..23 -> "0${hourInt?.minus(12)}"
-
-            else -> "12"
-
-
-        }
-    }.getOrNull() ?: ""
 
 }
 
