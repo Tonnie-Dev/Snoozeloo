@@ -18,8 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -38,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tonyxlab.R
 import com.tonyxlab.domain.model.DayChipState
@@ -52,7 +51,10 @@ import com.tonyxlab.presentation.components.VolumeSlider
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.TextFieldValue
-import com.tonyxlab.utils.alarmIn
+import com.tonyxlab.utils.now
+import com.tonyxlab.utils.plusDays
+import com.tonyxlab.utils.timeToNextAlarm
+import kotlinx.datetime.LocalDateTime
 
 
 @Composable
@@ -77,7 +79,7 @@ fun SettingsScreen(
 
     SettingsScreenContent(
             modifier = modifier.padding(spacing.spaceMedium),
-            durationToNextTrigger = uiState.durationToNextTrigger,
+            triggerTime = uiState.triggerTime,
             daysActive = uiState.daysActive,
             showAlarmIn = uiState.showAlarmIn,
             onClose = onClose,
@@ -98,7 +100,7 @@ fun SettingsScreen(
 
 @Composable
 fun SettingsScreenContent(
-    durationToNextTrigger: Long,
+    triggerTime: LocalDateTime,
     daysActive: List<DayChipState>,
     onClose: () -> Unit,
     onSave: () -> Unit,
@@ -146,7 +148,7 @@ fun SettingsScreenContent(
 
             //Set Time Setting
             TimePanel(
-                    durationToNextTrigger = durationToNextTrigger,
+                    triggerTime = triggerTime,
                     hourFieldValue = hourFieldValue,
                     minuteFieldValue = minuteFieldValue,
                     showAlarmIn = showAlarmIn
@@ -253,7 +255,7 @@ fun SettingsScreenContent(
 
 @Composable
 fun TimePanel(
-    durationToNextTrigger: Long,
+    triggerTime: LocalDateTime,
     hourFieldValue: TextFieldValue<String>,
     minuteFieldValue: TextFieldValue<String>,
     showAlarmIn: Boolean,
@@ -269,53 +271,59 @@ fun TimePanel(
 
             ) {
 
-        Row(
+        HourAndMinuteInputFields(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-        ) {
+                hourFieldValue = hourFieldValue,
+                minuteFieldValue = minuteFieldValue
+        )
 
-            Card(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.background
-                    ),
-                    shape = RoundedCornerShape(spacing.spaceDoubleDp * 5)
-            ) {
+        /* Row(
+                 modifier = Modifier.fillMaxWidth(),
+                 verticalAlignment = Alignment.CenterVertically,
+                 horizontalArrangement = Arrangement.Center
+         ) {
 
-                NumberInputField(
-                        modifier = Modifier.wrapContentSize(),
-                        value = hourFieldValue.value,
-                        onValueChanged = hourFieldValue.onValueChange,
-                        isError = hourFieldValue.isError
-                )
-            }
+             Card(
+                     modifier = Modifier.align(Alignment.CenterVertically),
+                     colors = CardDefaults.cardColors(
+                             containerColor = MaterialTheme.colorScheme.background
+                     ),
+                     shape = RoundedCornerShape(spacing.spaceDoubleDp * 5)
+             ) {
 
-            Spacer(modifier = Modifier.width(spacing.spaceMedium))
+                 NumberInputField(
+                         modifier = Modifier.weight(1f),
+                         value = hourFieldValue.value,
+                         onValueChanged = hourFieldValue.onValueChange,
+                         isError = hourFieldValue.isError
+                 )
+             }
 
-            Text(
-                    text = ":",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-            )
+             Spacer(modifier = Modifier.width(spacing.spaceMedium))
 
-            Spacer(modifier = Modifier.width(spacing.spaceMedium))
+             Text(
+                     text = ":",
+                     style = MaterialTheme.typography.titleLarge,
+                     fontWeight = FontWeight.Bold
+             )
 
-            Card(
-                    colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.background
-                    ),
-                    shape = RoundedCornerShape(spacing.spaceDoubleDp * 5)
-            ) {
-                NumberInputField(
-                        modifier = Modifier.wrapContentSize(),
-                        value = minuteFieldValue.value,
-                        onValueChanged = minuteFieldValue.onValueChange,
-                        isError = minuteFieldValue.isError
+             Spacer(modifier = Modifier.width(spacing.spaceMedium))
 
-                )
-            }
-        }
+             Card(
+                     colors = CardDefaults.cardColors(
+                             containerColor = MaterialTheme.colorScheme.background
+                     ),
+                     shape = RoundedCornerShape(spacing.spaceDoubleDp * 5)
+             ) {
+                 NumberInputField(
+                         modifier = Modifier.weight(1f),
+                         value = minuteFieldValue.value,
+                         onValueChanged = minuteFieldValue.onValueChange,
+                         isError = minuteFieldValue.isError
+
+                 )
+             }
+         }*/
 
         Spacer(modifier = Modifier.height(spacing.spaceMedium))
 
@@ -326,7 +334,7 @@ fun TimePanel(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(
                             id = R.string.alarm_in_text,
-                            durationToNextTrigger.alarmIn()
+                            triggerTime.timeToNextAlarm()
                     ),
                     textAlign = TextAlign.Center
             )
@@ -334,6 +342,48 @@ fun TimePanel(
     }
 
 
+}
+
+@Composable
+fun HourAndMinuteInputFields(
+    modifier: Modifier = Modifier,
+    hourFieldValue: TextFieldValue<String>,
+    minuteFieldValue: TextFieldValue<String>
+) {
+
+    val spacing = LocalSpacing.current
+    Row(
+            modifier = modifier
+                    .clip(RoundedCornerShape(spacing.spaceDoubleDp * 5)),
+            verticalAlignment = Alignment.CenterVertically
+    ) {
+
+
+        NumberInputField(
+                modifier = Modifier.weight(1f),
+                value = hourFieldValue.value,
+                onValueChanged = hourFieldValue.onValueChange,
+                isError = hourFieldValue.isError
+        )
+
+
+        Text(
+                modifier = Modifier.padding(horizontal = spacing.spaceDoubleDp * 5),
+                text = ":",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.secondary,
+                fontWeight = FontWeight.Bold
+        )
+
+
+        NumberInputField(
+                modifier = Modifier.weight(1f),
+                value = minuteFieldValue.value,
+                onValueChanged = minuteFieldValue.onValueChange,
+                isError = minuteFieldValue.isError
+
+        )
+    }
 }
 
 @Composable
@@ -385,7 +435,8 @@ private fun SettingsScreenContentPreview() {
         SettingsScreenContent(
 
                 modifier = Modifier.fillMaxSize(),
-                durationToNextTrigger = 0L,
+                triggerTime = LocalDateTime.now()
+                        .plusDays(1),
                 onClose = {},
                 onSave = {},
                 onDayChipClick = {},

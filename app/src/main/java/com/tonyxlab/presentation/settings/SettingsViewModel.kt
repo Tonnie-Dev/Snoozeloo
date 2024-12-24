@@ -11,6 +11,7 @@ import com.tonyxlab.domain.model.SILENT_RINGTONE
 import com.tonyxlab.domain.ringtone.RingtoneFetcher
 import com.tonyxlab.domain.usecases.CreateAlarmUseCase
 import com.tonyxlab.domain.usecases.GetAlarmByIdUseCase
+import com.tonyxlab.domain.usecases.GetSecsToNextAlarmUseCase
 import com.tonyxlab.domain.usecases.UpdateAlarmUseCase
 import com.tonyxlab.presentation.navigation.NestedScreens
 import com.tonyxlab.utils.Resource
@@ -21,6 +22,7 @@ import com.tonyxlab.utils.setTriggerTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -28,6 +30,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 
 @HiltViewModel
@@ -36,29 +39,36 @@ class SettingsViewModel @Inject constructor(
     private val createAlarmUseCase: CreateAlarmUseCase,
     private val updateAlarmUseCase: UpdateAlarmUseCase,
     private val ringtoneFetcher: RingtoneFetcher,
+    getSecsToNextAlarmUseCase: GetSecsToNextAlarmUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
 
     private var alarmItem: AlarmItem? = null
     private val _uiState = MutableStateFlow(AlarmUiState())
+
     private val _ringtones = MutableStateFlow<List<Ringtone>>(emptyList())
     val ringtones = _ringtones.asStateFlow()
     init {
 
-
         val id = savedStateHandle.toRoute<NestedScreens>().id
 
-        Timber.i("Init Block Id is: $id")
         readAlarmInfo(id)
-        ringtoneFetcher.fetchRingtone()
-                .onEach {
+        val ringtonesFlow = ringtoneFetcher.fetchRingtone()
 
-                    _ringtones.value = it
-                }
-                .launchIn(viewModelScope)
+        val secsFlow = getSecsToNextAlarmUseCase(
+                futureDate = _uiState.value.triggerTime,
+                delay = 1.seconds
+        )
+
+       combine(ringtonesFlow, secsFlow){ ringtonesList, secs ->
+
+           _ringtones.value = ringtonesList
+           _uiState.update { it.copy(durationToNextTrigger = secs) }
+
+       }.launchIn(viewModelScope)
+
     }
-
 
     val uiState = _uiState.asStateFlow()
 
@@ -71,6 +81,7 @@ class SettingsViewModel @Inject constructor(
 
     )
         private set
+
     var minuteFieldValue = MutableStateFlow(
             TextFieldValue(
                     value = _uiState.value.triggerTime.getMinuteString(),
@@ -90,6 +101,7 @@ class SettingsViewModel @Inject constructor(
             )
     )
         private set
+
     var volumeFieldValue = MutableStateFlow(
             TextFieldValue(
                     value = _uiState.value.volume,
@@ -113,11 +125,8 @@ class SettingsViewModel @Inject constructor(
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying = _isPlaying.asStateFlow()
 
-
-
     private val _selectedRingtone = MutableStateFlow(SILENT_RINGTONE)
     val selectedRingtone = _selectedRingtone.asStateFlow()
-
 
     private fun readAlarmInfo(alarmId: String?) {
 

@@ -9,7 +9,7 @@ import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.minutes
 
-class GetSleepTimeInSecsUseCase @Inject constructor(){
+class GetSleepTimeInSecsUseCase @Inject constructor() {
 
 
     operator fun invoke(futureDate: LocalDateTime) = flow {

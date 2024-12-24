@@ -6,11 +6,15 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.toJavaLocalDateTime
 import java.time.temporal.ChronoUnit
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
 class GetSecsToNextAlarmUseCase {
 
-    operator fun invoke(futureDate: LocalDateTime) = flow {
+    operator fun invoke(
+        futureDate: LocalDateTime,
+        delay: Duration = 1.minutes
+    ) = flow {
 
         while (true) {
 
@@ -21,7 +25,7 @@ class GetSecsToNextAlarmUseCase {
             )
             emit(secs)
 
-            delay(1.minutes)
+            delay(delay)
         }
     }
 }
