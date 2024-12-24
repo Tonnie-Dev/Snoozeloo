@@ -23,19 +23,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.R
-import com.tonyxlab.domain.model.AlarmItem
+import com.tonyxlab.presentation.home.AlarmState
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
-import com.tonyxlab.utils.alarmIn
 import com.tonyxlab.utils.getAmPmSuffix
 import com.tonyxlab.utils.getBlack_900
 import com.tonyxlab.utils.getRandomAlarmItem
 import com.tonyxlab.utils.removeAmPmSuffix
+import com.tonyxlab.utils.timeToNextAlarm
 import com.tonyxlab.utils.toAmPmTime
 
 @Composable
 fun AlarmCard(
-    alarmItem: AlarmItem,
+    alarmItem: AlarmState,
     onAlarmItemClick: (id: String) -> Unit,
     onDayChipClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -47,7 +47,7 @@ fun AlarmCard(
             modifier = modifier
                     .clip(RoundedCornerShape(spacing.spaceSmall))
                     .fillMaxWidth()
-                    .clickable { onAlarmItemClick(alarmItem.id) }
+                    .clickable { onAlarmItemClick(alarmItem.alarmItem.id) }
                     .background(MaterialTheme.colorScheme.surface)
                     .padding(spacing.spaceMedium)
     ) {
@@ -55,7 +55,7 @@ fun AlarmCard(
         AlarmFace(alarmItem = alarmItem)
         Spacer(modifier = Modifier.height(spacing.spaceSmall))
         ChipsRow(
-                daysActive = alarmItem.daysActive,
+                daysActive = alarmItem.alarmItem.daysActive,
                 onDayChipClick = onDayChipClick
         )
     }
@@ -64,7 +64,7 @@ fun AlarmCard(
 
 @Composable
 fun AlarmFace(
-    alarmItem: AlarmItem,
+    alarmItem: AlarmState,
     modifier: Modifier = Modifier
 ) {
 
@@ -77,7 +77,7 @@ fun AlarmFace(
                 verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                    text = alarmItem.name,
+                    text = alarmItem.alarmItem.name,
                     style = MaterialTheme.typography.titleLarge,
                     color = getBlack_900(),
                     fontWeight = FontWeight.W600
@@ -92,7 +92,7 @@ fun AlarmFace(
 
             Text(
                     modifier = Modifier.alignByBaseline(),
-                    text = alarmItem.triggerTime.toAmPmTime()
+                    text = alarmItem.alarmItem.triggerTime.toAmPmTime()
                             .removeAmPmSuffix(),
                     style = MaterialTheme.typography.displayMedium,
                     fontWeight = FontWeight.W500,
@@ -101,7 +101,7 @@ fun AlarmFace(
 
             Text(
                     modifier = Modifier.alignByBaseline(),
-                    text = alarmItem.triggerTime.toAmPmTime()
+                    text = alarmItem.alarmItem.triggerTime.toAmPmTime()
                             .getAmPmSuffix(),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.W500,
@@ -115,7 +115,7 @@ fun AlarmFace(
             Text(
                     text = stringResource(
                             id = R.string.alarm_in_text,
-                            alarmItem.durationToNextTrigger.alarmIn()
+                            alarmItem.alarmItem.triggerTime.timeToNextAlarm()
                     ),
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.W500,
@@ -134,7 +134,13 @@ private fun AlarmFacePreview() {
 
         Surface {
 
-            AlarmFace(alarmItem = getRandomAlarmItem())
+            AlarmFace(
+                    alarmItem = AlarmState(
+                            alarmItem = getRandomAlarmItem(),
+                            remainingSecs = 0L,
+                            sleepTime = 0L
+                    )
+            )
 
         }
     }
@@ -150,7 +156,11 @@ private fun AlarmCardPreview() {
 
 
             AlarmCard(
-                    alarmItem = getRandomAlarmItem(),
+                    alarmItem = AlarmState(
+                            alarmItem = getRandomAlarmItem(),
+                            remainingSecs = 0L,
+                            sleepTime = 0L
+                    ),
                     onAlarmItemClick = {},
                     onDayChipClick = {}
             )
