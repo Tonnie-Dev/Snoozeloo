@@ -29,6 +29,7 @@ import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.presentation.components.AlarmCard
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
+import com.tonyxlab.utils.getRandomAlarmItem
 import com.tonyxlab.utils.getRandomAlarmItems
 
 @Composable
@@ -52,7 +53,7 @@ fun HomeScreen(
 
 @Composable
 fun HomeScreenContent(
-    alarmItems: List<AlarmItem>,
+    alarmItems: List<AlarmState>,
     onAlarmItemClick: (id: String) -> Unit,
     onAddNewAlarm: () -> Unit,
     modifier: Modifier = Modifier
@@ -100,7 +101,7 @@ fun HomeScreenContent(
                         fontWeight = FontWeight.W500
                 )
             }
-            items(items = alarmItems, key = { it.id }) {
+            items(items = alarmItems, key = { it.alarmItem.id}) {
 
                 AlarmCard(modifier = Modifier.padding(spacing.spaceSmall),
                         alarmItem = it,
@@ -135,7 +136,7 @@ private fun FilledHomeScreenPreview() {
 
         HomeScreenContent(
                 onAddNewAlarm = {},
-                alarmItems = getRandomAlarmItems(),
+                alarmItems = emptyList(),
                 onAlarmItemClick = {},
                 modifier = Modifier.fillMaxSize()
         )
