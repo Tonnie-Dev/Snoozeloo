@@ -1,8 +1,9 @@
 package com.tonyxlab.domain.model
 
 import android.net.Uri
+import com.tonyxlab.utils.now
+import com.tonyxlab.utils.plusDays
 import kotlinx.datetime.LocalDateTime
-import kotlinx.serialization.Contextual
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -34,7 +35,7 @@ data class Ringtone(
     val ringtoneName: String,
     @Serializable(with = UriSerializer::class)
     val ringtoneUri: Uri
-){
+) {
 
     override fun toString(): String {
         return ringtoneName
@@ -55,3 +56,4 @@ object UriSerializer : KSerializer<Uri> {
         return Uri.parse(decoder.decodeString())
     }
 }
+
