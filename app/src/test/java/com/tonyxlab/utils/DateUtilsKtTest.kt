@@ -2,11 +2,11 @@ package com.tonyxlab.utils
 
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
-import kotlin.math.min
-
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Duration
+
 
 class DateUtilsKtTest {
 
@@ -87,5 +87,21 @@ class DateUtilsKtTest {
         assertEquals(expected = "32", actual = time1.getMinuteString())
         assertEquals(expected = "01", actual = time2.getMinuteString())
         assertEquals(expected = "00", actual = time3.getMinuteString())
+    }
+    @Test
+    fun `Test duration_To_Next_Alarm function`() {
+        // December 22, 2024 10:08:41 AM in milliseconds
+        val nextAlarmTime = 1734851321000L
+
+        // Mock the current time to a known value
+        val now = LocalDateTime(2024, 12, 21, 10, 8, 41)
+        val nowInMillis = now.fromLocalDateTimeToMillis()
+
+        // Calculate the expected duration
+        val expectedDuration = Duration()
+
+        // Call the function and assert the result
+        val actualDuration = durationToNextAlarm(nextAlarmTime)
+        assertEquals(expected = expectedDuration, actual = actualDuration)
     }
 }
