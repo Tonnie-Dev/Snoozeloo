@@ -55,10 +55,13 @@ class SettingsViewModel @Inject constructor(
 
     private var settingsUiState by mutableStateOf(SettingsUiState())
         private set
+    private val hoursFlow = snapshotFlow { settingsUiState.hour }
+    private val minutesFlow = snapshotFlow { settingsUiState.minute }
 
 
     private val _ringtones = MutableStateFlow<List<Ringtone>>(emptyList())
     val ringtones = _ringtones.asStateFlow()
+
 
     init {
 
@@ -66,8 +69,7 @@ class SettingsViewModel @Inject constructor(
 
         readAlarmInfo(id)
         val ringtonesFlow = ringtoneFetcher.fetchRingtone()
-        val hoursFlow = snapshotFlow { settingsUiState.hour }
-        val minutesFlow = snapshotFlow { settingsUiState.minute }
+
         val secsFlow = getSecsToNextAlarmUseCase(
                 futureDate = _uiState.value.triggerTime,
                 delay = 1.seconds
@@ -76,7 +78,6 @@ class SettingsViewModel @Inject constructor(
 
 
             ringtonesList, secs, hours, minutes ->
-
             val isValid = when (validateAlarmUseCase(hours, minutes)) {
 
                 is Resource.Success -> true
@@ -94,7 +95,7 @@ class SettingsViewModel @Inject constructor(
 
     var hourFieldValue = MutableStateFlow(
             TextFieldValue(
-                    value = _uiState.value.triggerTime.getHourString(),
+                    value = settingsUiState.hour ,
                     onValueChange = this::setHourField,
                     range = 0..23
             )
@@ -104,7 +105,7 @@ class SettingsViewModel @Inject constructor(
 
     var minuteFieldValue = MutableStateFlow(
             TextFieldValue(
-                    value = _uiState.value.triggerTime.getMinuteString(),
+                    value = settingsUiState.minute,
                     onValueChange = this::setMinuteField,
                     range = 0..59
             )

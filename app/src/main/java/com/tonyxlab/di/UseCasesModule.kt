@@ -1,6 +1,7 @@
 package com.tonyxlab.di
 
 import com.tonyxlab.domain.usecases.GetSecsToNextAlarmUseCase
+import com.tonyxlab.domain.usecases.ValidateAlarmUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,4 +19,9 @@ object UseCasesModule {
         return GetSecsToNextAlarmUseCase()
     }
 
+    @Provides
+    fun provideValidateAlarmUseCase():ValidateAlarmUseCase{
+
+        return ValidateAlarmUseCase()
+    }
 }
