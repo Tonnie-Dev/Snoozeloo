@@ -4,16 +4,16 @@ package com.tonyxlab.data.database.converters
 import com.tonyxlab.domain.json.JsonSerializer
 import kotlinx.serialization.KSerializer
 import javax.inject.Inject
-
+import kotlinx.serialization.json.Json
 class JsonSerializerImpl<T> @Inject constructor(
     private val serializer: KSerializer<T>
 ) : JsonSerializer {
 
-    fun toJson(data: T): String {
-        return toJson(serializer, data)
+    override fun <T> toJson(serializer: KSerializer<T>, data: T): String {
+        return Json.encodeToString(serializer, data)
     }
 
-    fun fromJson(json: String): T {
-        return fromJson(serializer, json)
+    override fun <T> fromJson(serializer: KSerializer<T>, json: String): T {
+        return Json.decodeFromString(serializer, json)
     }
 }

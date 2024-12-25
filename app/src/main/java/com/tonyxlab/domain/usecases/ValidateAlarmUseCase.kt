@@ -10,18 +10,18 @@ class ValidateAlarmUseCase @Inject constructor() {
 
 
         val hourInt = hourString.toIntOrNull()
-            ?: return Resource.Error(Exception(message = "Hour should be a number"))
+            ?: return Resource.Error(Exception("Hour should be a number"))
 
         val minuteInt = minuteString.toIntOrNull()
-            ?: return Resource.Error(Exception(message = "Minute should be a number"))
+            ?: return Resource.Error(Exception("Minute should be a number"))
 
         if ((hourInt in 0..23).not()) {
-            return Resource.Error(Exception(message = "Hour should be between 0 and 23"))
+            return Resource.Error(Exception("Hour should be between 0 and 23"))
 
         }
 
         if ((minuteInt in 0..59).not()) {
-            return Resource.Error(Exception(message = "Minute should be between 0 and 59"))
+            return Resource.Error(Exception("Minute should be between 0 and 59"))
         }
 
         return Resource.Success(true)

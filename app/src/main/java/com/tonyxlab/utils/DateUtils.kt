@@ -70,6 +70,23 @@ fun LocalDateTime.timeToNextAlarm(): String {
     }
 }
 
+
+fun Long.timeToNextAlarm(): String {
+
+    val duration = durationToNextAlarm(this)
+
+    val totalNoOfMinutes = duration.inWholeMinutes
+
+    val daysToGo = duration.inWholeDays
+    val hoursToGo = (totalNoOfMinutes % 1440) / 60
+    val minutesToGo = totalNoOfMinutes % 60
+
+    return when {
+        daysToGo > 0 -> "$daysToGo days, $hoursToGo h, $minutesToGo min"
+        hoursToGo > 0 -> "$hoursToGo h, $minutesToGo min"
+        else -> "$minutesToGo min"
+    }
+}
 fun Long.alarmIn(): String {
 
     val duration = durationToNextAlarm(this)
@@ -123,6 +140,8 @@ fun Long.addOneDayToMilliTime(): Long {
     return this.plus(dayInMillis)
 }
 
+
+
 fun LocalDateTime.getHourString(): String {
 
     return when (val hourInt = this.hour) {
@@ -153,4 +172,6 @@ fun setTriggerTime(hour: Int, minute: Int): LocalDateTime {
     )
 
 }
+
+
 

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,12 +33,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tonyxlab.R
-import com.tonyxlab.domain.model.DayChipState
 import com.tonyxlab.domain.model.Ringtone
-import com.tonyxlab.domain.model.SILENT_RINGTONE
 import com.tonyxlab.presentation.components.AppTopBar
 import com.tonyxlab.presentation.components.ChipsRow
 import com.tonyxlab.presentation.components.MediumButton
@@ -47,12 +43,8 @@ import com.tonyxlab.presentation.components.ModalDialog
 import com.tonyxlab.presentation.components.NumberInputField
 import com.tonyxlab.presentation.components.VolumeSlider
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
-import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.TextFieldValue
-import com.tonyxlab.utils.now
-import com.tonyxlab.utils.plusDays
 import com.tonyxlab.utils.timeToNextAlarm
-import kotlinx.datetime.LocalDateTime
 
 
 @Composable
@@ -65,7 +57,7 @@ fun SettingsScreen(
 ) {
     val spacing = LocalSpacing.current
 
-    val uiState by viewModel.uiState.collectAsState()
+    // val uiState by viewModel.uiState.collectAsState()
 
     val hourFieldValue by viewModel.hourFieldValue.collectAsState()
     val minuteFieldValue by viewModel.minuteFieldValue.collectAsState()
@@ -77,13 +69,11 @@ fun SettingsScreen(
 
     SettingsScreenContent(
             modifier = modifier.padding(spacing.spaceMedium),
-            triggerTime = uiState.triggerTime,
-            daysActive = uiState.daysActive,
-            showAlarmIn = uiState.showAlarmIn,
+            uiState = viewModel.settingsUiState,
             onClose = onClose,
             onSave = viewModel::onSaveButtonClick,
             onDayChipClick = onDayChipClick,
-            isSaveButtonEnabled = uiState.isSaveEnabled,
+
             onSelectRingtone = onSelectRingtone,
             hourFieldValue = hourFieldValue,
             minuteFieldValue = minuteFieldValue,
@@ -98,11 +88,9 @@ fun SettingsScreen(
 
 @Composable
 fun SettingsScreenContent(
-    triggerTime: LocalDateTime,
-    daysActive: List<DayChipState>,
-    onClose: () -> Unit,
-    onSave: () -> Unit,
-    showAlarmIn: Boolean,
+
+
+    uiState: SettingsUiState,
     hourFieldValue: TextFieldValue<String>,
     minuteFieldValue: TextFieldValue<String>,
     nameFieldValue: TextFieldValue<String>,
@@ -110,7 +98,8 @@ fun SettingsScreenContent(
     hapticsFieldValue: TextFieldValue<Boolean>,
     selectedRingtone: Ringtone,
     onDayChipClick: () -> Unit,
-    isSaveButtonEnabled: Boolean,
+    onClose: () -> Unit,
+    onSave: () -> Unit,
     onSelectRingtone: (String) -> Unit,
     onDeleteAlarmNameText: () -> Unit,
     modifier: Modifier = Modifier
@@ -131,7 +120,7 @@ fun SettingsScreenContent(
                             MediumButton(
                                     text = stringResource(id = R.string.save_text),
                                     onClick = onSave,
-                                    isEnabled = isSaveButtonEnabled
+                                    isEnabled = uiState.isSaveEnabled
                             )
                         }
                 )
@@ -146,11 +135,11 @@ fun SettingsScreenContent(
 
             //Set Time Setting
             TimePanel(
-                    triggerTime = triggerTime,
+                    uiState,
                     hourFieldValue = hourFieldValue,
                     minuteFieldValue = minuteFieldValue,
-                    showAlarmIn = showAlarmIn
-            )
+
+                    )
 
             //Alarm Name Setting
             TitlePanel(
@@ -177,7 +166,7 @@ fun SettingsScreenContent(
                     bottomContent = {
                         ChipsRow(
                                 modifier = Modifier,
-                                daysActive = daysActive,
+                                daysActive = uiState.daysActive,
                                 onDayChipClick = onDayChipClick
                         )
                     }
@@ -253,10 +242,10 @@ fun SettingsScreenContent(
 
 @Composable
 fun TimePanel(
-    triggerTime: LocalDateTime,
+    uiState: SettingsUiState,
     hourFieldValue: TextFieldValue<String>,
     minuteFieldValue: TextFieldValue<String>,
-    showAlarmIn: Boolean,
+
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
@@ -275,64 +264,18 @@ fun TimePanel(
                 minuteFieldValue = minuteFieldValue
         )
 
-        /* Row(
-                 modifier = Modifier.fillMaxWidth(),
-                 verticalAlignment = Alignment.CenterVertically,
-                 horizontalArrangement = Arrangement.Center
-         ) {
 
-             Card(
-                     modifier = Modifier.align(Alignment.CenterVertically),
-                     colors = CardDefaults.cardColors(
-                             containerColor = MaterialTheme.colorScheme.background
-                     ),
-                     shape = RoundedCornerShape(spacing.spaceDoubleDp * 5)
-             ) {
-
-                 NumberInputField(
-                         modifier = Modifier.weight(1f),
-                         value = hourFieldValue.value,
-                         onValueChanged = hourFieldValue.onValueChange,
-                         isError = hourFieldValue.isError
-                 )
-             }
-
-             Spacer(modifier = Modifier.width(spacing.spaceMedium))
-
-             Text(
-                     text = ":",
-                     style = MaterialTheme.typography.titleLarge,
-                     fontWeight = FontWeight.Bold
-             )
-
-             Spacer(modifier = Modifier.width(spacing.spaceMedium))
-
-             Card(
-                     colors = CardDefaults.cardColors(
-                             containerColor = MaterialTheme.colorScheme.background
-                     ),
-                     shape = RoundedCornerShape(spacing.spaceDoubleDp * 5)
-             ) {
-                 NumberInputField(
-                         modifier = Modifier.weight(1f),
-                         value = minuteFieldValue.value,
-                         onValueChanged = minuteFieldValue.onValueChange,
-                         isError = minuteFieldValue.isError
-
-                 )
-             }
-         }*/
 
         Spacer(modifier = Modifier.height(spacing.spaceMedium))
 
-        AnimatedVisibility(visible = showAlarmIn) {
+        AnimatedVisibility(visible = uiState.isShowAlarmIn) {
 
 
             Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(
                             id = R.string.alarm_in_text,
-                            triggerTime.timeToNextAlarm()
+                            uiState.durationToNextTrigger.timeToNextAlarm()
                     ),
                     textAlign = TextAlign.Center
             )
@@ -424,6 +367,7 @@ fun TitlePanel(
 
 }
 
+/*
 
 @PreviewLightDark
 @Composable
@@ -475,3 +419,4 @@ private fun SettingsScreenContentPreview() {
         )
     }
 }
+*/
