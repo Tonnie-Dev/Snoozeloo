@@ -1,6 +1,10 @@
 package com.tonyxlab.presentation.settings
 
 import android.net.Uri
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +17,7 @@ import com.tonyxlab.domain.usecases.CreateAlarmUseCase
 import com.tonyxlab.domain.usecases.GetAlarmByIdUseCase
 import com.tonyxlab.domain.usecases.GetSecsToNextAlarmUseCase
 import com.tonyxlab.domain.usecases.UpdateAlarmUseCase
+import com.tonyxlab.domain.usecases.ValidateAlarmUseCase
 import com.tonyxlab.presentation.navigation.NestedScreens
 import com.tonyxlab.utils.Resource
 import com.tonyxlab.utils.TextFieldValue
@@ -24,7 +29,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -40,33 +44,49 @@ class SettingsViewModel @Inject constructor(
     private val updateAlarmUseCase: UpdateAlarmUseCase,
     private val ringtoneFetcher: RingtoneFetcher,
     getSecsToNextAlarmUseCase: GetSecsToNextAlarmUseCase,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    validateAlarmUseCase: ValidateAlarmUseCase
 ) : ViewModel() {
 
 
     private var alarmItem: AlarmItem? = null
+
     private val _uiState = MutableStateFlow(AlarmUiState())
+
+    private var settingsUiState by mutableStateOf(SettingsUiState())
+        private set
+
 
     private val _ringtones = MutableStateFlow<List<Ringtone>>(emptyList())
     val ringtones = _ringtones.asStateFlow()
+
     init {
 
         val id = savedStateHandle.toRoute<NestedScreens>().id
 
         readAlarmInfo(id)
         val ringtonesFlow = ringtoneFetcher.fetchRingtone()
-
+        val hoursFlow = snapshotFlow { settingsUiState.hour }
+        val minutesFlow = snapshotFlow { settingsUiState.minute }
         val secsFlow = getSecsToNextAlarmUseCase(
                 futureDate = _uiState.value.triggerTime,
                 delay = 1.seconds
         )
+        combine(ringtonesFlow, secsFlow, hoursFlow, minutesFlow) {
 
-       combine(ringtonesFlow, secsFlow){ ringtonesList, secs ->
 
-           _ringtones.value = ringtonesList
-           _uiState.update { it.copy(durationToNextTrigger = secs) }
+            ringtonesList, secs, hours, minutes ->
 
-       }.launchIn(viewModelScope)
+            val isValid = when (validateAlarmUseCase(hours, minutes)) {
+
+                is Resource.Success -> true
+                else -> false
+            }
+            _ringtones.value = ringtonesList
+            settingsUiState = settingsUiState.copy(isSaveEnabled = isValid)
+            //_uiState.update { it.copy(durationToNextTrigger = secs) }
+
+        }.launchIn(viewModelScope)
 
     }
 
@@ -175,7 +195,7 @@ class SettingsViewModel @Inject constructor(
                 it.copy(value = value, isError = isFieldError(value, hourFieldValue.value))
             }
         }
-     //   _uiState.update { it.copy(showAlarmIn = true, isSaveEnabled = true) }
+        //   _uiState.update { it.copy(showAlarmIn = true, isSaveEnabled = true) }
     }
 
 
@@ -187,7 +207,7 @@ class SettingsViewModel @Inject constructor(
             }
         }
 
-      //  _uiState.update { it.copy(showAlarmIn = true, isSaveEnabled = true) }
+        //  _uiState.update { it.copy(showAlarmIn = true, isSaveEnabled = true) }
     }
 
     private fun isFieldError(newInput: String, field: TextFieldValue<String>): Boolean {
@@ -201,6 +221,8 @@ class SettingsViewModel @Inject constructor(
 
             _uiState.update { it.copy(isSaveEnabled = false) }
         }
+
+        Timber.i("isFieldError: $isError")
 
         return isError
 
@@ -273,7 +295,7 @@ class SettingsViewModel @Inject constructor(
     fun onSaveButtonClick() {
 
         val isSave = _uiState.value.isSaveEnabled
-        if (isSave){
+        if (isSave) {
 
             doSave()
             _uiState.update { it.copy(showAlarmIn = true, isSaveEnabled = true) }
@@ -302,18 +324,19 @@ class SettingsViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-          val result =  if (this@SettingsViewModel.alarmItem != null) {
+            val result = if (this@SettingsViewModel.alarmItem != null) {
                 updateAlarmUseCase(alarmItem = alarmItem)
             } else {
                 createAlarmUseCase(alarmItem = alarmItem)
             }
 
-            when(result){
+            when (result) {
 
                 is Resource.Error -> {
 
                     Timber.d("Save Error: ${result.exception.message}")
                 }
+
                 is Resource.Success -> {
 
 
