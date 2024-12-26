@@ -91,11 +91,20 @@ class SettingsViewModel @Inject constructor(
             _ringtones.value = ringtonesList
             settingsUiState = settingsUiState.copy(isSaveEnabled = isValid)
 
-                   getSecs(
-                            hours,
-                            minutes
 
-            )
+            if (isValid) {
+                getSecs(
+                        hours,
+                        minutes
+
+                )
+
+            } else {
+
+                settingsUiState = settingsUiState.copy(isError = true)
+
+            }
+
 
         }.launchIn(viewModelScope)
 
@@ -216,7 +225,6 @@ class SettingsViewModel @Inject constructor(
     private suspend fun getSecs(hour: String, minute: String) {
 
 
-
         Timber.i("GetSecs called - $hour:$minute")
 
         val futureDate = getFutureDateUseCase(
@@ -227,8 +235,8 @@ class SettingsViewModel @Inject constructor(
         settingsUiState =
             settingsUiState.copy(durationToNextTrigger = getSecsToNextAlarmUseCase(futureDate).first())
 
-      Timber.i("GetSecs Duration: ${settingsUiState.durationToNextTrigger}")
-      Timber.i("GetSecs Ac Duration: ${ getSecsToNextAlarmUseCase(futureDate).first()}")
+        Timber.i("GetSecs Duration: ${settingsUiState.durationToNextTrigger}")
+        Timber.i("GetSecs Ac Duration: ${getSecsToNextAlarmUseCase(futureDate).first()}")
 
     }
 
@@ -265,7 +273,7 @@ class SettingsViewModel @Inject constructor(
 
     }
 
-    private fun isFieldError(newInput: String, field: TextFieldValue<String>): Boolean {
+   private fun isFieldError(newInput: String, field: TextFieldValue<String>): Boolean {
 
         val isError = newInput.toIntOrNull()
                 ?.let { int -> int !in field.range } ?: true
@@ -294,13 +302,16 @@ class SettingsViewModel @Inject constructor(
             }
 
         }
-        settingsUiState = settingsUiState.copy(isSaveEnabled = true, isShowAlarmIn = false)
+
+        setIsSaveEnabled(isSaveEnabled = true, showAlarmIn = false)
+
     }
 
     private fun setVolume(value: Float) {
 
         volumeFieldValue.update { it.copy(value = value) }
-        settingsUiState = settingsUiState.copy(isSaveEnabled = true, isShowAlarmIn = false)
+
+        setIsSaveEnabled(isSaveEnabled = true, showAlarmIn = false)
 
 
     }
@@ -310,14 +321,16 @@ class SettingsViewModel @Inject constructor(
 
         hapticsFieldValue.update { it.copy(value = value) }
 
-        settingsUiState = settingsUiState.copy(isSaveEnabled = true, isShowAlarmIn = false)
+
+        setIsSaveEnabled(isSaveEnabled = true, showAlarmIn = false)
 
     }
 
     fun setRingtone(value: Ringtone) {
 
         _selectedRingtone.value = value
-        settingsUiState = settingsUiState.copy(isSaveEnabled = true, isShowAlarmIn = false)
+
+        setIsSaveEnabled(isSaveEnabled = true, showAlarmIn = false)
     }
 
 
@@ -330,7 +343,7 @@ class SettingsViewModel @Inject constructor(
     fun onDeleteAlarmText() {
 
         nameFieldValue.update { it.copy(value = "") }
-        // _uiState.update { it.copy(isDialogSaveButtonEnabled = false) }
+
 
     }
 
@@ -338,7 +351,7 @@ class SettingsViewModel @Inject constructor(
     private fun resetState() {
 
         settingsUiState = SettingsUiState()
-        // _uiState.value = AlarmUiState()
+
     }
 
     override fun onCleared() {
@@ -347,15 +360,25 @@ class SettingsViewModel @Inject constructor(
         resetState()
     }
 
+    private fun setIsSaveEnabled(isSaveEnabled: Boolean, showAlarmIn: Boolean) {
+        val isError = settingsUiState.isError
+
+        if (isError.not()) {
+
+            settingsUiState =
+                settingsUiState.copy(isSaveEnabled = isSaveEnabled, isShowAlarmIn = showAlarmIn)
+
+        }
+
+    }
 
     fun onSaveButtonClick() {
 
 
         val isSave = settingsUiState.isSaveEnabled
         if (isSave) {
-
             doSave()
-            settingsUiState = settingsUiState.copy(isSaveEnabled = false, isShowAlarmIn = true)
+            setIsSaveEnabled(isSaveEnabled = false, showAlarmIn = true)
         }
 
     }
