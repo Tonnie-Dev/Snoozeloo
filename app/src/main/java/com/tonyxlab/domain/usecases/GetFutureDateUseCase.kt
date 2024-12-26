@@ -9,11 +9,12 @@ import javax.inject.Inject
 class GetFutureDateUseCase @Inject constructor() {
 
     operator fun invoke(alarmTriggerTime: LocalDateTime, list: List<DayChipState>): LocalDateTime {
-        var finalDateTime: LocalDateTime? = null
+        val finalDateTime: LocalDateTime?
         val currentTime = LocalDateTime.now()
         val dayOfWeek = currentTime.dayOfWeek.value
 
         val checkedDays = mutableListOf<Int>()
+
         for (i in list.indices) {
 
 
@@ -44,19 +45,21 @@ class GetFutureDateUseCase @Inject constructor() {
 
         }
 
-        return finalDateTime ?: currentTime.plusDays(1)
+        return finalDateTime
     }
 
     private fun carryTime(alarmTriggerTime: LocalDateTime): LocalDateTime {
 
         val currentTime = LocalDateTime.now()
         return if (alarmTriggerTime < currentTime) {
-            //earlier
-            alarmTriggerTime
-        } else {
 
-            //after
+
+            //earlier
             alarmTriggerTime.plusDays(1)
+        } else {
+            alarmTriggerTime
+            //after
+
         }
     }
 

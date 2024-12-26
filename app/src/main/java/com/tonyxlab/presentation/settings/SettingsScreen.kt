@@ -45,6 +45,7 @@ import com.tonyxlab.presentation.components.VolumeSlider
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.utils.TextFieldValue
 import com.tonyxlab.utils.timeToNextAlarm
+import timber.log.Timber
 
 
 @Composable
@@ -57,7 +58,9 @@ fun SettingsScreen(
 ) {
     val spacing = LocalSpacing.current
 
-    // val uiState by viewModel.uiState.collectAsState()
+     val uiState = viewModel.settingsUiState
+
+   Timber.i("Settings Screen UiState Duration: ${uiState.durationToNextTrigger}")
 
     val hourFieldValue by viewModel.hourFieldValue.collectAsState()
     val minuteFieldValue by viewModel.minuteFieldValue.collectAsState()
@@ -73,7 +76,6 @@ fun SettingsScreen(
             onClose = onClose,
             onSave = viewModel::onSaveButtonClick,
             onDayChipClick = onDayChipClick,
-
             onSelectRingtone = onSelectRingtone,
             hourFieldValue = hourFieldValue,
             minuteFieldValue = minuteFieldValue,
@@ -135,10 +137,9 @@ fun SettingsScreenContent(
 
             //Set Time Setting
             TimePanel(
-                    uiState,
+                    uiState =uiState,
                     hourFieldValue = hourFieldValue,
                     minuteFieldValue = minuteFieldValue,
-
                     )
 
             //Alarm Name Setting
@@ -245,9 +246,12 @@ fun TimePanel(
     uiState: SettingsUiState,
     hourFieldValue: TextFieldValue<String>,
     minuteFieldValue: TextFieldValue<String>,
-
     modifier: Modifier = Modifier
-) {
+)
+
+{
+
+    Timber.i("TitlePanel UiState Duration: ${uiState.durationToNextTrigger}")
     val spacing = LocalSpacing.current
     Column(
 
@@ -270,7 +274,8 @@ fun TimePanel(
 
         AnimatedVisibility(visible = uiState.isShowAlarmIn) {
 
-
+            Timber.i("AniVis UiState Duration: ${uiState.durationToNextTrigger}")
+            Timber.i("AniVis UiState AlarmIn: ${uiState.durationToNextTrigger.timeToNextAlarm()}")
             Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(
@@ -279,6 +284,8 @@ fun TimePanel(
                     ),
                     textAlign = TextAlign.Center
             )
+
+            Timber.i("AniVis UiState AlarmIn: ${uiState.durationToNextTrigger.timeToNextAlarm()}")
         }
     }
 

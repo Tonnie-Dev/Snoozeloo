@@ -25,12 +25,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tonyxlab.R
-import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.presentation.components.AlarmCard
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
-import com.tonyxlab.utils.getRandomAlarmItem
-import com.tonyxlab.utils.getRandomAlarmItems
 
 @Composable
 fun HomeScreen(
@@ -90,7 +87,9 @@ fun HomeScreenContent(
         }
 
         LazyColumn(
-                modifier = modifier.padding(innerPadding).padding(spacing.spaceMedium),
+                modifier = modifier
+                        .padding(innerPadding)
+                        .padding(spacing.spaceMedium),
                 contentPadding = innerPadding
         ) {
 
@@ -101,7 +100,7 @@ fun HomeScreenContent(
                         fontWeight = FontWeight.W500
                 )
             }
-            items(items = alarmItems, key = { it.alarmItem.id}) {
+            items(items = alarmItems, key = { it.alarmItem.id }) {
 
                 AlarmCard(modifier = Modifier.padding(spacing.spaceSmall),
                         alarmItem = it,

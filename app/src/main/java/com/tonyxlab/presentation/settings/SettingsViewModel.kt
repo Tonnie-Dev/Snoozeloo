@@ -15,6 +15,7 @@ import com.tonyxlab.domain.model.SILENT_RINGTONE
 import com.tonyxlab.domain.ringtone.RingtoneFetcher
 import com.tonyxlab.domain.usecases.CreateAlarmUseCase
 import com.tonyxlab.domain.usecases.GetAlarmByIdUseCase
+import com.tonyxlab.domain.usecases.GetFutureDateUseCase
 import com.tonyxlab.domain.usecases.GetSecsToNextAlarmUseCase
 import com.tonyxlab.domain.usecases.UpdateAlarmUseCase
 import com.tonyxlab.domain.usecases.ValidateAlarmUseCase
@@ -28,6 +29,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -42,7 +44,8 @@ class SettingsViewModel @Inject constructor(
     private val createAlarmUseCase: CreateAlarmUseCase,
     private val updateAlarmUseCase: UpdateAlarmUseCase,
     private val ringtoneFetcher: RingtoneFetcher,
-    getSecsToNextAlarmUseCase: GetSecsToNextAlarmUseCase,
+    private val getSecsToNextAlarmUseCase: GetSecsToNextAlarmUseCase,
+    private val getFutureDateUseCase: GetFutureDateUseCase,
     savedStateHandle: SavedStateHandle,
     validateAlarmUseCase: ValidateAlarmUseCase
 ) : ViewModel() {
@@ -50,10 +53,11 @@ class SettingsViewModel @Inject constructor(
 
     private var alarmItem: AlarmItem? = null
 
-    //private val _uiState = MutableStateFlow(AlarmUiState())
-    //val uiState = _uiState.asStateFlow()
+
     var settingsUiState by mutableStateOf(SettingsUiState())
         private set
+
+
     private val hoursFlow = snapshotFlow { settingsUiState.hour }
     private val minutesFlow = snapshotFlow { settingsUiState.minute }
 
@@ -69,31 +73,29 @@ class SettingsViewModel @Inject constructor(
         readAlarmInfo(id)
         val ringtonesFlow = ringtoneFetcher.fetchRingtone()
 
-        val secsFlow = getSecsToNextAlarmUseCase(
-                futureDate = setTriggerTime(
-                        settingsUiState.hour.toInt(),
-                        settingsUiState.minute.toInt()
-                ),
 
-                )
-        combine(ringtonesFlow, hoursFlow, minutesFlow, secsFlow) {
 
-            ringtonesList, hours, minutes, secs ->
 
-            Timber.i("Combine Called")
+        combine(ringtonesFlow, hoursFlow, minutesFlow) {
+
+            ringtonesList, hours, minutes ->
+
+
             val isValid = when (validateAlarmUseCase(hours, minutes)) {
 
-
                 is Resource.Success -> true
-
                 else -> false
             }
 
-            Timber.i("isValid is: $isValid")
-            Timber.i("Hour is: $hours, minute is: $minutes")
+
             _ringtones.value = ringtonesList
             settingsUiState = settingsUiState.copy(isSaveEnabled = isValid)
-            settingsUiState = settingsUiState.copy(durationToNextTrigger = secs)
+
+                   getSecs(
+                            hours,
+                            minutes
+
+            )
 
         }.launchIn(viewModelScope)
 
@@ -210,6 +212,25 @@ class SettingsViewModel @Inject constructor(
         _isPlaying.value = true
     }
 
+
+    private suspend fun getSecs(hour: String, minute: String) {
+
+
+
+        Timber.i("GetSecs called - $hour:$minute")
+
+        val futureDate = getFutureDateUseCase(
+                alarmTriggerTime = setTriggerTime(hour, minute),
+                list = settingsUiState.daysActive
+        )
+        Timber.i("Get Secs FutureDate: ${futureDate.hour}:${futureDate.minute}, DayM: ${futureDate.dayOfMonth}")
+        settingsUiState =
+            settingsUiState.copy(durationToNextTrigger = getSecsToNextAlarmUseCase(futureDate).first())
+
+      Timber.i("GetSecs Duration: ${settingsUiState.durationToNextTrigger}")
+      Timber.i("GetSecs Ac Duration: ${ getSecsToNextAlarmUseCase(futureDate).first()}")
+
+    }
 
     fun stop() {
 
@@ -341,7 +362,6 @@ class SettingsViewModel @Inject constructor(
 
     private fun doSave() {
 
-        Timber.i("DoSave...\nhourField:${hourFieldValue.value.value}\nhourUi:${settingsUiState.hour}")
 
         val alarmItem = AlarmItem(
                 id = this.alarmItem?.id ?: UUID.randomUUID()
@@ -349,10 +369,10 @@ class SettingsViewModel @Inject constructor(
                 name = nameFieldValue.value.value,
                 isEnabled = hapticsFieldValue.value.value,
                 triggerTime = setTriggerTime(
-                        hour = hourFieldValue.value.value.toInt(),
-                        minute = minuteFieldValue.value.value.toInt()
+                        hour = hourFieldValue.value.value,
+                        minute = minuteFieldValue.value.value
                 ),
-                durationToNextTrigger = 0L,
+                durationToNextTrigger = settingsUiState.durationToNextTrigger,
                 daysActive = settingsUiState.daysActive,
                 ringtone = _selectedRingtone.value,
                 volume = volumeFieldValue.value.value,
@@ -372,14 +392,11 @@ class SettingsViewModel @Inject constructor(
 
                 is Resource.Error -> {
 
-                    Timber.d("Save Error: ${result.exception.message}")
                 }
 
                 is Resource.Success -> {
 
 
-                    Timber.d("Save Success")
-                    // _uiState.update { it.copy(isSaveEnabled = false) }
                 }
             }
 

@@ -72,8 +72,9 @@ fun LocalDateTime.timeToNextAlarm(): String {
 
 
 fun Long.timeToNextAlarm(): String {
-
-    val duration = durationToNextAlarm(this)
+    val millisSinceEpoch = LocalDateTime.now().fromLocalDateTimeToMillis()
+    val timeInMillis = this * 1_000
+    val duration = durationToNextAlarm(timeInMillis.plus(millisSinceEpoch))
 
     val totalNoOfMinutes = duration.inWholeMinutes
 
@@ -160,15 +161,17 @@ fun LocalDateTime.getMinuteString(): String {
     return if (minuteInt in 0..9) "0$minuteInt" else "$minuteInt"
 }
 
-fun setTriggerTime(hour: Int, minute: Int): LocalDateTime {
+fun setTriggerTime(hour: String, minute: String): LocalDateTime {
 
+    val hourInt = hour.toIntOrNull() ?: 0
+    val minInt = minute.toIntOrNull() ?: 0
     val now = LocalDateTime.now()
     return LocalDateTime(
             year = now.year,
             month = now.month,
             dayOfMonth = now.dayOfMonth,
-            hour = hour,
-            minute = minute
+            hour = hourInt,
+            minute = minInt
     )
 
 }
