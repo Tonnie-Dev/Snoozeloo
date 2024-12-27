@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
 
@@ -93,15 +92,15 @@ class SettingsViewModel @Inject constructor(
 
 
             if (isValid) {
-                getSecs(
-                        hours,
-                        minutes
+                getSecs(hours, minutes)
 
-                )
+                settingsUiState = settingsUiState.copy(isError = false)
+
 
             } else {
 
                 settingsUiState = settingsUiState.copy(isError = true)
+
 
             }
 
@@ -136,7 +135,7 @@ class SettingsViewModel @Inject constructor(
             TextFieldValue(
                     value = settingsUiState.alarmName,
                     onValueChange = this::setAlarmName,
-                    isConfirmButtonEnabled = settingsUiState.isDialogSaveButtonEnabled
+
             )
     )
         private set
@@ -197,14 +196,6 @@ class SettingsViewModel @Inject constructor(
                     }
 
 
-                    /*_uiState.value = result.data.toAlarmUiState()
-
-                    setHourField(_uiState.value.triggerTime.getHourString())
-                    setMinuteField(_uiState.value.triggerTime.getMinuteString())
-                    setAlarmName(_uiState.value.name)
-                    setRingtone(_uiState.value.ringtone)
-                    setVolume(_uiState.value.volume)
-                    setHaptics(_uiState.value.isHapticsOn)*/
                 }
 
                 is Resource.Error -> Unit
@@ -225,18 +216,13 @@ class SettingsViewModel @Inject constructor(
     private suspend fun getSecs(hour: String, minute: String) {
 
 
-        Timber.i("GetSecs called - $hour:$minute")
-
         val futureDate = getFutureDateUseCase(
                 alarmTriggerTime = setTriggerTime(hour, minute),
                 list = settingsUiState.daysActive
         )
-        Timber.i("Get Secs FutureDate: ${futureDate.hour}:${futureDate.minute}, DayM: ${futureDate.dayOfMonth}")
         settingsUiState =
             settingsUiState.copy(durationToNextTrigger = getSecsToNextAlarmUseCase(futureDate).first())
 
-        Timber.i("GetSecs Duration: ${settingsUiState.durationToNextTrigger}")
-        Timber.i("GetSecs Ac Duration: ${getSecsToNextAlarmUseCase(futureDate).first()}")
 
     }
 
@@ -251,7 +237,12 @@ class SettingsViewModel @Inject constructor(
         if (value.length <= 2) {
             hourFieldValue.update {
 
-                settingsUiState = settingsUiState.copy(hour = value, isShowAlarmIn = false)
+                settingsUiState =
+                    settingsUiState.copy(
+                            hour = value,
+                            isShowAlarmIn = false,
+                            //isSaveEnabled = true
+                    )
                 it.copy(value = value, isError = isFieldError(value, hourFieldValue.value))
 
             }
@@ -265,7 +256,11 @@ class SettingsViewModel @Inject constructor(
         if (value.length <= 2) {
             minuteFieldValue.update {
 
-                settingsUiState = settingsUiState.copy(minute = value, isShowAlarmIn = false)
+                settingsUiState = settingsUiState.copy(
+                        minute = value,
+                        isShowAlarmIn = false,
+
+                        )
                 it.copy(value = value, isError = isFieldError(value, minuteFieldValue.value))
             }
         }
@@ -273,34 +268,20 @@ class SettingsViewModel @Inject constructor(
 
     }
 
-   private fun isFieldError(newInput: String, field: TextFieldValue<String>): Boolean {
+    private fun isFieldError(newInput: String, field: TextFieldValue<String>): Boolean {
 
-        val isError = newInput.toIntOrNull()
+        return newInput.toIntOrNull()
                 ?.let { int -> int !in field.range } ?: true
-
-
-
-        if (isError) {
-
-            settingsUiState = settingsUiState.copy(isSaveEnabled = false, isError = true)
-        }
-
-        Timber.i("isFieldError: $isError")
-
-        return isError
 
     }
 
     private fun setAlarmName(value: String) {
-        if (value.isNotBlank()) {
 
-            nameFieldValue.update {
-                it.copy(
-                        value = value,
-                        isConfirmButtonEnabled = value.isNotBlank()
-                )
-            }
-
+        nameFieldValue.update {
+            it.copy(
+                    value = value,
+                    isConfirmButtonEnabled = settingsUiState.alarmName.isNotEmpty()
+            )
         }
 
         setIsSaveEnabled(isSaveEnabled = true, showAlarmIn = false)
@@ -313,14 +294,12 @@ class SettingsViewModel @Inject constructor(
 
         setIsSaveEnabled(isSaveEnabled = true, showAlarmIn = false)
 
-
     }
 
 
     private fun setHaptics(value: Boolean) {
 
         hapticsFieldValue.update { it.copy(value = value) }
-
 
         setIsSaveEnabled(isSaveEnabled = true, showAlarmIn = false)
 
@@ -342,11 +321,14 @@ class SettingsViewModel @Inject constructor(
 
     fun onDeleteAlarmText() {
 
-        nameFieldValue.update { it.copy(value = "") }
+        nameFieldValue.update {
+
+            it.copy(value = "")
+
+        }
 
 
     }
-
 
     private fun resetState() {
 
@@ -362,7 +344,6 @@ class SettingsViewModel @Inject constructor(
 
     private fun setIsSaveEnabled(isSaveEnabled: Boolean, showAlarmIn: Boolean) {
         val isError = settingsUiState.isError
-
         if (isError.not()) {
 
             settingsUiState =
@@ -374,17 +355,16 @@ class SettingsViewModel @Inject constructor(
 
     fun onSaveButtonClick() {
 
-
         val isSave = settingsUiState.isSaveEnabled
         if (isSave) {
-            doSave()
             setIsSaveEnabled(isSaveEnabled = false, showAlarmIn = true)
+            doSave()
+
         }
 
     }
 
     private fun doSave() {
-
 
         val alarmItem = AlarmItem(
                 id = this.alarmItem?.id ?: UUID.randomUUID()

@@ -91,7 +91,7 @@ fun ModalDialog(
                         MediumButton(
                                 text = stringResource(id = R.string.save_text),
                                 onClick = { onConfirmDialog() },
-                                isEnabled = isDialogSaveButtonEnabled
+                                isEnabled = textValue.isNotBlank()
                         )
                     }
                 },

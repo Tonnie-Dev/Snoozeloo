@@ -231,7 +231,7 @@ fun SettingsScreenContent(
                     isDialogSaveButtonEnabled = nameFieldValue.isConfirmButtonEnabled,
                     onDeleteText = onDeleteAlarmNameText,
                     onDismissDialog = {
-                        onDeleteAlarmNameText()
+
                         showDialog = false
                     }
             )
@@ -274,8 +274,6 @@ fun TimePanel(
 
         AnimatedVisibility(visible = uiState.isShowAlarmIn) {
 
-            Timber.i("AniVis UiState Duration: ${uiState.durationToNextTrigger}")
-            Timber.i("AniVis UiState AlarmIn: ${uiState.durationToNextTrigger.timeToNextAlarm()}")
             Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(
@@ -285,7 +283,7 @@ fun TimePanel(
                     textAlign = TextAlign.Center
             )
 
-            Timber.i("AniVis UiState AlarmIn: ${uiState.durationToNextTrigger.timeToNextAlarm()}")
+
         }
     }
 
@@ -306,14 +304,12 @@ fun HourAndMinuteInputFields(
             verticalAlignment = Alignment.CenterVertically
     ) {
 
-
         NumberInputField(
                 modifier = Modifier.weight(1f),
                 value = hourFieldValue.value,
                 onValueChanged = hourFieldValue.onValueChange,
                 isError = hourFieldValue.isError
         )
-
 
         Text(
                 modifier = Modifier.padding(horizontal = spacing.spaceDoubleDp * 5),

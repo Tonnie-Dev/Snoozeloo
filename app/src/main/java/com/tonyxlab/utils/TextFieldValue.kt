@@ -6,7 +6,6 @@ data class TextFieldValue<T>(
     val isError: Boolean = false,
     val onValueChange: ((T) -> Unit)? ,
     val isConfirmButtonEnabled:Boolean = false ,
-
     val range: IntRange = 0..Int.MAX_VALUE,
     val maxCharacters: Int = Int.MAX_VALUE
 )
