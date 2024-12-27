@@ -18,7 +18,7 @@ data class AlarmItem(
     val name: String,
     val isEnabled: Boolean,
     val triggerTime: LocalDateTime,
-    val durationToNextTrigger: Long,
+
     val daysActive: List<DayChipState> = emptyList(),
     val ringtone: Ringtone = SILENT_RINGTONE,
     val volume: Float = 0f,

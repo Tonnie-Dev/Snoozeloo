@@ -27,23 +27,6 @@ data class AlarmUiState(
 )
 
 
-fun AlarmItem?.toAlarmUiState(): AlarmUiState =
-    this?.run {
-
-        AlarmUiState(
-                id = id,
-                name = name,
-                isEnabled = isEnabled,
-                triggerTime = triggerTime,
-                durationToNextTrigger = durationToNextTrigger,
-                daysActive = daysActive,
-                ringtone = ringtone,
-                volume = volume,
-                isHapticsOn = isHapticsOn,
-                wakeUpTime = wakeUpTime
-        )
-    } ?: AlarmUiState()
-
 
 data class SettingsUiState(
     val hour: String = "00",

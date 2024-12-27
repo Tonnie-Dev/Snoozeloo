@@ -19,7 +19,6 @@ fun getRandomAlarmItem(): AlarmItem = AlarmItem(
                 second = 57,
                 nanosecond = 100
         ),
-        durationToNextTrigger = 0L,
         daysActive =List(7){i ->
             DayChipState(day = i, isEnabled = i>=4)
         },

@@ -19,8 +19,6 @@ data class AlarmEntity(
     val isEnabled: Boolean,
     @ColumnInfo(name = "trigger_time")
     val triggerTime: Long,
-    @ColumnInfo(name = "duration_to_next_trigger")
-    val durationToNextTrigger: Long,
     @ColumnInfo(name = "days_active")
     val daysActive: List<DayChipState> = emptyList(),
     @ColumnInfo(name = "ringtone")

@@ -52,14 +52,11 @@ class SettingsViewModel @Inject constructor(
 
     private var alarmItem: AlarmItem? = null
 
-
     var settingsUiState by mutableStateOf(SettingsUiState())
         private set
 
-
     private val hoursFlow = snapshotFlow { settingsUiState.hour }
     private val minutesFlow = snapshotFlow { settingsUiState.minute }
-
 
     private val _ringtones = MutableStateFlow<List<Ringtone>>(emptyList())
     val ringtones = _ringtones.asStateFlow()
@@ -73,12 +70,9 @@ class SettingsViewModel @Inject constructor(
         val ringtonesFlow = ringtoneFetcher.fetchRingtone()
 
 
-
-
         combine(ringtonesFlow, hoursFlow, minutesFlow) {
 
             ringtonesList, hours, minutes ->
-
 
             val isValid = when (validateAlarmUseCase(hours, minutes)) {
 
@@ -90,17 +84,13 @@ class SettingsViewModel @Inject constructor(
             _ringtones.value = ringtonesList
             settingsUiState = settingsUiState.copy(isSaveEnabled = isValid)
 
-
             if (isValid) {
                 getSecs(hours, minutes)
-
                 settingsUiState = settingsUiState.copy(isError = false)
-
 
             } else {
 
                 settingsUiState = settingsUiState.copy(isError = true)
-
 
             }
 
@@ -375,7 +365,7 @@ class SettingsViewModel @Inject constructor(
                         hour = hourFieldValue.value.value,
                         minute = minuteFieldValue.value.value
                 ),
-                durationToNextTrigger = settingsUiState.durationToNextTrigger,
+
                 daysActive = settingsUiState.daysActive,
                 ringtone = _selectedRingtone.value,
                 volume = volumeFieldValue.value.value,
