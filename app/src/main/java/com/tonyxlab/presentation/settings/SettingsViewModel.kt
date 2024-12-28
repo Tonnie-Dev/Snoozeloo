@@ -49,7 +49,6 @@ class SettingsViewModel @Inject constructor(
     validateAlarmUseCase: ValidateAlarmUseCase
 ) : ViewModel() {
 
-
     private var alarmItem: AlarmItem? = null
 
     var settingsUiState by mutableStateOf(SettingsUiState())
@@ -61,14 +60,12 @@ class SettingsViewModel @Inject constructor(
     private val _ringtones = MutableStateFlow<List<Ringtone>>(emptyList())
     val ringtones = _ringtones.asStateFlow()
 
-
     init {
 
         val id = savedStateHandle.toRoute<NestedScreens>().id
 
         readAlarmInfo(id)
         val ringtonesFlow = ringtoneFetcher.fetchRingtone()
-
 
         combine(ringtonesFlow, hoursFlow, minutesFlow) {
 
@@ -80,12 +77,11 @@ class SettingsViewModel @Inject constructor(
                 else -> false
             }
 
-
             _ringtones.value = ringtonesList
             settingsUiState = settingsUiState.copy(isSaveEnabled = isValid)
 
             if (isValid) {
-                getSecs(hours, minutes)
+                setSecsToNextAlarm(hours, minutes)
                 settingsUiState = settingsUiState.copy(isError = false)
 
             } else {
@@ -94,11 +90,8 @@ class SettingsViewModel @Inject constructor(
 
             }
 
-
         }.launchIn(viewModelScope)
-
     }
-
 
     var hourFieldValue = MutableStateFlow(
             TextFieldValue(
@@ -106,7 +99,6 @@ class SettingsViewModel @Inject constructor(
                     onValueChange = this::setHourField,
                     range = 0..23
             )
-
     )
         private set
 
@@ -119,7 +111,6 @@ class SettingsViewModel @Inject constructor(
 
     )
         private set
-
 
     var nameFieldValue = MutableStateFlow(
             TextFieldValue(
@@ -149,7 +140,6 @@ class SettingsViewModel @Inject constructor(
     )
         private set
 
-
     private val _isPlaying = MutableStateFlow(false)
     val isPlaying = _isPlaying.asStateFlow()
 
@@ -176,7 +166,6 @@ class SettingsViewModel @Inject constructor(
                                 volume = volume,
                                 isHapticsOn = isHapticsOn
                         )
-
                         setHourField(triggerTime.getHourString())
                         setMinuteField(triggerTime.getMinuteString())
                         setAlarmName(name)
@@ -184,17 +173,12 @@ class SettingsViewModel @Inject constructor(
                         setVolume(volume)
                         setHaptics(isHapticsOn)
                     }
-
-
                 }
-
                 is Resource.Error -> Unit
-
             }
         }
 
     }
-
 
     fun play(uri: Uri) {
 
@@ -203,18 +187,6 @@ class SettingsViewModel @Inject constructor(
     }
 
 
-    private suspend fun getSecs(hour: String, minute: String) {
-
-
-        val futureDate = getFutureDateUseCase(
-                alarmTriggerTime = setTriggerTime(hour, minute),
-                list = settingsUiState.daysActive
-        )
-        settingsUiState =
-            settingsUiState.copy(durationToNextTrigger = getSecsToNextAlarmUseCase(futureDate).first())
-
-
-    }
 
     fun stop() {
 
@@ -265,6 +237,17 @@ class SettingsViewModel @Inject constructor(
 
     }
 
+    private suspend fun setSecsToNextAlarm(hour: String, minute: String) {
+
+        val futureDate = getFutureDateUseCase(
+                alarmTriggerTime = setTriggerTime(hour, minute),
+                list = settingsUiState.daysActive
+        )
+        settingsUiState =
+            settingsUiState.copy(durationToNextTrigger = getSecsToNextAlarmUseCase(futureDate).first())
+
+    }
+
     private fun setAlarmName(value: String) {
 
         nameFieldValue.update {
@@ -286,7 +269,6 @@ class SettingsViewModel @Inject constructor(
 
     }
 
-
     private fun setHaptics(value: Boolean) {
 
         hapticsFieldValue.update { it.copy(value = value) }
@@ -302,21 +284,18 @@ class SettingsViewModel @Inject constructor(
         setIsSaveEnabled(isSaveEnabled = true, showAlarmIn = false)
     }
 
-
     fun onNavigateBackToSettingsScreen() {
 
         ringtoneFetcher.stopPlay()
         ringtoneFetcher.release()
     }
 
-    fun onDeleteAlarmText() {
+    fun onClearAlarmNameText() {
 
         nameFieldValue.update {
 
             it.copy(value = "")
-
         }
-
 
     }
 
@@ -335,12 +314,10 @@ class SettingsViewModel @Inject constructor(
     private fun setIsSaveEnabled(isSaveEnabled: Boolean, showAlarmIn: Boolean) {
         val isError = settingsUiState.isError
         if (isError.not()) {
-
             settingsUiState =
                 settingsUiState.copy(isSaveEnabled = isSaveEnabled, isShowAlarmIn = showAlarmIn)
 
         }
-
     }
 
     fun onSaveButtonClick() {
@@ -351,7 +328,6 @@ class SettingsViewModel @Inject constructor(
             doSave()
 
         }
-
     }
 
     private fun doSave() {
@@ -396,7 +372,6 @@ class SettingsViewModel @Inject constructor(
         }
 
     }
-
 
 }
 

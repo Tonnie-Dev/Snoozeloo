@@ -83,7 +83,7 @@ fun SettingsScreen(
             volumeFieldValue = volumeFieldValue,
             hapticsFieldValue = hapticsFieldValue,
             selectedRingtone = selectedRingtone,
-            onDeleteAlarmNameText = viewModel::onDeleteAlarmText
+            onDeleteAlarmNameText = viewModel::onClearAlarmNameText
     )
 }
 
