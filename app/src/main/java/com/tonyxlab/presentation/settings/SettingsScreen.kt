@@ -51,7 +51,6 @@ import timber.log.Timber
 @Composable
 fun SettingsScreen(
     onClose: () -> Unit,
-    onDayChipClick: () -> Unit,
     onSelectRingtone: (String?) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel()
@@ -75,7 +74,7 @@ fun SettingsScreen(
             uiState = viewModel.settingsUiState,
             onClose = onClose,
             onSave = viewModel::onSaveButtonClick,
-            onDayChipClick = onDayChipClick,
+            onDayChipClick = viewModel::setActiveDays,
             onSelectRingtone = onSelectRingtone,
             hourFieldValue = hourFieldValue,
             minuteFieldValue = minuteFieldValue,
@@ -99,7 +98,7 @@ fun SettingsScreenContent(
     volumeFieldValue: TextFieldValue<Float>,
     hapticsFieldValue: TextFieldValue<Boolean>,
     selectedRingtone: Ringtone,
-    onDayChipClick: () -> Unit,
+    onDayChipClick: (Int) -> Unit,
     onClose: () -> Unit,
     onSave: () -> Unit,
     onSelectRingtone: (String) -> Unit,
@@ -251,7 +250,7 @@ fun TimePanel(
 
 {
 
-    Timber.i("TitlePanel UiState Duration: ${uiState.durationToNextTrigger}")
+
     val spacing = LocalSpacing.current
     Column(
 

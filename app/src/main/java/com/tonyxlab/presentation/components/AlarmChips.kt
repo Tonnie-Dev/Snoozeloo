@@ -31,7 +31,7 @@ import com.tonyxlab.utils.getRandomAlarmItem
 @Composable
 fun ChipsRow(
     daysActive: List<DayChipState>,
-    onDayChipClick: () -> Unit,
+    onDayChipClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val spacing = LocalSpacing.current
@@ -48,7 +48,7 @@ fun ChipsRow(
             val dayOfWeek = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")[i]
             DayChip(
                     text = dayOfWeek,
-                    onSelectChip = onDayChipClick,
+                    onSelectChip = {onDayChipClick(i)},
                     selected = state.isEnabled,
                     modifier = Modifier.weight(1f)
             )

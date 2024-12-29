@@ -37,7 +37,6 @@ fun NavGraphBuilder.appDestinations(navController: NavController) {
 
             SettingsScreen(
                     onClose = { navController.navigate(route = HomeScreenObject) },
-                    onDayChipClick = {},
                     onSelectRingtone = { navController.navigate(route = RingtoneScreenObject) },
                     viewModel = viewModel
             )

@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
 
@@ -117,7 +118,7 @@ class SettingsViewModel @Inject constructor(
                     value = settingsUiState.alarmName,
                     onValueChange = this::setAlarmName,
 
-            )
+                    )
     )
         private set
 
@@ -172,8 +173,12 @@ class SettingsViewModel @Inject constructor(
                         setRingtone(ringtone)
                         setVolume(volume)
                         setHaptics(isHapticsOn)
+
+                        Timber.i("Name is:$name \n List is: ${daysActive.forEach { println( it.isEnabled) }}")
+                        Timber.i("$daysActive")
                     }
                 }
+
                 is Resource.Error -> Unit
             }
         }
@@ -185,7 +190,6 @@ class SettingsViewModel @Inject constructor(
         ringtoneFetcher.startPlay(uri)
         _isPlaying.value = true
     }
-
 
 
     fun stop() {
@@ -261,6 +265,22 @@ class SettingsViewModel @Inject constructor(
 
     }
 
+
+    fun setActiveDays(index: Int) {
+
+        val daysActive = settingsUiState.daysActive.mapIndexed { i, dayChipState ->
+
+
+            if (i == index) dayChipState.copy(isEnabled = !dayChipState.isEnabled) else dayChipState
+        }
+
+
+        settingsUiState = settingsUiState.copy(daysActive = daysActive)
+
+
+        setIsSaveEnabled(isSaveEnabled = true, showAlarmIn = false)
+    }
+
     private fun setVolume(value: Float) {
 
         volumeFieldValue.update { it.copy(value = value) }
@@ -283,7 +303,14 @@ class SettingsViewModel @Inject constructor(
 
         setIsSaveEnabled(isSaveEnabled = true, showAlarmIn = false)
     }
+    private fun setIsSaveEnabled(isSaveEnabled: Boolean, showAlarmIn: Boolean) {
+        val isError = settingsUiState.isError
+        if (isError.not()) {
+            settingsUiState =
+                settingsUiState.copy(isSaveEnabled = isSaveEnabled, isShowAlarmIn = showAlarmIn)
 
+        }
+    }
     fun onNavigateBackToSettingsScreen() {
 
         ringtoneFetcher.stopPlay()
@@ -311,14 +338,7 @@ class SettingsViewModel @Inject constructor(
         resetState()
     }
 
-    private fun setIsSaveEnabled(isSaveEnabled: Boolean, showAlarmIn: Boolean) {
-        val isError = settingsUiState.isError
-        if (isError.not()) {
-            settingsUiState =
-                settingsUiState.copy(isSaveEnabled = isSaveEnabled, isShowAlarmIn = showAlarmIn)
 
-        }
-    }
 
     fun onSaveButtonClick() {
 

@@ -12,7 +12,7 @@ data class SettingsUiState(
     val daysActive: List<DayChipState> = List(7) { i ->
         DayChipState(
                 day = i,
-                isEnabled = i % 2 == 0
+                isEnabled = false
         )
     },
     val ringtone: Ringtone = SILENT_RINGTONE,
