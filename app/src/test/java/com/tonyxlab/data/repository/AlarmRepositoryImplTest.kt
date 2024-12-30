@@ -55,7 +55,7 @@ class AlarmRepositoryImplTest {
                 isEnabled = false,
                 triggerTime = LocalDateTime.now(),
                 durationToNextTrigger = 6342,
-                daysActive = listOf(),
+                activeDays = listOf(),
                 ringtone = null,
                 volume = 2108,
                 isHapticsOn = false,

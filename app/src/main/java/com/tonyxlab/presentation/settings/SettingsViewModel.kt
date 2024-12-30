@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.tonyxlab.domain.model.AlarmItem
+import com.tonyxlab.domain.model.DayChipState
 import com.tonyxlab.domain.model.Ringtone
 import com.tonyxlab.domain.model.SILENT_RINGTONE
 import com.tonyxlab.domain.ringtone.RingtoneFetcher
@@ -33,7 +34,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
 
@@ -64,8 +64,8 @@ class SettingsViewModel @Inject constructor(
     init {
 
         val id = savedStateHandle.toRoute<NestedScreens>().id
-
         readAlarmInfo(id)
+
         val ringtonesFlow = ringtoneFetcher.fetchRingtone()
 
         combine(ringtonesFlow, hoursFlow, minutesFlow) {
@@ -162,7 +162,7 @@ class SettingsViewModel @Inject constructor(
                                 hour = triggerTime.getHourString(),
                                 minute = triggerTime.getMinuteString(),
                                 alarmName = name,
-                                daysActive = daysActive,
+                                activeDays = daysActive,
                                 ringtone = ringtone,
                                 volume = volume,
                                 isHapticsOn = isHapticsOn
@@ -173,9 +173,6 @@ class SettingsViewModel @Inject constructor(
                         setRingtone(ringtone)
                         setVolume(volume)
                         setHaptics(isHapticsOn)
-
-                        Timber.i("Name is:$name \n List is: ${daysActive.forEach { println( it.isEnabled) }}")
-                        Timber.i("$daysActive")
                     }
                 }
 
@@ -245,7 +242,7 @@ class SettingsViewModel @Inject constructor(
 
         val futureDate = getFutureDateUseCase(
                 alarmTriggerTime = setTriggerTime(hour, minute),
-                list = settingsUiState.daysActive
+                list = settingsUiState.activeDays
         )
         settingsUiState =
             settingsUiState.copy(durationToNextTrigger = getSecsToNextAlarmUseCase(futureDate).first())
@@ -267,16 +264,20 @@ class SettingsViewModel @Inject constructor(
 
 
     fun setActiveDays(index: Int) {
+       val defaultList = List(7){ DayChipState(day = it, isEnabled = false)}
+        settingsUiState.activeDays.ifEmpty {
 
-        val daysActive = settingsUiState.daysActive.mapIndexed { i, dayChipState ->
+            settingsUiState = settingsUiState.copy(activeDays = defaultList)
+
+        }
+
+        val daysActive = settingsUiState.activeDays.mapIndexed { i, dayChipState ->
 
 
             if (i == index) dayChipState.copy(isEnabled = !dayChipState.isEnabled) else dayChipState
         }
 
-
-        settingsUiState = settingsUiState.copy(daysActive = daysActive)
-
+        settingsUiState = settingsUiState.copy(activeDays = daysActive)
 
         setIsSaveEnabled(isSaveEnabled = true, showAlarmIn = false)
     }
@@ -303,6 +304,9 @@ class SettingsViewModel @Inject constructor(
 
         setIsSaveEnabled(isSaveEnabled = true, showAlarmIn = false)
     }
+
+
+
     private fun setIsSaveEnabled(isSaveEnabled: Boolean, showAlarmIn: Boolean) {
         val isError = settingsUiState.isError
         if (isError.not()) {
@@ -311,6 +315,7 @@ class SettingsViewModel @Inject constructor(
 
         }
     }
+
     fun onNavigateBackToSettingsScreen() {
 
         ringtoneFetcher.stopPlay()
@@ -339,7 +344,6 @@ class SettingsViewModel @Inject constructor(
     }
 
 
-
     fun onSaveButtonClick() {
 
         val isSave = settingsUiState.isSaveEnabled
@@ -352,6 +356,7 @@ class SettingsViewModel @Inject constructor(
 
     private fun doSave() {
 
+
         val alarmItem = AlarmItem(
                 id = this.alarmItem?.id ?: UUID.randomUUID()
                         .toString(),
@@ -362,7 +367,7 @@ class SettingsViewModel @Inject constructor(
                         minute = minuteFieldValue.value.value
                 ),
 
-                daysActive = settingsUiState.daysActive,
+                daysActive = settingsUiState.activeDays,
                 ringtone = _selectedRingtone.value,
                 volume = volumeFieldValue.value.value,
                 isHapticsOn = hapticsFieldValue.value.value,

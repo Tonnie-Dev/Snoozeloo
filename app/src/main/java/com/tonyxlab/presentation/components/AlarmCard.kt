@@ -55,7 +55,7 @@ fun AlarmCard(
         AlarmFace(alarmItem = alarmItem)
         Spacer(modifier = Modifier.height(spacing.spaceSmall))
         ChipsRow(
-                daysActive = alarmItem.alarmItem.daysActive,
+                activeDays = alarmItem.alarmItem.daysActive,
                 onDayChipClick = { // TODO: Fix This
                      }
         )

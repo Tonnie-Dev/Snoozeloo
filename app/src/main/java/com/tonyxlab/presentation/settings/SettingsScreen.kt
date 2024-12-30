@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -33,9 +34,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tonyxlab.R
 import com.tonyxlab.domain.model.Ringtone
+import com.tonyxlab.domain.model.SILENT_RINGTONE
 import com.tonyxlab.presentation.components.AppTopBar
 import com.tonyxlab.presentation.components.ChipsRow
 import com.tonyxlab.presentation.components.MediumButton
@@ -43,9 +46,10 @@ import com.tonyxlab.presentation.components.ModalDialog
 import com.tonyxlab.presentation.components.NumberInputField
 import com.tonyxlab.presentation.components.VolumeSlider
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
+import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.TextFieldValue
 import com.tonyxlab.utils.timeToNextAlarm
-import timber.log.Timber
+
 
 
 @Composable
@@ -57,9 +61,7 @@ fun SettingsScreen(
 ) {
     val spacing = LocalSpacing.current
 
-     val uiState = viewModel.settingsUiState
-
-   Timber.i("Settings Screen UiState Duration: ${uiState.durationToNextTrigger}")
+    val uiState = viewModel.settingsUiState
 
     val hourFieldValue by viewModel.hourFieldValue.collectAsState()
     val minuteFieldValue by viewModel.minuteFieldValue.collectAsState()
@@ -71,7 +73,7 @@ fun SettingsScreen(
 
     SettingsScreenContent(
             modifier = modifier.padding(spacing.spaceMedium),
-            uiState = viewModel.settingsUiState,
+            settingsUiState = viewModel.settingsUiState,
             onClose = onClose,
             onSave = viewModel::onSaveButtonClick,
             onDayChipClick = viewModel::setActiveDays,
@@ -89,9 +91,7 @@ fun SettingsScreen(
 
 @Composable
 fun SettingsScreenContent(
-
-
-    uiState: SettingsUiState,
+    settingsUiState: SettingsUiState,
     hourFieldValue: TextFieldValue<String>,
     minuteFieldValue: TextFieldValue<String>,
     nameFieldValue: TextFieldValue<String>,
@@ -121,7 +121,7 @@ fun SettingsScreenContent(
                             MediumButton(
                                     text = stringResource(id = R.string.save_text),
                                     onClick = onSave,
-                                    isEnabled = uiState.isSaveEnabled
+                                    isEnabled = settingsUiState.isSaveEnabled
                             )
                         }
                 )
@@ -136,10 +136,10 @@ fun SettingsScreenContent(
 
             //Set Time Setting
             TimePanel(
-                    uiState =uiState,
+                    uiState = settingsUiState,
                     hourFieldValue = hourFieldValue,
                     minuteFieldValue = minuteFieldValue,
-                    )
+            )
 
             //Alarm Name Setting
             TitlePanel(
@@ -160,13 +160,14 @@ fun SettingsScreenContent(
                     onClickComponent = { showDialog = true }
             )
 
+
             //Chips-Day Setting
             TitlePanel(
                     mainText = stringResource(R.string.repeat_text),
                     bottomContent = {
                         ChipsRow(
                                 modifier = Modifier,
-                                daysActive = uiState.daysActive,
+                                activeDays = settingsUiState.activeDays,
                                 onDayChipClick = onDayChipClick
                         )
                     }
@@ -246,9 +247,7 @@ fun TimePanel(
     hourFieldValue: TextFieldValue<String>,
     minuteFieldValue: TextFieldValue<String>,
     modifier: Modifier = Modifier
-)
-
-{
+) {
 
 
     val spacing = LocalSpacing.current
@@ -369,7 +368,8 @@ fun TitlePanel(
 
 }
 
-/*
+
+
 
 @PreviewLightDark
 @Composable
@@ -379,12 +379,9 @@ private fun SettingsScreenContentPreview() {
         SettingsScreenContent(
 
                 modifier = Modifier.fillMaxSize(),
-                triggerTime = LocalDateTime.now()
-                        .plusDays(1),
                 onClose = {},
                 onSave = {},
                 onDayChipClick = {},
-                isSaveButtonEnabled = false,
                 onSelectRingtone = {},
                 onDeleteAlarmNameText = {},
                 hourFieldValue = TextFieldValue(
@@ -415,10 +412,10 @@ private fun SettingsScreenContentPreview() {
                         isError = false,
                         isConfirmButtonEnabled = false
                 ),
-                daysActive = emptyList(),
-                showAlarmIn = false,
+
                 selectedRingtone = SILENT_RINGTONE,
+                settingsUiState = SettingsUiState()
         )
     }
 }
-*/
+

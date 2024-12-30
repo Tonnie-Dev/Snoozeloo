@@ -27,13 +27,49 @@ import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.getRandomAlarmItem
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ChipsRow(
-    daysActive: List<DayChipState>,
+    activeDays: List<DayChipState>,
     onDayChipClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    if (activeDays.isNotEmpty()) {
+
+        ChipsRowContent(
+                activeDays = activeDays,
+                modifier = modifier,
+                onDayChipClick = onDayChipClick
+        )
+    } else {
+
+        val daysActive = List(7) { i ->
+
+            DayChipState(
+                    day = i,
+                    isEnabled = false
+            )
+
+        }
+
+        ChipsRowContent(
+                activeDays = daysActive,
+                modifier = modifier,
+                onDayChipClick = onDayChipClick
+        )
+    }
+
+}
+
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ChipsRowContent(
+    activeDays: List<DayChipState>,
+    modifier: Modifier = Modifier,
+    onDayChipClick: (Int) -> Unit
+) {
+
     val spacing = LocalSpacing.current
 
     FlowRow(
@@ -43,19 +79,22 @@ fun ChipsRow(
             horizontalArrangement = Arrangement.spacedBy(spacing.spaceExtraSmall)
     ) {
 
-        daysActive.forEachIndexed { i, state ->
+        activeDays.forEachIndexed { i, state ->
 
             val dayOfWeek = listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su")[i]
+
             DayChip(
                     text = dayOfWeek,
-                    onSelectChip = {onDayChipClick(i)},
+                    onSelectChip = { onDayChipClick(i) },
                     selected = state.isEnabled,
                     modifier = Modifier.weight(1f)
             )
-
         }
+
     }
+
 }
+
 
 @Composable
 fun DayChip(
@@ -97,7 +136,6 @@ fun DayChip(
     }
 }
 
-
 @PreviewLightDark
 @Composable
 private fun DayChipPreview() {
@@ -138,7 +176,7 @@ private fun WeekRowPreview() {
 
             ChipsRow(
                     onDayChipClick = {},
-                    daysActive = getRandomAlarmItem().daysActive
+                    activeDays = getRandomAlarmItem().daysActive
             )
         }
     }

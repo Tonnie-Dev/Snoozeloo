@@ -9,12 +9,7 @@ data class SettingsUiState(
     val minute: String = "",
     val alarmName: String = "",
     val durationToNextTrigger: Long = 0L,
-    val daysActive: List<DayChipState> = List(7) { i ->
-        DayChipState(
-                day = i,
-                isEnabled = false
-        )
-    },
+    val activeDays:List<DayChipState> = emptyList(),
     val ringtone: Ringtone = SILENT_RINGTONE,
     val volume: Float = 0f,
     val isHapticsOn: Boolean = false,
