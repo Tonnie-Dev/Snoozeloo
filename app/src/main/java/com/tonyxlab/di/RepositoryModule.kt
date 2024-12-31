@@ -6,7 +6,7 @@ import com.tonyxlab.data.repository.AlarmRepositoryImpl
 import com.tonyxlab.data.repository.RingtoneFetcherImpl
 import com.tonyxlab.data.schedulerimpl.AlarmSchedulerImpl
 import com.tonyxlab.domain.json.JsonSerializer
-import com.tonyxlab.domain.model.DayChipState
+import com.tonyxlab.domain.model.DayActivityState
 import com.tonyxlab.domain.repository.AlarmRepository
 import com.tonyxlab.domain.ringtone.RingtoneFetcher
 import com.tonyxlab.domain.scheduler.AlarmHandler
@@ -28,7 +28,7 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun provideJsonSerializer(
-        jsonSerializerImpl: JsonSerializerImpl<DayChipState>
+        jsonSerializerImpl: JsonSerializerImpl<DayActivityState>
     ): JsonSerializer
 
     @Binds

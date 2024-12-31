@@ -1,6 +1,6 @@
 package com.tonyxlab.domain.usecases
 
-import com.tonyxlab.domain.model.DayChipState
+import com.tonyxlab.domain.model.DayActivityState
 import com.tonyxlab.utils.now
 import com.tonyxlab.utils.plusDays
 import kotlinx.datetime.LocalDateTime
@@ -8,7 +8,7 @@ import javax.inject.Inject
 
 class GetFutureDateUseCase @Inject constructor() {
 
-    operator fun invoke(alarmTriggerTime: LocalDateTime, list: List<DayChipState>): LocalDateTime {
+    operator fun invoke(alarmTriggerTime: LocalDateTime, list: List<DayActivityState>): LocalDateTime {
         val finalDateTime: LocalDateTime?
         val currentTime = LocalDateTime.now()
         val dayOfWeek = currentTime.dayOfWeek.value

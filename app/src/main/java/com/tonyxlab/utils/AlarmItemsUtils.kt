@@ -1,7 +1,7 @@
 package com.tonyxlab.utils
 
 import com.tonyxlab.domain.model.AlarmItem
-import com.tonyxlab.domain.model.DayChipState
+import com.tonyxlab.domain.model.DayActivityState
 import kotlinx.datetime.LocalDateTime
 import java.util.UUID
 
@@ -20,7 +20,7 @@ fun getRandomAlarmItem(): AlarmItem = AlarmItem(
                 nanosecond = 100
         ),
         daysActive =List(7){i ->
-            DayChipState(day = i, isEnabled = i>=4)
+            DayActivityState(day = i, isEnabled = i>=4)
         },
 )
 

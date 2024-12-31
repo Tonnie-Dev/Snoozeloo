@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.tonyxlab.domain.model.AlarmItem
-import com.tonyxlab.domain.model.DayChipState
+import com.tonyxlab.domain.model.DayActivityState
 import com.tonyxlab.domain.model.Ringtone
 import com.tonyxlab.domain.model.SILENT_RINGTONE
 import com.tonyxlab.domain.ringtone.RingtoneFetcher
@@ -18,6 +18,7 @@ import com.tonyxlab.domain.usecases.CreateAlarmUseCase
 import com.tonyxlab.domain.usecases.GetAlarmByIdUseCase
 import com.tonyxlab.domain.usecases.GetFutureDateUseCase
 import com.tonyxlab.domain.usecases.GetSecsToNextAlarmUseCase
+import com.tonyxlab.domain.usecases.UpdateActiveDaysUseCase
 import com.tonyxlab.domain.usecases.UpdateAlarmUseCase
 import com.tonyxlab.domain.usecases.ValidateAlarmUseCase
 import com.tonyxlab.presentation.navigation.NestedScreens
@@ -46,6 +47,7 @@ class SettingsViewModel @Inject constructor(
     private val ringtoneFetcher: RingtoneFetcher,
     private val getSecsToNextAlarmUseCase: GetSecsToNextAlarmUseCase,
     private val getFutureDateUseCase: GetFutureDateUseCase,
+    private val updateActiveDaysUseCase: UpdateActiveDaysUseCase,
     savedStateHandle: SavedStateHandle,
     validateAlarmUseCase: ValidateAlarmUseCase
 ) : ViewModel() {
@@ -264,18 +266,15 @@ class SettingsViewModel @Inject constructor(
 
 
     fun setActiveDays(index: Int) {
-       val defaultList = List(7){ DayChipState(day = it, isEnabled = false)}
+        val defaultList = List(7) { DayActivityState(day = it, isEnabled = false) }
         settingsUiState.activeDays.ifEmpty {
 
             settingsUiState = settingsUiState.copy(activeDays = defaultList)
 
         }
 
-        val daysActive = settingsUiState.activeDays.mapIndexed { i, dayChipState ->
-
-
-            if (i == index) dayChipState.copy(isEnabled = !dayChipState.isEnabled) else dayChipState
-        }
+        val daysActive =
+            updateActiveDaysUseCase(activeDays = settingsUiState.activeDays, clickedIndex = index)
 
         settingsUiState = settingsUiState.copy(activeDays = daysActive)
 
@@ -304,7 +303,6 @@ class SettingsViewModel @Inject constructor(
 
         setIsSaveEnabled(isSaveEnabled = true, showAlarmIn = false)
     }
-
 
 
     private fun setIsSaveEnabled(isSaveEnabled: Boolean, showAlarmIn: Boolean) {

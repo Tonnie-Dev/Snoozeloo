@@ -22,14 +22,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import com.tonyxlab.domain.model.DayChipState
+import com.tonyxlab.domain.model.DayActivityState
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
 import com.tonyxlab.utils.getRandomAlarmItem
 
 @Composable
 fun ChipsRow(
-    activeDays: List<DayChipState>,
+    activeDays: List<DayActivityState>,
     onDayChipClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -45,7 +45,7 @@ fun ChipsRow(
 
         val daysActive = List(7) { i ->
 
-            DayChipState(
+            DayActivityState(
                     day = i,
                     isEnabled = false
             )
@@ -65,7 +65,7 @@ fun ChipsRow(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ChipsRowContent(
-    activeDays: List<DayChipState>,
+    activeDays: List<DayActivityState>,
     modifier: Modifier = Modifier,
     onDayChipClick: (Int) -> Unit
 ) {

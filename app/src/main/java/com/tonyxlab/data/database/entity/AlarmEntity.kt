@@ -3,7 +3,7 @@ package com.tonyxlab.data.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.tonyxlab.domain.model.DayChipState
+import com.tonyxlab.domain.model.DayActivityState
 import com.tonyxlab.domain.model.Ringtone
 import com.tonyxlab.domain.model.SILENT_RINGTONE
 
@@ -20,7 +20,7 @@ data class AlarmEntity(
     @ColumnInfo(name = "trigger_time")
     val triggerTime: Long,
     @ColumnInfo(name = "days_active")
-    val daysActive: List<DayChipState> = emptyList(),
+    val daysActive: List<DayActivityState> = emptyList(),
     @ColumnInfo(name = "ringtone")
     val ringtone: Ringtone = SILENT_RINGTONE,
     @ColumnInfo(name = "volume")

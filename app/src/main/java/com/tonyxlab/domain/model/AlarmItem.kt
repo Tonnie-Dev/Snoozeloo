@@ -1,8 +1,6 @@
 package com.tonyxlab.domain.model
 
 import android.net.Uri
-import com.tonyxlab.utils.now
-import com.tonyxlab.utils.plusDays
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -19,7 +17,7 @@ data class AlarmItem(
     val isEnabled: Boolean,
     val triggerTime: LocalDateTime,
 
-    val daysActive: List<DayChipState> = emptyList(),
+    val daysActive: List<DayActivityState> = emptyList(),
     val ringtone: Ringtone = SILENT_RINGTONE,
     val volume: Float = 0f,
     val isHapticsOn: Boolean = false,
@@ -28,7 +26,7 @@ data class AlarmItem(
 
 
 @Serializable
-data class DayChipState(val day: Int, val isEnabled: Boolean)
+data class DayActivityState(val day: Int, val isEnabled: Boolean)
 
 @Serializable
 data class Ringtone(

@@ -1,6 +1,6 @@
 package com.tonyxlab.di
 
-import com.tonyxlab.domain.model.DayChipState
+import com.tonyxlab.domain.model.DayActivityState
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,8 +14,8 @@ object SerializerModule {
 
     @Provides
     @Singleton
-    fun provideDayChipStateSerializer(): KSerializer<DayChipState> {
-        return DayChipState.serializer()
+    fun provideDayChipStateSerializer(): KSerializer<DayActivityState> {
+        return DayActivityState.serializer()
     }
 
 
