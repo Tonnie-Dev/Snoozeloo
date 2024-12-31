@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
 
@@ -175,7 +176,11 @@ class SettingsViewModel @Inject constructor(
                         setRingtone(ringtone)
                         setVolume(volume)
                         setHaptics(isHapticsOn)
+
+                        Timber.i("Settings VW, activeDays: $daysActive")
+
                     }
+
                 }
 
                 is Resource.Error -> Unit

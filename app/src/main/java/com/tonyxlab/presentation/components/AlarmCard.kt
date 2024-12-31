@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.tonyxlab.R
+import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.presentation.home.AlarmState
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
@@ -37,7 +38,7 @@ import com.tonyxlab.utils.toAmPmTime
 fun AlarmCard(
     alarmItem: AlarmState,
     onAlarmItemClick: (id: String) -> Unit,
-    onDayChipClick: () -> Unit,
+    onDayChipClick: (AlarmItem, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -56,7 +57,7 @@ fun AlarmCard(
         Spacer(modifier = Modifier.height(spacing.spaceSmall))
         ChipsRow(
                 activeDays = alarmItem.alarmItem.daysActive,
-                onDayChipClick = { // TODO: Fix This
+                onDayChipClick = {onDayChipClick(alarmItem.alarmItem,it)
                      }
         )
     }
@@ -163,7 +164,7 @@ private fun AlarmCardPreview() {
                             sleepTime = 0L
                     ),
                     onAlarmItemClick = {},
-                    onDayChipClick = {}
+                    onDayChipClick = {item, i ->}
             )
 
         }

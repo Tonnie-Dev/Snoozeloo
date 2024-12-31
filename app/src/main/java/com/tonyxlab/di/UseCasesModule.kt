@@ -1,6 +1,7 @@
 package com.tonyxlab.di
 
 import com.tonyxlab.domain.usecases.GetSecsToNextAlarmUseCase
+import com.tonyxlab.domain.usecases.UpdateActiveDaysUseCase
 import com.tonyxlab.domain.usecases.ValidateAlarmUseCase
 import dagger.Module
 import dagger.Provides
@@ -23,5 +24,12 @@ object UseCasesModule {
     fun provideValidateAlarmUseCase():ValidateAlarmUseCase{
 
         return ValidateAlarmUseCase()
+    }
+
+
+    @Provides
+    fun provideUpdateActiveDaysUseCase():UpdateActiveDaysUseCase{
+
+        return UpdateActiveDaysUseCase()
     }
 }

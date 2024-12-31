@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.tonyxlab.R
+import com.tonyxlab.domain.model.AlarmItem
 import com.tonyxlab.presentation.components.AlarmCard
 import com.tonyxlab.presentation.ui.theme.LocalSpacing
 import com.tonyxlab.presentation.ui.theme.SnoozelooTheme
@@ -44,7 +45,8 @@ fun HomeScreen(
             modifier = modifier,
             alarmItems = alarmItems,
             onAlarmItemClick = onAlarmItemClick,
-            onAddNewAlarm = onAddNewAlarm
+            onAddNewAlarm = onAddNewAlarm,
+            onChangeDayAlarmActivityState = viewModel::onDayAlarmActivityChange
     )
 }
 
@@ -52,6 +54,7 @@ fun HomeScreen(
 fun HomeScreenContent(
     alarmItems: List<AlarmState>,
     onAlarmItemClick: (id: String) -> Unit,
+    onChangeDayAlarmActivityState:(AlarmItem, Int) -> Unit,
     onAddNewAlarm: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -105,7 +108,7 @@ fun HomeScreenContent(
                 AlarmCard(modifier = Modifier.padding(spacing.spaceSmall),
                         alarmItem = it,
                         onAlarmItemClick = onAlarmItemClick,
-                        onDayChipClick = {})
+                        onDayChipClick = onChangeDayAlarmActivityState)
             }
         }
     }
@@ -122,7 +125,8 @@ private fun EmptyHomeScreenPreview() {
                     onAddNewAlarm = {},
                     alarmItems = emptyList(),
                     onAlarmItemClick = {},
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    onChangeDayAlarmActivityState = { _, _ ->}
             )
         }
     }
@@ -137,7 +141,8 @@ private fun FilledHomeScreenPreview() {
                 onAddNewAlarm = {},
                 alarmItems = emptyList(),
                 onAlarmItemClick = {},
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                onChangeDayAlarmActivityState = { _, _ ->}
         )
 
     }
