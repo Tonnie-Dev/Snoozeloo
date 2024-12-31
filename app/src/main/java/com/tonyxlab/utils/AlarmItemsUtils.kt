@@ -25,12 +25,12 @@ fun getRandomAlarmItem(): AlarmItem = AlarmItem(
 )
 
 
-fun getRandomAlarmItems(count: Int = 10): List<AlarmItem> =
+fun getDefaultDayAlarmActivityList(): List<DayActivityState> =
     buildList {
 
-        repeat(count) {
+        repeat(7) {
 
-            add(getRandomAlarmItem())
+            add(DayActivityState(day = it, isEnabled = false))
         }
     }
 

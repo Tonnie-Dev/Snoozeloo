@@ -13,6 +13,7 @@ import com.tonyxlab.domain.usecases.UpdateActiveDaysUseCase
 import com.tonyxlab.domain.usecases.UpdateAlarmUseCase
 import com.tonyxlab.utils.AppCoroutineDispatchers
 import com.tonyxlab.utils.Resource
+import com.tonyxlab.utils.getDefaultDayAlarmActivityList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -82,6 +83,8 @@ class HomeViewModel @Inject constructor(
                 }
                 .launchIn(viewModelScope)
 
+
+
     }
 
     private suspend fun updateAlarmItem(alarmItem: AlarmItem) {
@@ -98,7 +101,13 @@ class HomeViewModel @Inject constructor(
 
                 is Resource.Success -> {
 
-                    activeDays.update { result.data.daysActive }
+                    if (result.data.daysActive.isEmpty()){
+
+                        activeDays.update { getDefaultDayAlarmActivityList() }
+                    }else {
+
+                        activeDays.update { result.data.daysActive }
+                    }
                 }
 
                 else -> Unit

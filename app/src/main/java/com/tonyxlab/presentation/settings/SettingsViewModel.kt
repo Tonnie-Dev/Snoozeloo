@@ -24,6 +24,7 @@ import com.tonyxlab.domain.usecases.ValidateAlarmUseCase
 import com.tonyxlab.presentation.navigation.NestedScreens
 import com.tonyxlab.utils.Resource
 import com.tonyxlab.utils.TextFieldValue
+import com.tonyxlab.utils.getDefaultDayAlarmActivityList
 import com.tonyxlab.utils.getHourString
 import com.tonyxlab.utils.getMinuteString
 import com.tonyxlab.utils.setTriggerTime
@@ -35,7 +36,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
 
@@ -177,7 +177,6 @@ class SettingsViewModel @Inject constructor(
                         setVolume(volume)
                         setHaptics(isHapticsOn)
 
-                        Timber.i("Settings VW, activeDays: $daysActive")
 
                     }
 
@@ -271,10 +270,10 @@ class SettingsViewModel @Inject constructor(
 
 
     fun setActiveDays(index: Int) {
-        val defaultList = List(7) { DayActivityState(day = it, isEnabled = false) }
+
         settingsUiState.activeDays.ifEmpty {
 
-            settingsUiState = settingsUiState.copy(activeDays = defaultList)
+            settingsUiState = settingsUiState.copy(activeDays = getDefaultDayAlarmActivityList())
 
         }
 
